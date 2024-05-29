@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Automation</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+    <h1>Automation</h1>
+    <form method="POST">
+        <label for="operation">Operation:</label>
+        <select name="operation" id="operation">
+            <option value="planting">Planting</option>
+            <option value="harvesting">Harvesting</option>
+        </select>
+        <button type="submit">Submit</button>
+    </form>
+    <a href="/">Back to Home</a>
+<script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
+</body>
+</html>

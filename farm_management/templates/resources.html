@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Resources</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+    <header>
+        <h1>Resources</h1>
+    </header>
+    <div class="container">
+        <div class="padded-section">
+            <h2>Available Resources</h2>
+            <ul>
+                {% for resource in resources %}
+                    <li>{{ resource.name }}: {{ resource.quantity }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="/">Back to Home</a></li>
+            </ul>
+        </nav>
+    </div>
+    <footer>
+        <p>&copy; 2024 Farm Management System</p>
+    </footer>
+    <script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
+</body>
+</html>

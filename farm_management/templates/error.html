@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Error</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Error</h1>
+        </header>
+        <p>{{ message }}</p>
+        <nav>
+            <ul>
+                <li><a href="/">Back to Home</a></li>
+            </ul>
+        </nav>
+    </div>
+    <footer>
+        <p>&copy; 2024 Farm Management System</p>
+    </footer>
+<script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
+</body>
+</html>
