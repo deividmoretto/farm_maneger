@@ -1,18 +1,26 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt-BR">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Sistema de Gestão Agrícola">
+    <meta name="keywords" content="gestão agrícola, monitoramento, planejamento, automação">
+    <meta name="author" content="Seu Nome">
     <title>Farm Management</title>
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/styles.css') }}">
     <script src="{{ url_for('static', filename='js/scripts.js') }}" defer></script>
 </head>
 <body>
-    <h1>Farm Management System</h1>
-    <ul>
-        <li><a href="/resources">Resource Management</a></li>
-        <li><a href="/monitoring">Monitoring</a></li>
-        <li><a href="/planning">Planning</a></li>
-        <li><a href="/automation">Automation</a></li>
-    </ul>
-<script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
+    <header>
+        <h1>Farm Management System</h1>
+        <nav>
+            <ul>
+                <li><a href="/resources">Resource Management</a></li>
+                <li><a href="/monitoring">Monitoring</a></li>
+                <li><a href="/planning">Planning</a></li>
+                <li><a href="/automation">Automation</a></li>
+            </ul>
+        </nav>
+    </header>
 </body>
 </html>
