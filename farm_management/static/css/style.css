@@ -1,51 +1,81 @@
+/* Reset básico para garantir consistência entre navegadores */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Estilos gerais do corpo */
 body {
     font-family: Arial, sans-serif;
     background-color: #f4f4f4;
-    margin: 0;
-    padding: 0;
+    color: #333;
+    line-height: 1.6;
 }
 
+/* Container centralizado com estilo aprimorado */
 .container {
-    width: 50%;
-    margin: auto;
-    overflow: hidden;
+    width: 90%;
+    max-width: 600px;
+    margin: 50px auto;
     padding: 20px;
-    background: white;
-    margin-top: 50px;
+    background: #fff;
     box-shadow: 0px 0px 10px 0px #aaa;
+    border-radius: 8px;
 }
 
+/* Título centralizado com cor de contraste */
 h1 {
     text-align: center;
     color: #333;
+    margin-bottom: 20px;
 }
 
+/* Estilo do formulário com flexbox */
 form {
     display: flex;
     flex-direction: column;
 }
 
+/* Labels com margem ajustada */
 label {
     margin: 10px 0 5px;
+    font-weight: bold;
 }
 
+/* Inputs estilizados */
 input {
     padding: 10px;
     margin-bottom: 20px;
     border: 1px solid #ccc;
     border-radius: 4px;
+    font-size: 16px;
 }
 
+/* Botão estilizado */
 button {
     padding: 10px;
     background: #28a745;
     border: none;
-    color: white;
+    color: #fff;
     border-radius: 4px;
     cursor: pointer;
     font-size: 16px;
+    transition: background 0.3s;
 }
 
 button:hover {
     background: #218838;
+}
+
+/* Estilos responsivos */
+@media (max-width: 600px) {
+    .container {
+        width: 100%;
+        padding: 15px;
+    }
+    
+    input, button {
+        font-size: 14px;
+    }
 }
