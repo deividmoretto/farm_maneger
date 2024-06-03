@@ -12,15 +12,43 @@
 </head>
 <body>
     <header>
-        <h1>Farm Management System</h1>
-        <nav>
-            <ul>
-                <li><a href="/resources">Resource Management</a></li>
-                <li><a href="/monitoring">Monitoring</a></li>
-                <li><a href="/planning">Planning</a></li>
-                <li><a href="/automation">Automation</a></li>
-            </ul>
-        </nav>
+        <div class="container">
+            <h1>Farm Management System</h1>
+            <nav>
+                <ul class="nav-links">
+                    <li><a href="/resources">Resource Management</a></li>
+                    <li><a href="/monitoring">Monitoring</a></li>
+                    <li><a href="/planning">Planning</a></li>
+                    <li><a href="/automation">Automation</a></li>
+                    <li><a href="/profile">Profile</a></li>
+                    <li><a href="/logout">Logout</a></li>
+                </ul>
+            </nav>
+        </div>
     </header>
+
+    <main>
+        <div class="container">
+            <section class="login-section">
+                <h2>Login</h2>
+                <form id="loginForm" method="post" action="/login">
+                    <label for="username">Username:</label>
+                    <input type="text" id="username" name="username" required>
+                    
+                    <label for="password">Password:</label>
+                    <input type="password" id="password" name="password" required>
+                    
+                    <button type="submit">Login</button>
+                </form>
+            </section>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>Contact us at: <a href="mailto:info@farmmanagement.com">info@farmmanagement.com</a></p>
+            <p>&copy; 2024 Farm Management System. All rights reserved.</p>
+        </div>
+    </footer>
 </body>
 </html>
