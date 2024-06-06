@@ -1,26 +1,36 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Monitoring</title>
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/styles.css') }}">
 </head>
 <body>
     <header>
-        <h1>Monitoring</h1>
-    </header>
-    <div class="container">
-        <div class="padded-section">
-            <p>Drone Data: {{ drone_data }}</p>
+        <div class="container">
+            <h1>Monitoring</h1>
         </div>
+    </header>
+    <main class="container">
+        <section class="data-section">
+            <div class="padded-section">
+                <h2>Drone Data</h2>
+                <p>{{ drone_data }}</p>
+            </div>
+        </section>
         <nav>
             <ul>
                 <li><a href="/">Back to Home</a></li>
             </ul>
         </nav>
-    </div>
+    </main>
     <footer>
-        <p>&copy; 2024 Farm Management System</p>
+        <div class="container">
+            <p>&copy; 2024 Farm Management System. All rights reserved.</p>
+        </div>
     </footer>
-<script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
 </body>
 </html>
+

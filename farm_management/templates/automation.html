@@ -1,20 +1,42 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Automation</title>
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/styles.css') }}">
 </head>
 <body>
-    <h1>Automation</h1>
-    <form method="POST">
-        <label for="operation">Operation:</label>
-        <select name="operation" id="operation">
-            <option value="planting">Planting</option>
-            <option value="harvesting">Harvesting</option>
-        </select>
-        <button type="submit">Submit</button>
-    </form>
-    <a href="/">Back to Home</a>
-<script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
+    <header>
+        <div class="container">
+            <h1>Automation</h1>
+        </div>
+    </header>
+    <main class="container">
+        <section class="form-section">
+            <form method="POST">
+                <div class="form-group">
+                    <label for="operation">Operation:</label>
+                    <select name="operation" id="operation">
+                        <option value="planting">Planting</option>
+                        <option value="harvesting">Harvesting</option>
+                    </select>
+                </div>
+                <button type="submit">Submit</button>
+            </form>
+        </section>
+        <nav>
+            <ul>
+                <li><a href="/">Back to Home</a></li>
+            </ul>
+        </nav>
+    </main>
+    <footer>
+        <div class="container">
+            <p>&copy; 2024 Farm Management System. All rights reserved.</p>
+        </div>
+    </footer>
+    <script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
 </body>
 </html>
+
