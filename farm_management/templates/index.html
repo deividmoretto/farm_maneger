@@ -7,38 +7,40 @@
     <meta name="keywords" content="gestão agrícola, monitoramento, planejamento, automação">
     <meta name="author" content="Seu Nome">
     <title>Farm Management</title>
-    <link rel="stylesheet" type="text/css" href="/static/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" type="text/css" href="/static/css/index.css">
     <script src="{{ url_for('static', filename='js/scripts.js') }}" defer></script>
 </head>
 <body>
+    <nav>
+        <ul class="nav-links">
+            <li><a href="/resources"><i class="fas fa-seedling"></i> Resource Management</a></li>
+            <li><a href="/monitoring"><i class="fas fa-chart-line"></i> Monitoring</a></li>
+            <li><a href="/planning"><i class="fas fa-calendar-alt"></i> Planning</a></li>
+            <li><a href="/automation"><i class="fas fa-cogs"></i> Automation</a></li>
+            <li><a href="/profile"><i class="fas fa-user"></i> Profile</a></li>
+            <li><a href="/logout"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+        </ul>
+    </nav>
+
     <header>
-        <div class="container">
-            <h1>Farm Management System</h1>
-            <nav>
-                <ul class="nav-links">
-                    <li><a href="/resources">Resource Management</a></li>
-                    <li><a href="/monitoring">Monitoring</a></li>
-                    <li><a href="/planning">Planning</a></li>
-                    <li><a href="/automation">Automation</a></li>
-                    <li><a href="/profile">Profile</a></li>
-                    <li><a href="/logout">Logout</a></li>
-                </ul>
-            </nav>
-        </div>
+        <h1>Farm Management System</h1>
     </header>
 
-    <main class="container">
+    <main>
         <section class="welcome-section">
             <h2>Welcome to the Farm Management System</h2>
             <p>Your one-stop solution for managing farm resources, monitoring conditions, planning activities, and automating processes.</p>
         </section>
+
+        <section class="contact-section">
+            <h2>Contact us</h2>
+            <p>If you have any questions or inquiries, feel free to contact us at <a href="mailto:info@farmmanagement.com">info@farmmanagement.com</a>.</p>
+        </section>
     </main>
 
     <footer>
-        <div class="container">
-            <p>Contact us at: <a href="mailto:info@farmmanagement.com">info@farmmanagement.com</a></p>
-            <p>&copy; 2024 Farm Management System. All rights reserved.</p>
-        </div>
+        <p>&copy; 2024 Farm Management System. All rights reserved.</p>
     </footer>
 </body>
 </html>
