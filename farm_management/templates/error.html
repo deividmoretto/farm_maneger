@@ -1,24 +1,25 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt-BR">
 <head>
-    <title>Error</title>
+    <meta charset="UTF-8">
+    <title>Erro</title>
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/styles.css') }}">
 </head>
 <body>
     <div class="container">
         <header>
-            <h1>Error</h1>
+            <h1>Erro</h1>
         </header>
-        <p>{{ message }}</p>
+        <p>{{ mensagem }}</p>
         <nav>
             <ul>
-                <li><a href="/">Back to Home</a></li>
+                <li><a href="/">Voltar para a Home</a></li>
             </ul>
         </nav>
     </div>
     <footer>
-        <p>&copy; 2024 Farm Management System</p>
+        <p>&copy; 2024 Sistema de Gestão Agrícola</p>
     </footer>
-<script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
 </body>
 </html>

@@ -1,30 +1,30 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Monitoring</title>
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/monitoring.css') }}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"> <!-- Font Awesome for icons -->
+    <title>Monitoramento</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/styles.css') }}">
 </head>
 <body>
     <header>
         <h1>Monitoramento</h1>
     </header>
-
-    <nav>
-        <ul>
-            <li><a href="/"><i class="fas fa-arrow-left"></i> Back to Home</a></li>
-        </ul>
-    </nav>
-
-    <h2>Drone Data</h2>
-    <p>{{ drone_data }}</p>
-
+    <div class="container">
+        {% if drone_data %}
+            <h2>Dados do Drone</h2>
+            <pre>{{ drone_data | tojson(indent=2) }}</pre>
+        {% else %}
+            <p>Não foi possível obter os dados do drone.</p>
+        {% endif %}
+        <nav>
+            <ul>
+                <li><a href="/"><i class="fas fa-arrow-left"></i> Voltar para a Home</a></li>
+            </ul>
+        </nav>
+    </div>
     <footer>
-        <p>&copy; 2024 Farm Management System. All rights reserved.</p>
+        <p>&copy; 2024 Sistema de Gestão Agrícola. Todos os direitos reservados.</p>
     </footer>
-
     <script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
 </body>
 </html>

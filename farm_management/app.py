@@ -10,14 +10,14 @@ def index():
 @app.route('/recursos')
 def recursos():
     recursos_data = [
-        {'name': 'Water', 'quantity': '200 liters'},
-        {'name': 'Fertilizer', 'quantity': '50 kg'},
-        {'name': 'Seeds', 'quantity': '100 packets'}
+        {'name': 'Água', 'quantity': '200 litros'},
+        {'name': 'Fertilizante', 'quantity': '50 kg'},
+        {'name': 'Sementes', 'quantity': '100 pacotes'}
     ]
     return render_template('recursos.html', recursos=recursos_data)
 
 @app.route('/monitoramento')
-def monitoring():
+def monitoramento():
     return render_template('monitoramento.html')
 
 @app.route('/planejamento', methods=['GET', 'POST'])
@@ -35,7 +35,7 @@ def planejamento():
         if weather_forecast:
             return render_template('planejamento.html', weather=weather_forecast)
         else:
-            error_message = "Could not retrieve weather data"
+            error_message = "Não foi possível obter os dados do tempo"
             return render_template('planejamento.html', error=error_message)
     else:
         return render_template('planejamento.html')

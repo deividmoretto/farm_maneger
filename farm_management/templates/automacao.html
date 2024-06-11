@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Automation</title>
+    <title>Automação</title>
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/styles.css') }}">
 </head>
 <body>
@@ -16,27 +16,32 @@
         <section class="form-section">
             <form method="POST">
                 <div class="form-group">
-                    <label for="operation">Operation:</label>
+                    <label for="operation">Operação:</label>
                     <select name="operation" id="operation">
-                        <option value="planting">Planting</option>
-                        <option value="harvesting">Harvesting</option>
+                        <option value="planting">Plantio</option>
+                        <option value="harvesting">Colheita</option>
                     </select>
                 </div>
-                <button type="submit">Submit</button>
+                <button type="submit">Enviar</button>
             </form>
         </section>
+        {% if result %}
+        <section class="result-section">
+            <h2>Resultado da Operação</h2>
+            <p>{{ result }}</p>
+        </section>
+        {% endif %}
         <nav>
             <ul>
-                <li><a href="/">Back to Home</a></li>
+                <li><a href="/">Voltar para a Home</a></li>
             </ul>
         </nav>
     </main>
     <footer>
         <div class="container">
-            <p>&copy; 2024 Farm Management System. All rights reserved.</p>
+            <p>&copy; 2024 Sistema de Gestão Agrícola. Todos os direitos reservados.</p>
         </div>
     </footer>
     <script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
 </body>
 </html>
-
