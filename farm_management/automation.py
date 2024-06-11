@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request
 from weather import get_weather_forecast
 
 app = Flask(__name__)
@@ -25,7 +25,7 @@ def recursos():
         {'name': 'Fertilizante', 'quantity': '50 kg'},
         {'name': 'Sementes', 'quantity': '100 pacotes'}
     ]
-    return render_template('recursos.html', recursos=recursos_data)
+    return render_template('recursos.html', resources=recursos_data)
 
 @app.route('/monitoramento')
 def monitoramento():
@@ -44,10 +44,10 @@ def planejamento():
         weather_forecast = get_weather_forecast(lat, lon, start, end)
         
         if weather_forecast:
-            return render_template('planejamento.html', weather=weather_forecast)
+            return render_template('planejamento.html', weather_forecast=weather_forecast)
         else:
             error_message = "Não foi possível obter os dados do tempo"
-            return render_template('planejamento.html', error=error_message)
+            return render_template('planejamento.html', error_message=error_message)
     else:
         return render_template('planejamento.html')
 
