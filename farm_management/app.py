@@ -7,21 +7,21 @@ app = Flask(__name__)
 def index():
     return render_template('index.html')
 
-@app.route('/resources')
-def resources():
-    resources_data = [
+@app.route('/recursos')
+def recursos():
+    recursos_data = [
         {'name': 'Water', 'quantity': '200 liters'},
         {'name': 'Fertilizer', 'quantity': '50 kg'},
         {'name': 'Seeds', 'quantity': '100 packets'}
     ]
-    return render_template('resources.html', resources=resources_data)
+    return render_template('recursos.html', recursos=recursos_data)
 
-@app.route('/monitoring')
+@app.route('/monitoramento')
 def monitoring():
-    return render_template('monitoring.html')
+    return render_template('monitoramento.html')
 
-@app.route('/planning', methods=['GET', 'POST'])
-def planning():
+@app.route('/planejamento', methods=['GET', 'POST'])
+def planejamento():
     if request.method == 'POST':
         # Obter dados do formulário
         lat = request.form.get('lat')
@@ -33,16 +33,16 @@ def planning():
         weather_forecast = get_weather_forecast(lat, lon, start, end)
         
         if weather_forecast:
-            return render_template('planning.html', weather=weather_forecast)
+            return render_template('planejamento.html', weather=weather_forecast)
         else:
             error_message = "Could not retrieve weather data"
-            return render_template('planning.html', error=error_message)
+            return render_template('planejamento.html', error=error_message)
     else:
-        return render_template('planning.html')
+        return render_template('planejamento.html')
 
-@app.route('/automation')
-def automation():
-    return render_template('automation.html')
+@app.route('/automacao')
+def automacao():
+    return render_template('automacao.html')
 
 if __name__ == '__main__':
     app.run(debug=True)
