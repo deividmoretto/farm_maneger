@@ -1,88 +1,30 @@
-/* Reset básico para garantir consistência entre navegadores */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+/* Estilize as caixas para cada opção da barra de menus */
+nav ul li::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 75%; /* Reduzir para 75% da largura original */
+    height: 75%; /* Reduzir para 75% da altura original */
+    background-size: cover;
+    background-position: center;
+    border-radius: 5px;
+    z-index: -1; /* Coloque a caixa atrás do texto */
 }
 
-/* Estilos gerais do corpo */
-body {
-    font-family: Arial, sans-serif;
-    background: linear-gradient(to bottom, #000000, #333333); /* Degradê de preto */
-    color: #ffffff; /* branco */
-    line-height: 1.6;
-    min-height: 100vh;
+/* Estilize cada opção da barra de menus individualmente */
+nav ul li:nth-child(1)::after {
+    background-image: url('imagem1.jpg');
 }
 
-/* Estilo do cabeçalho */
-header {
-    background: linear-gradient(to bottom, #770000, #cc0000); /* Degradê de vermelho escuro */
-    color: #fff;
-    padding: 20px 0;
-    text-align: center;
-    border-radius: 8px;
-    margin-bottom: 20px;
+nav ul li:nth-child(2)::after {
+    background-image: url('imagem2.jpg');
 }
 
-header h1 {
-    margin: 0;
-    font-size: 2em;
+nav ul li:nth-child(3)::after {
+    background-image: url('imagem3.jpg');
 }
 
-/* Estilo da barra de navegação */
-nav {
-    background: linear-gradient(to bottom, #770000, #cc0000); /* Degradê de vermelho escuro */
-    display: flex;
-    justify-content: center;
-    padding: 20px 0;
-    border-radius: 8px;
-    margin-bottom: 20px;
-}
-
-nav ul {
-    list-style: none;
-    display: flex;
-}
-
-nav ul li {
-    margin: 0 15px;
-}
-
-nav ul li a {
-    text-decoration: none;
-    color: #fff;
-    font-weight: bold;
-    transition: color 0.3s;
-}
-
-nav ul li a:hover {
-    color: #000; /* preto */
-}
-
-/* Estilo do conteúdo principal */
-main {
-    padding: 0 20px;
-}
-
-/* Estilo das seções */
-.welcome-section,
-.contact-section {
-    margin-bottom: 20px;
-}
-
-/* Estilo do rodapé */
-footer {
-    background: linear-gradient(to bottom, #770000, #cc0000); /* Degradê de vermelho escuro */
-    color: #fff;
-    text-align: center;
-    padding: 20px 0;
-}
-
-footer a {
-    color: #fff;
-    text-decoration: none;
-}
-
-footer a:hover {
-    text-decoration: underline;
+nav ul li:nth-child(4)::after {
+    background-image: url('imagem4.jpg');
 }
