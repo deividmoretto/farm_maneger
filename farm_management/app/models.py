@@ -36,4 +36,13 @@ class contabilidade(db.Model):
     data = db.Column(db.DateTime,  default=db.func.current_timestamp(), onupdate=db.func.current_timestamp())          
 
 
+class Safra(db.Model):
+    __tablename__ = 'safra'
+    id = db.Column(db.Integer, primary_key=True)
+    nome = db.Column(db.String(100), nullable=False)
+    data_inicio = db.Column(db.Date, nullable=False)
+    data_fim = db.Column(db.Date, nullable=False)
+
+
+
    
