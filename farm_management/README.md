@@ -1,2 +1,0 @@
-# Crud_completo_flask
-Crud_completo_flask
