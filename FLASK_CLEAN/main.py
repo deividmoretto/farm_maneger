@@ -6,5 +6,13 @@ app = Flask(__name__)
 def home():
     return render_template('base.html')
 
+@app.route('/sensor')
+def sensor_data():
+    return render_template('sensor_data.html')
+
+@app.route('/index')
+def index_page():
+    return render_template('index.html')
+
 if __name__ == '__main__':
     app.run(debug=True)

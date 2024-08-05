@@ -1,24 +1,25 @@
-<!-- templates/base.html -->
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Software Agrícola{% endblock %}</title>
-    <link rel="stylesheet" href="/static/style.css">
-    <script defer src="/static/script.js"></script>
+    <title>{% block title %}AgroLink{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script defer src="{{ url_for('static', filename='script.js') }}"></script>
 </head>
 <body>
     <nav id="sideNav" class="side-nav closed">
         <div class="nav-header">
             <a href="javascript:void(0)" class="closebtn" onclick="toggleNav()">&times;</a>
-            <div class="nav-title" id="navTitle">AgrL</div>
-            <img src="/static/imagens/Agrolink_sem_fundo.png" alt="Logo" class="logo">
+            <div class="nav-title" id="navTitle">AgroLink</div>
+            <img src="{{ url_for('static', filename='imagens/Agrolink_sem_fundo.png') }}" alt="Logo" class="logo">
         </div>
-        <a href="/">Início</a>
-        <a href="/sattic/templates/sensor_data.html">Sensor</a>
-       
+        <div class="nav-links">
+            <a href="{{ url_for('home') }}">Início</a>
+            <a href="{{ url_for('sensor_data') }}">Sensor</a>
+        </div>
     </nav>
+
     <div id="main" class="main-collapsed">
         <span class="openbtn" onclick="toggleNav()">&#9776; Menu</span>
         <div class="container">

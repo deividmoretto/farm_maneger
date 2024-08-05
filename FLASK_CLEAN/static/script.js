@@ -14,7 +14,7 @@ function toggleNav() {
         sideNav.style.width = "250px";
         main.classList.remove('main-collapsed');
         main.classList.add('main-expanded');
-        navTitle.innerHTML = "AgroVision";
+        navTitle.innerHTML = "AgroLink";
         logo.style.maxWidth = "150px";
         links.forEach(link => link.style.opacity = 1);
     } else {
@@ -22,7 +22,7 @@ function toggleNav() {
         sideNav.style.width = "70px";
         main.classList.remove('main-expanded');
         main.classList.add('main-collapsed');
-        navTitle.innerHTML = "AgrV";
+        navTitle.innerHTML = "AgrL";
         logo.style.maxWidth = "50px";
         links.forEach(link => link.style.opacity = 0);
     }
