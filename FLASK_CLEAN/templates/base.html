@@ -1,32 +1,49 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-BR"> 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}AgroLink{% endblock %}</title>
+    <meta charset="UTF-8"> 
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+    <title>{% block title %}AgroLink{% endblock %}</title> 
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <script defer src="{{ url_for('static', filename='script.js') }}"></script>
 </head>
 <body>
+    <!-- Barra de navegação lateral, inicialmente fechada, identificada pelo ID 'sideNav' -->
     <nav id="sideNav" class="side-nav closed">
-        <div class="nav-header">
+        <div class="nav-header"> <!-- Cabeçalho da barra de navegação -->
+            <!-- Botão de fechar a barra de navegação, usando a função JavaScript 'toggleNav()' -->
             <a href="javascript:void(0)" class="closebtn" onclick="toggleNav()">&times;</a>
+            
+            <!-- Título da navegação -->
             <div class="nav-title" id="navTitle">AgroLink</div>
+            
+            <!-- Logo da aplicação, com caminho gerado por Flask para o arquivo estático -->
             <img src="{{ url_for('static', filename='imagens/Agrolink_sem_fundo.png') }}" alt="Logo" class="logo">
         </div>
+        
+        <!-- Links de navegação -->
         <div class="nav-links">
+            <!-- Link para a página inicial, com rota gerada por Flask -->
             <a href="{{ url_for('home') }}">Início</a>
+            
+            <!-- Link para a página de dados do sensor, com rota gerada por Flask -->
             <a href="{{ url_for('sensor_data') }}">Sensor</a>
         </div>
     </nav>
 
-    <div id="main" class="main-collapsed">
+    <!-- Conteúdo principal da página -->
+    <div id="main" class="main-collapsed"> <!-- Classe 'main-collapsed' para estado inicial colapsado -->
+        <!-- Botão para abrir a barra de navegação -->
         <span class="openbtn" onclick="toggleNav()">&#9776; Menu</span>
+        
+        <!-- Container para o conteúdo dinâmico -->
         <div class="container">
-            {% block content %}{% endblock %}
+            {% block content %}{% endblock %} <!-- Bloco de conteúdo dinâmico que será substituído em templates específicos -->
         </div>
+        
+        <!-- Rodapé da página -->
         <footer>
-            &copy; 2024 AgroLink. MetaCore Todos os direitos reservados.
+            &copy; 2024 AgroLink. MetaCore Todos os direitos reservados. <!-- Direitos autorais e informação de rodapé -->
         </footer>
     </div>
 </body>
