@@ -1,5 +1,0 @@
-Flask
-Flask-RESTful
-Flask-Caching
-requests
-flask-limiter
