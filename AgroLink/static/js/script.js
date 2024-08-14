@@ -1,4 +1,4 @@
-<script>
+
     // Coloque o código JavaScript aqui
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', function(e) {
@@ -50,6 +50,4 @@
             event.preventDefault();
         }
     });
-</script>
-</body>
-</html>
+
