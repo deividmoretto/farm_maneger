@@ -5,28 +5,46 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Safra</title>
 
-<div class="container">
-    <h1>Safra</h1>
-    <form id="safraForm">
-        <label for="tipoCultivo">Tipo de Cultivo:</label>
-        <input type="text" id="tipoCultivo" required>
-
-        <label for="dataPlantio">Data de Plantio:</label>
-        <input type="date" id="dataPlantio" required>
-
-        <label for="dataColheita">Data da Colheita:</label>
-        <input type="date" id="dataColheita" required>
-
-        <button type="button" onclick="exibirInformacoes()">Exibir Informações</button>
-
-        <label for="areaPlantada">Área Plantada (em hectares):</label>
-        <input type="number" id="areaPlantada" step="0.01" required>
-
-        <label for="rendimentoEsperado">Rendimento Esperado (em toneladas):</label>
-        <input type="number" id="rendimentoEsperado" step="0.01" required>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="/AgroLink/static/js/safra.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 
-    </form>
+    <div class="container">
+        <h1>Safra</h1>
+        <form id="safraForm">
+            <label for="tipoCultivo">Tipo de Cultivo:</label>
+            <input type="text" id="tipoCultivo" required>
+    
+            <label for="dataPlantio">Data de Plantio:</label>
+            <input type="date" id="dataPlantio" required>
+    
+            <label for="dataColheita">Data da Colheita:</label>
+            <input type="date" id="dataColheita" required>
+    
+            <button type="button" onclick="exibirInformacoes()">Exibir Informações</button>
+    
+            <label for="areaPlantada">Área Plantada (em hectares):</label>
+            <input type="number" id="areaPlantada" step="0.01" required>
+    
+            <label for="rendimentoEsperado">Rendimento Esperado (em toneladas):</label>
+            <input type="number" id="rendimentoEsperado" step="0.01" required>
+    
+        </form>
+    
+        <div id="Pragas" class="tabcontent">
+            <h2>Monitoramento de Pragas</h2>
+        </div>
+    
+        <div id="Operacional" class="tabcontent">
+            <h2>Gestão Operacional</h2>
+        </div>
+    
+        <div id="Crise" class="tabcontent">
+            <h2>Gestão Emergêncial</h2>
+    
+        <div class="result" id="resultado"></div>
+    
+        
+    </div>
 
-    <div class="result" id="resultado"></div>
-</div>
