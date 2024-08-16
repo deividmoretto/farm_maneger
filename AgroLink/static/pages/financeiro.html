@@ -1,2 +1,41 @@
-consultar as ofertas 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Módulo Financeiro</title>
+    <link rel="stylesheet" href="styles_financeiro.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Gestão Financeira da Safra</h1>
 
+        <form id="financeiroForm">
+            <label for="financiamento">Escolha um Financiamento:</label>
+            <select id="financiamento" name="financiamento" onchange="mostrarDetalhes()">
+                <option value="">Selecione</option>
+                <option value="Bradesco">Bradesco - Taxa: 3.5%</option>
+                <option value="Itau">Itau - Taxa: 4.0%</option>
+                <option value="Santander">Santander - Taxa: 4.2%</option>
+            </select>
+
+            <label for="areaSafra">Área da Safra (m²):</label>
+            <input type="number" id="areaSafra" name="areaSafra" required>
+
+            <label for="recursoNecessario">Recurso Necessário (R$):</label>
+            <input type="number" id="recursoNecessario" name="recursoNecessario" required>
+
+            <button type="button" onclick="calcularAplicacao()">Calcular Aplicação</button>
+        </form>
+
+        <div id="result">
+            <h2>Resultado</h2>
+            <p id="detalhesFinanciamento"></p>
+            <p id="valorAplicado"></p>
+            <p id="alertaFinanceiro"></p>
+        </div>
+    </div>
+
+    <script src="financeiro.js"></script>
+</body>
+</html>
