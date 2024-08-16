@@ -36,11 +36,53 @@ header h1 {
     margin-bottom: 2.5rem;
 }
 
+button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .solo {
+    background-color: #4CAF50;
+    color: #ffffff;
+  }
+  
+  .safra {
+    background-color: #8BC34A;
+    color: #ffffff;
+  }
+  
+  .preco {
+    background-color: #2196F3;
+    color: #ffffff;
+  }
+  
+  .maquinario {
+    background-color: #9C27B0;
+    color: #ffffff;
+  }
+  
+  .insumos {
+    background-color: #FFC107;
+    color: #ffffff;
+  }
+  
+  .financeiro {
+    background-color: #03A9F4;
+    color: #ffffff;
+  }
+  
+  .seguro {
+    background-color: #E91E63;
+    color: #ffffff;
+  }
+
 nav ul {
     display: flex;
     justify-content: center;
     list-style: none;
-    padding: 0rem 0;
+    padding: 0;
 }
 
 nav ul li {
@@ -199,3 +241,4 @@ footer p {
     margin: 0;
     font-size: 0.9rem;
 }
+
