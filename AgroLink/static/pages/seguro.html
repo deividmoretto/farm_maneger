@@ -15,19 +15,19 @@
             <label for="coverage-select">Escolha uma cobertura:</label>
             <select id="coverage-select">
                 <option value="">Selecione</option>
-                <option value="fire">Seguro FLoresta</option>
+                <option value="fire">Seguro Floresta</option>
                 <option value="theft">Seguro Granizo</option>
                 <option value="third-party">Seguro Multirrisco Rural</option>
                 <option value="natural-disasters">Seguro Rural Simplificado</option>
                 <option value="liability">Seguro Penhor Rural</option>
-                <option value="fire">Seguro Colheita Garantida</option>
-                <option value="theft">Seguro Cafezal</option>
+                <option value="harvest-guarantee">Seguro Colheita Garantida</option>
+                <option value="cafezal">Seguro Cafezal</option>
             </select>
         </div>
 
         <div class="dropdown">
-            <label for="coverage-select">Escolha o banco:</label>
-            <select id="coverage-select">
+            <label for="bank-select">Escolha o banco:</label>
+            <select id="bank-select">
                 <option value="">Selecione</option>
                 <option value="Sicredi">Sicredi</option>
                 <option value="Porto">Porto Seguro</option>
@@ -37,25 +37,41 @@
             </select>
         </div>
 
-        <div id="fire" class="coverage">
-            <h2>Cobertura Contra Incêndio</h2>
+        <div id="fire" class="coverage hidden">
+            <h2>Seguro Floresta</h2>
+            <p>Este seguro cobre os danos causados por incêndios florestais, protegendo os investimentos em áreas de reflorestamento.</p>
         </div>
 
-        <div id="theft" class="coverage">
-            <h2>Cobertura Contra Roubo</h2>
+        <div id="theft" class="coverage hidden">
+            <h2>Seguro Granizo</h2>
+            <p>Proteção contra danos causados por granizo em culturas agrícolas, garantindo a segurança da produção.</p>
         </div>
 
-        <div id="third-party" class="coverage">
-            <h2>Cobertura Contra Danos a Terceiros</h2>
+        <div id="third-party" class="coverage hidden">
+            <h2>Seguro Multirrisco Rural</h2>
+            <p>Cobre uma variedade de riscos que podem afetar a produção agrícola, como intempéries e pragas.</p>
         </div>
 
-        <div id="natural-disasters" class="coverage">
-            <h2>Cobertura de Desastres Naturais</h2>
+        <div id="natural-disasters" class="coverage hidden">
+            <h2>Seguro Rural Simplificado</h2>
+            <p>Oferece cobertura básica contra desastres naturais e outras ameaças comuns ao ambiente rural.</p>
         </div>
 
-        <div id="liability" class="coverage">
-            <h2>Cobertura de Responsabilidade Civil</h2>
+        <div id="liability" class="coverage hidden">
+            <h2>Seguro Penhor Rural</h2>
+            <p>Cobre os bens empenhados como garantia de financiamento agrícola, protegendo contra possíveis perdas.</p>
+        </div>
+
+        <div id="harvest-guarantee" class="coverage hidden">
+            <h2>Seguro Colheita Garantida</h2>
+            <p>Oferece uma garantia para a colheita, cobrindo perdas significativas devido a condições climáticas adversas.</p>
+        </div>
+
+        <div id="cafezal" class="coverage hidden">
+            <h2>Seguro Cafezal</h2>
+            <p>Cobertura específica para plantações de café, protegendo contra diversos riscos, incluindo pragas e intempéries.</p>
         </div>
     </div>
+    <script src="/AgroLink/static/js/seguro.js"></script>
 </body>
 </html>

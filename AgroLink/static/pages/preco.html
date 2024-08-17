@@ -3,19 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portal de Notícias</title>
+    <title>Portal de Preços e Notícias</title>
     <link rel="stylesheet" href="/AgroLink/static/css/preco.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> <!-- Adicionando Chart.js -->
 </head>
 <body>
-    <h1>Portal de Notícias</h1>
-    <div class="news-container">
-        <!-- Notícias serão exibidas aqui -->
-    </div>
-    <h1>Projeção de Preços</h1>
-    <h4>Simule aqui</h4>
-    <div class="chart-container">
-        <!-- Gráfico será exibido aqui -->
-    </div>
+    <header>
+        <h1>Portal de Preços e Notícias</h1>
+    </header>
+
+    <section class="news-section">
+        <h2>Notícias Atualizadas</h2>
+        <div class="news-container">
+            <!-- Notícias serão exibidas aqui -->
+        </div>
+    </section>
+
+    <section class="projection-section">
+        <h2>Projeção de Preços</h2>
+        <p>Simule aqui:</p>
+        <div class="chart-container">
+            <canvas id="precoChart"></canvas> <!-- Adicionando o elemento canvas -->
+        </div>
+    </section>
 
     <script src="/AgroLink/static/js/preco.js"></script>
 </body>

@@ -1,64 +1,49 @@
-// Suponha que você tenha uma variável "noticias" que contenha um array de objetos com as notícias
-const noticias = [
-  { titulo: "Notícia 1", descricao: "Descrição da notícia 1" },
-  { titulo: "Notícia 2", descricao: "Descrição da notícia 2" },
-  { titulo: "Notícia 3", descricao: "Descrição da notícia 3" },
-  // ...
-];
+document.addEventListener("DOMContentLoaded", function() {
+    // Simulação de notícias
+    const noticias = [
+        { titulo: "Aumento na produção de soja impulsiona preços", data: "15/08/2024" },
+        { titulo: "Clima adverso afeta safra de milho", data: "14/08/2024" },
+        { titulo: "Novo acordo comercial pode favorecer exportações", data: "13/08/2024" },
+    ];
 
-// Seleciona o elemento "news-container"
-const newsContainer = document.querySelector(".news-container");
+    const newsContainer = document.querySelector(".news-container");
+    noticias.forEach(noticia => {
+        const newsItem = document.createElement("div");
+        newsItem.className = "news-item";
+        newsItem.innerHTML = `<strong>${noticia.data}</strong> - ${noticia.titulo}`;
+        newsContainer.appendChild(newsItem);
+    });
 
-// Loop through each news item and create an HTML element for it
-noticias.forEach((noticia) => {
-  const newsItem = document.createElement("div");
-  newsItem.className = "news-item";
-  newsItem.innerHTML = `
-    <h2>${noticia.titulo}</h2>
-    <p>${noticia.descricao}</p>
-  `;
-  newsContainer.appendChild(newsItem);
-});
+    // Simulação de projeção de preços (utilizando Chart.js)
+    const ctx = document.createElement("canvas");
+    document.querySelector(".chart-container").appendChild(ctx);
 
-// Gráfico de Projeção de Preços
-const nomeProduto = 'Milho';
-const precosHistoricos = [
-    { data: '2024-01-01', preco: 100 },
-    { data: '2024-01-15', preco: 105 },
-    { data: '2024-02-01', preco: 110 },
-    { data: '2024-02-15', preco: 115 },
-    // Adicione mais preços históricos aqui
-];
+    const data = {
+        labels: ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"],
+        datasets: [{
+            label: 'Preço da Cultura (R$/saca)',
+            data: [50, 55, 53, 60, 65, 63, 68, 70, 72, 74, 73, 75],
+            borderColor: 'rgba(0, 128, 0, 0.6)',
+            backgroundColor: 'rgba(0, 128, 0, 0.1)',
+            borderWidth: 2,
+            fill: true,
+        }]
+    };
 
-function calcularPrecosProjetados() {
-    const precosProjetados = [];
-    for (let i = 0; i < 6; i++) {
-        const data = new Date(precosHistoricos[precosHistoricos.length - 1].data);
-        data.setDate(data.getDate() + (i + 1) * 15);
-        const precoProjetado = precosHistoricos[precosHistoricos.length - 1].preco + (i + 1) * 5;
-        precosProjetados.push({ data: data.toLocaleDateString(), preco: precoProjetado });
-    }
-    return precosProjetados;
-}
-
-function exibirGrafico() {
-    const chartContainer = document.querySelector('.chart-container');
-    const dadosGrafico = [...precosHistoricos, ...calcularPrecosProjetados()];
-    const grafico = new Chart(chartContainer, {
-        type: 'line',
-        data: dadosGrafico,
-        options: {
-            title: {
-                display: true,
-                text: `Projeção de Preços para ${nomeProduto}`
-            },
-            scales: {
-                y: {
-                    beginAtZero: true
-                }
+    const options = {
+        responsive: true,
+        scales: {
+            y: {
+                beginAtZero: false,
+                suggestedMin: 50,
+                suggestedMax: 80,
             }
         }
-    });
-}
+    };
 
-exibirGrafico();
+    new Chart(ctx, {
+        type: 'line',
+        data: data,
+        options: options
+    });
+});
