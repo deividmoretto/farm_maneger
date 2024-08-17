@@ -7,7 +7,8 @@
 
 body {
     font-family: 'Poppins', sans-serif;
-    background-color: #f0f4f8;
+    background-color: #f0f0f0ea;
+    background-color: ;
     color: #333;
     line-height: 1.6;
     margin: 0;
@@ -22,7 +23,7 @@ body {
 
 /* Estilo do cabeçalho */
 header {
-    background-color: #1e3a8a;
+    background-color: #056e28;
     color: #fff;
     padding: 1rem 0;
     text-align: center;
@@ -37,6 +38,9 @@ header h1 {
 }
 
 button {
+    font-family: '𝙖𝙧𝙞𝙖𝙡', modern-clarity;
+    font-size: 20px;
+    margin-left: 20px;
     padding: 10px 20px;
     border: none;
     border-radius: 5px;
@@ -44,37 +48,53 @@ button {
   }
   
   .solo {
-    background-color: #4CAF50;
+    background-color: #056e28; 
     color: #ffffff;
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
   }
+
+    button:hover{
+        background-color: #0069d9;
+        color: #ffff;
+    }
+
   
   .safra {
-    background-color: #8BC34A;
+    background-color: #056e28;
+    background-color: ;
     color: #ffffff;
   }
   
   .preco {
-    background-color: #2196F3;
+    background-color: #056e28;
+    background-color: ;
     color: #ffffff;
   }
   
   .maquinario {
-    background-color: #9C27B0;
+    background-color: #056e28;
+    background-color: ;
     color: #ffffff;
   }
   
   .insumos {
-    background-color: #FFC107;
+    background-color: #056e28;
+    background-color: ;
     color: #ffffff;
   }
   
   .financeiro {
-    background-color: #03A9F4;
+    background-color: #056e28;
+    background-color: ;
     color: #ffffff;
   }
   
   .seguro {
-    background-color: #E91E63;
+    background-color: #056e28;
+    background-color: ;
     color: #ffffff;
   }
 
@@ -106,7 +126,7 @@ nav ul li a:hover {
 }
 
 #home {
-    background-color: #1e3a8a;
+    background-color: #056e28;
     color: #fff;
     text-align: center;
     padding: 5rem 0;
@@ -139,7 +159,7 @@ nav ul li a:hover {
 
 /* Seção de funcionalidades */
 #features {
-    background-color: #fff;
+    background-color: #f0f0f0ea;
     text-align: center;
 }
 
@@ -230,7 +250,8 @@ nav ul li a:hover {
 
 /* Rodapé */
 footer {
-    background-color: #1e3a8a;
+    background-color: #056e28; 
+    background-color: ;
     color: #fff;
     text-align: center;
     padding: 1rem 0;
