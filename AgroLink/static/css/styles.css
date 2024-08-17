@@ -7,8 +7,7 @@
 
 body {
     font-family: 'Poppins', sans-serif;
-    background-color: #f0f0f0ea;
-    background-color: ;
+    background-color: #f0f4f8;
     color: #333;
     line-height: 1.6;
     margin: 0;
@@ -33,8 +32,8 @@ header {
 }
 
 header h1 {
-    font-size: 2.5rem;
-    margin-bottom: 0.5rem;
+    font-size: 3rem;
+    margin-bottom: 2.5rem;
 }
 
 button {
@@ -63,14 +62,12 @@ button {
 
   
   .safra {
-    background-color: #056e28;
-    background-color: ;
+    background-color: #8BC34A;
     color: #ffffff;
   }
   
   .preco {
-    background-color: #056e28;
-    background-color: ;
+    background-color: #2196F3;
     color: #ffffff;
   }
   
@@ -80,20 +77,17 @@ button {
   }
   
   .insumos {
-    background-color: #056e28;
-    background-color: ;
+    background-color: #FFC107;
     color: #ffffff;
   }
   
   .financeiro {
-    background-color: #056e28;
-    background-color: ;
+    background-color: #03A9F4;
     color: #ffffff;
   }
   
   .seguro {
-    background-color: #056e28;
-    background-color: ;
+    background-color: #E91E63;
     color: #ffffff;
   }
 
@@ -102,7 +96,7 @@ nav ul {
     justify-content: center;
     list-style: none;
     padding: 0;
-} 
+}
 
 nav ul li {
     margin: 0 1rem;
@@ -133,7 +127,7 @@ nav ul li a:hover {
 }
 
 #home h2 {
-    font-size: 2.5rem;
+    font-size: 1.5rem;
     margin-bottom: 1rem;
 }
 
@@ -249,8 +243,7 @@ nav ul li a:hover {
 
 /* Rodapé */
 footer {
-    background-color: #056e28; 
-    background-color: ;
+    background-color: #1e3a8a;
     color: #fff;
     text-align: center;
     padding: 1rem 0;
