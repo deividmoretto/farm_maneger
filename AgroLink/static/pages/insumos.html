@@ -1,4 +1,45 @@
-cotação de insumos em um modulo separado, mostrando o quanto ele gastaria em metro quadrado
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ferramenta de Insumos</title>
+    <link rel="stylesheet" href="/AgroLink/static/css/insumos.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Calcúlo de Insumos</h1>
+        
+        <form id="insumoForm">
+            <label for="area">Área (m²):</label>
+            <input type="number" id="area" name="area" required>
+            
+            <label for="insumo">Tipo de Insumo:</label>
+            <select id="insumo" name="insumo">
+                <option value="fertilizer">Fertilizante</option>
+                <option value="pesticide">Pesticida</option>
+            </select>
 
-modulo de seguro
+            <label for="consumoMensal">Consumo Mensal (kg):</label>
+            <input type="number" id="consumoMensal" name="consumoMensal" required>
 
+            <label for="estoqueAtual">Estoque Atual (kg):</label>
+            <input type="number" id="estoqueAtual" name="estoqueAtual" required>
+
+            <label for="validade">Prazo de Validade (meses):</label>
+            <input type="number" id="validade" name="validade" required>
+
+            <button type="button" onclick="calculate()">Calcular</button>
+        </form>
+
+        <div id="result">
+            <h2>Resultado</h2>
+            <p id="quantidade"></p>
+            <p id="preco"></p>
+            <p id="reabastecimento"></p>
+        </div>
+    </div>
+
+    <script src="/AgroLink/static/js/insumos.js"></script>
+</body>
+</html>

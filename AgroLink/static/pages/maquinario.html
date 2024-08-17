@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestão Agrícola</title>
+    <link rel="stylesheet" href="/AgroLink/static/css/maquinario.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Gestão de Maquinário Agrícola</h1>
+
+        <form id="maquinarioForm">
+            <label for="equipamento">Nome do Equipamento:</label>
+            <input type="text" id="equipamento" name="equipamento" required>
+
+            <label for="horasOperacao">Horas de Operação:</label>
+            <input type="number" id="horasOperacao" name="horasOperacao" required>
+
+            <label for="checklist">Checklist de Manutenção:</label>
+            <textarea id="checklist" name="checklist" placeholder="Descreva as tarefas de manutenção..." required></textarea>
+
+            <label for="status">Status do Equipamento:</label>
+            <select id="status" name="status">
+                <option value="operando">Operando</option>
+                <option value="emManutencao">Em Manutenção</option>
+                <option value="arrendado">Arrendado</option>
+            </select>
+
+            <button type="button" onclick="gerarChecklist()">Gerar Checklist</button>
+        </form>
+
+        <div id="result">
+            <h2>Resultado</h2>
+            <p id="alerta"></p>
+            <p id="checklistGerado"></p>
+        </div>
+    </div>
+
+    <script src="/AgroLink/static/js/maquinario.js"></script>
+</body>
+</html>
