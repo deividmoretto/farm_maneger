@@ -52,7 +52,7 @@ button {
     color: #ffffff;
     border: none;
     padding: 10px 20px;
-    font-size: 16px;
+    font-size: 20px;
     cursor: pointer;
   }
 
@@ -66,35 +66,41 @@ button {
     background-color: #056e28;
     background-color: ;
     color: #ffffff;
+    font-size: 20px;
   }
   
   .preco {
     background-color: #056e28;
     background-color: ;
     color: #ffffff;
+    font-size: 20px;
   }
   
   .maquinario {
     background-color: #056e28;
     color: #ffffff;
+    font-size: 20px;
   }
   
   .insumos {
     background-color: #056e28;
     background-color: ;
     color: #ffffff;
+    font-size: 20px;
   }
   
   .financeiro {
     background-color: #056e28;
     background-color: ;
     color: #ffffff;
+    font-size: 20px;
   }
   
   .seguro {
     background-color: #056e28;
     background-color: ;
     color: #ffffff;
+    font-size: 20px;
   }
 
 nav ul {
