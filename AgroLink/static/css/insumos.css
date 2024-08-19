@@ -10,7 +10,7 @@ body {
 }
 
 .container {
-    background-color: #0f7d0f;
+    background-color: #056e28;
     padding: 20px;
     border-radius: 8px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
@@ -41,7 +41,7 @@ input, select {
 button {
     margin-top: 20px;
     padding: 10px;
-    background-color: #28a745;
+    background-color: #143d1d;
     color: #fff;
     border: none;
     border-radius: 4px;

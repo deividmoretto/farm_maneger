@@ -1,0 +1,117 @@
+/* safra.css */
+
+/* Estilo global */
+body {
+    font-family: 'Poppins', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #e9f5ee;
+    color: #333;
+}
+
+.container {
+    max-width: 900px;
+    margin: 40px auto;
+    padding: 30px;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+}
+
+h1 {
+    text-align: center;
+    color: #2a9d8f;
+    font-size: 2.5em;
+    margin-bottom: 30px;
+    letter-spacing: 1px;
+}
+
+h2 {
+    color: #264653;
+    margin-bottom: 20px;
+    font-size: 2em;
+    font-weight: 600;
+    border-bottom: 2px solid #2a9d8f;
+    padding-bottom: 5px;
+}
+
+#climateChart {
+    margin-bottom: 50px;
+}
+
+/* Estilo dos resultados de pesquisas */
+#research-container {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+
+.research-item {
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    background: linear-gradient(145deg, #f9f9f9, #ffffff);
+    box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.1), -5px -5px 10px rgba(255, 255, 255, 0.7);
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.research-item h3 {
+    margin: 0 0 10px;
+    color: #2a9d8f;
+    font-size: 1.5em;
+    font-weight: 500;
+}
+
+.research-item p {
+    margin: 0;
+    color: #555;
+    font-size: 1.1em;
+    line-height: 1.6;
+}
+
+/* Efeitos de interação */
+.research-item:hover {
+    transform: translateY(-8px);
+    box-shadow: 8px 8px 16px rgba(0, 0, 0, 0.1), -8px -8px 16px rgba(255, 255, 255, 0.7);
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    h1 {
+        font-size: 2em;
+    }
+
+    h2 {
+        font-size: 1.5em;
+    }
+
+    #climateChart {
+        height: 250px;
+    }
+
+    .research-item {
+        padding: 15px;
+    }
+}
+
+@media (max-width: 480px) {
+    .container {
+        padding: 20px;
+    }
+
+    h1 {
+        font-size: 1.8em;
+    }
+
+    h2 {
+        font-size: 1.3em;
+    }
+
+    #climateChart {
+        height: 200px;
+    }
+
+    .research-item {
+        padding: 12px;
+    }
+}
