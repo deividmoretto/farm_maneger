@@ -23,6 +23,89 @@ h1 {
     color: #fff;
 }
 
+button {
+    font-family: '𝙖𝙧𝙞𝙖𝙡', modern-clarity;
+    font-size: 20px;
+    margin-left: 20px;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .solo {
+    background-color: #056e28; 
+    color: #ffffff;
+    border: none;
+    padding: 10px 20px;
+    font-size: 20px;
+    cursor: pointer;
+  }
+
+    button:hover{
+        background-color: #3333334d;
+        color: #ffff;
+    }
+
+  
+  .safra {
+    background-color: #056e28;
+    color: #ffffff;
+    font-size: 20px;
+  }
+  
+  .preco {
+    background-color: #056e28;
+    color: #ffffff;
+    font-size: 20px;
+  }
+  
+  .maquinario {
+    background-color: #056e28;
+    color: #ffffff;
+    font-size: 20px;
+  }
+  
+  .insumos {
+    background-color: #056e28;
+    color: #ffffff;
+    font-size: 20px;
+  }
+  
+  .financeiro {
+    background-color: #056e28;
+    color: #ffffff;
+    font-size: 20px;
+  }
+  
+  .seguro {
+    background-color: #056e28;
+    color: #ffffff;
+    font-size: 20px;
+  }
+
+ ul {
+    display: flex;
+    justify-navcontent: center;
+    list-style: none;
+    padding: 0;
+} 
+
+nav ul li {
+    margin: 0 1rem;
+}
+
+nav ul li a {
+    color: #ffffff;
+    text-decoration: none;
+    font-weight: bold;
+    transition: color 0.3s ease;
+}
+
+nav ul li a:hover {
+    color: #fbbf24;
+}
+
 h2 {
     font-size: 1.5em;
     margin-top: 20px;

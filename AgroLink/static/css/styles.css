@@ -97,9 +97,9 @@ button {
     font-size: 20px;
   }
 
-nav ul {
+ ul {
     display: flex;
-    justify-content: center;
+    justify-navcontent: center;
     list-style: none;
     padding: 0;
 } 
