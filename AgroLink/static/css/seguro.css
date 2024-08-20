@@ -20,13 +20,13 @@ h1 {
     font-size: 2em;
     margin-bottom: 20px;
     text-align: center;
-    color: #000000;
+    color: #fff;
 }
 
 h2 {
     font-size: 1.5em;
     margin-top: 20px;
-    color: #000000;
+    color: #fff;
 }
 
 /* Dropdowns */
@@ -38,6 +38,7 @@ h2 {
     display: block;
     margin-bottom: 8px;
     font-weight: bold;
+    color: #ffff;
 }
 
 select {

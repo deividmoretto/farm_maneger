@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -18,7 +18,24 @@
             <input type="number" id="horasOperacao" name="horasOperacao" required>
 
             <label for="checklist">Checklist de Manutenção:</label>
-            <textarea id="checklist" name="checklist" placeholder="Descreva as tarefas de manutenção..." required></textarea>
+            <div id="checklistOptions">
+                <div>
+                    <input type="checkbox" id="check1" name="checklist" value="Verificação de Óleo">
+                    <label for="check1">Verificação de Óleo</label>
+                </div>
+                <div>
+                    <input type="checkbox" id="check2" name="checklist" value="Troca de Filtro de Ar">
+                    <label for="check2">Troca de Filtro de Ar</label>
+                </div>
+                <div>
+                    <input type="checkbox" id="check3" name="checklist" value="Lubrificação Geral">
+                    <label for="check3">Lubrificação Geral</label>
+                </div>
+                <div>
+                    <input type="checkbox" id="check4" name="checklist" value="Verificação de Pneus">
+                    <label for="check4">Verificação de Pneus</label>
+                </div>
+            </div>
 
             <label for="status">Status do Equipamento:</label>
             <select id="status" name="status">

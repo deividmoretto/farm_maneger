@@ -18,7 +18,7 @@ body {
 
 h1 {
     text-align: center;
-    color: #000000;
+    color: #fff;
 }
 
 form {
@@ -28,7 +28,7 @@ form {
 
 label {
     margin-top: 10px;
-    color: #000000;
+    color: #fff;
 }
 
 input, select {
