@@ -14,36 +14,24 @@ document.addEventListener("DOMContentLoaded", function() {
         newsContainer.appendChild(newsItem);
     });
 
-    // Simulação de projeção de preços (utilizando Chart.js)
-    const ctx = document.createElement("canvas");
-    document.querySelector(".chart-container").appendChild(ctx);
+    // Safras e preços simulados
+    const safras = [
+        { nome: "Trigo", preco: "R$ 75,00/saca" },
+        { nome: "Milho", preco: "R$ 65,00/saca" },
+        { nome: "Soja", preco: "R$ 90,00/saca" },
+        { nome: "Café", preco: "R$ 120,00/saca" }
+    ];
 
-    const data = {
-        labels: ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"],
-        datasets: [{
-            label: 'Preço da Cultura (R$/saca)',
-            data: [50, 55, 53, 60, 65, 63, 68, 70, 72, 74, 73, 75],
-            borderColor: 'rgba(0, 128, 0, 0.6)',
-            backgroundColor: 'rgba(0, 128, 0, 0.1)',
-            borderWidth: 2,
-            fill: true,
-        }]
-    };
+    const cropList = document.getElementById("crop-list");
+    const priceDisplay = document.getElementById("price-display");
 
-    const options = {
-        responsive: true,
-        scales: {
-            y: {
-                beginAtZero: false,
-                suggestedMin: 50,
-                suggestedMax: 80,
-            }
-        }
-    };
-
-    new Chart(ctx, {
-        type: 'line',
-        data: data,
-        options: options
+    safras.forEach(safra => {
+        const listItem = document.createElement("li");
+        listItem.className = "crop-item";
+        listItem.innerText = safra.nome;
+        listItem.addEventListener("click", function() {
+            priceDisplay.innerText = `Preço atual de ${safra.nome}: ${safra.preco}`;
+        });
+        cropList.appendChild(listItem);
     });
 });
