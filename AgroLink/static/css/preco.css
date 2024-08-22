@@ -24,7 +24,7 @@ header h1 {
 }
 
 button {
-    font-family: '𝙖𝙧𝙞𝙖𝙡', modern-clarity;
+    font-family: 'Arial', sans-serif;
     font-size: 20px;
     margin-left: 20px;
     padding: 10px 20px;
@@ -32,79 +32,18 @@ button {
     border-radius: 5px;
     cursor: pointer;
   }
-  
-  .solo {
-    background-color: #056e28; 
-    color: #ffffff;
-    border: none;
-    padding: 10px 20px;
-    font-size: 20px;
-    cursor: pointer;
-  }
 
-    button:hover{
-        background-color: #3333334d;
-        color: #ffff;
-    }
+button:hover {
+    background-color: #3333334d;
+    color: #ffff;
+}
 
-  
-  .safra {
-    background-color: #056e28;
-    color: #ffffff;
-    font-size: 20px;
-  }
-  
-  .preco {
-    background-color: #056e28;
-    color: #ffffff;
-    font-size: 20px;
-  }
-  
-  .maquinario {
-    background-color: #056e28;
-    color: #ffffff;
-    font-size: 20px;
-  }
-  
-  .insumos {
-    background-color: #056e28;
-    color: #ffffff;
-    font-size: 20px;
-  }
-  
-  .financeiro {
-    background-color: #056e28;
-    color: #ffffff;
-    font-size: 20px;
-  }
-  
-  .seguro {
-    background-color: #056e28;
-    color: #ffffff;
-    font-size: 20px;
-  }
-
- ul {
+nav ul {
     display: flex;
     justify-content: center;
     list-style: none;
     padding: 0;
 } 
-
-nav ul li {
-    margin: 0 1rem;
-}
-
-nav ul li a {
-    color: #ffffff;
-    text-decoration: none;
-    font-weight: bold;
-    transition: color 0.3s ease;
-}
-
-nav ul li a:hover {
-    color: #fbbf24;
-}
 
 section {
     padding: 30px 20px;
@@ -117,7 +56,7 @@ section {
 
 section h2 {
     font-size: 2em;
-    color: #ffffff;
+    color: #056e28;
     margin-bottom: 20px;
     border-bottom: 3px solid #056e28;
     padding-bottom: 10px;
@@ -148,16 +87,41 @@ section h2 {
 }
 
 /* Estilo da seção de projeção de preços */
-.projection-section p {
-    font-size: 1.1em;
-    color: #333;
-    margin-bottom: 10px;
+.projection-section ul {
+    list-style: none;
+    padding: 0;
 }
 
-.chart-container {
-    position: relative;
-    height: 400px;
-    width: 100%;
+.projection-section ul li {
+    padding: 10px;
+    background-color: #e0f2f1;
+    border: 1px solid #056e28;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.projection-section ul li:hover {
+    background-color: #b2dfdb;
+}
+
+.price-display {
+    margin-top: 20px;
+    background-color: #f0f4f7;
+    border: 1px solid #056e28;
+    padding: 15px;
+    border-radius: 8px;
+}
+
+.price-display h3 {
+    margin: 0;
+    color: #056e28;
+}
+
+.price-display p {
+    font-size: 1.5em;
+    color: #333;
 }
 
 /* Responsividade */
@@ -168,10 +132,6 @@ section h2 {
 
     .news-container {
         grid-template-columns: 1fr;
-    }
-
-    .chart-container {
-        height: 300px;
     }
 }
 
@@ -186,9 +146,5 @@ section h2 {
 
     section h2 {
         font-size: 1.3em;
-    }
-
-    .chart-container {
-        height: 250px;
     }
 }
