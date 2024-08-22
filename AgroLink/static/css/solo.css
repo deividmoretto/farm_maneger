@@ -85,7 +85,7 @@ button {
 
  ul {
     display: flex;
-    justify-navcontent: center;
+    justify-content: center;
     list-style: none;
     padding: 0;
 } 
