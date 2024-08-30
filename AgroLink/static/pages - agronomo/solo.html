@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sua Página</title>
+    <!-- Incluindo o Bootstrap via CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Estilos personalizados (opcional) -->
+    <style>
+        body {
+            padding-top: 50px;
+            padding-bottom: 50px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar (opcional) -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">AgroLink</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="#">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/static/pages/solo.html">Solo</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Pricing</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">About</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+<div class="row">
+    <div class="col-md-8 offset-md-2">
+        <h1 class="text-center my-4">Inserir Informações sobre o Solo</h1>
+        <form action="/submit-solo-info" method="post">
+            <div class="mb-3">
+                <label for="tipo-solo" class="form-label">Area:</label>
+                <input type="text" class="form-control" id="tipo-solo" name="numero da area" placeholder="Ex: 1;2;3" required>
+            </div>
+            <div class="mb-3">
+                <label for="tipo-solo" class="form-label">Tipo de Solo:</label>
+                <input type="text" class="form-control" id="tipo-solo" name="tipo-solo" placeholder="Ex: Arenoso, Argiloso, Siltoso" required>
+            </div>
+            <div class="mb-3">
+                <label for="ph-solo" class="form-label">pH do Solo:</label>
+                <input type="number" step="0.01" class="form-control" id="ph-solo" name="ph-solo" placeholder="Ex: 6.5%" required>
+            </div>
+            <div class="mb-3">
+                <label for="materia-organica" class="form-label">Matéria Orgânica (%):</label>
+                <input type="number" step="0.01" class="form-control" id="materia-organica" name="materia-organica" placeholder="Ex: 3.2%" required>
+            </div>
+            <div class="mb-3">
+                <label for="capacidade-troca-cationica" class="form-label">Capacidade de Troca Catiônica (cmol/kg):</label>
+                <input type="number" step="0.01" class="form-control" id="capacidade-troca-cationica" name="capacidade-troca-cationica" placeholder="Ex: 12.3%" required>
+            </div>
+            <div class="mb-3">
+                <label for="capacidade-troca-cationica" class="form-label">Nivel de nitrogenio no solo:</label>
+                <input type="number" step="0.01" class="form-control" id="capacidade-troca-cationica" name="capacidade-troca-cationica" placeholder="Ex: 12.3%" required>
+            </div>
+            <div class="mb-3">
+                <label for="nutrientes" class="form-label">Aplicação recomendada:</label>
+                <textarea class="form-control" id="nutrientes" name="nutrientes" rows="4" placeholder="" required></textarea>
+            </div>
+            <div class="d-grid">
+                <button type="submit" class="btn btn-primary">Salvar Informações</button>
+            </div>
+        </form>
+    </div>
+</div>
+<footer class="text-center mt-4">
+    <p>&copy; 2024 Sua Empresa. Todos os direitos reservados.</p>
+</footer>
+
+<!-- Incluindo o JavaScript do Bootstrap via CDN (opcional) -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Scripts personalizados (opcional) -->
+<script>
+    // Aqui você pode adicionar seus scripts JavaScript personalizados
+</script>
+</body>
+</html>
+
