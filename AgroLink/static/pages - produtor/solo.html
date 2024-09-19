@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Informações sobre o Solo - AgroLink</title>
     <!-- Incluindo o Bootstrap via CDN -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
     <!-- Estilos personalizados (opcional) -->
     <style>
         body {
@@ -57,39 +57,65 @@
     </nav>
 
     <!-- Conteúdo principal -->
-    <div class="container">
-        <div class="row">
-            <div class="col-md-12">
-                <h1 class="text-center my-4">Informações sobre o Solo</h1>
-                <p class="text-center">Nesta página, você encontrará informações detalhadas sobre os diferentes tipos de solo, suas características e como escolher o melhor solo para o seu cultivo.</p>
-
-                <!-- Tipos de Solo -->
-                <div class="card mb-4">
-                    <div class="card-body">
-                        <h5 class="card-title">Tipos de Solo</h5>
-                        <p class="card-text">Existem vários tipos de solo, como arenoso, argiloso e siltoso. Cada um tem suas próprias características que influenciam a capacidade de retenção de água, aeração e nutrientes disponíveis para as plantas.</p>
-                        <canvas id="tipoSoloChart"></canvas>
+    <div class="main-content">
+        <div class="section__content section__content--p30">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-lg-6">
+                        <div class="au-card m-b-30">
+                            <div class="au-card-inner">
+                                <h3 class="title-2 m-b-40">Doughnut Chart</h3>
+                                <!-- Adicione uma div ao redor do canvas -->
+                                <div style="width: 100%; max-width: 600px; height: 400px;">
+                                    <canvas id="doughutChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                </div>
-
-                <!-- Análise de Solo -->
-                <div class="card mb-4">
-                    <div class="card-body">
-                        <h5 class="card-title">Análise de Solo</h5>
-                        <p class="card-text">A análise de solo é fundamental para entender a composição do solo na sua propriedade. Isso inclui níveis de pH, matéria orgânica, capacidade de troca catiônica e a presença de nutrientes essenciais como nitrogênio, fósforo e potássio.</p>
-                        <canvas id="phChart"></canvas>
-                        <canvas id="nutrientesChart"></canvas>
-                        <canvas id="materiaOrganicaCTCChart"></canvas>
+                    <div class="col-lg-6">
+                        <div class="au-card m-b-30">
+                            <div class="au-card-inner">
+                                <h3 class="title-2 m-b-40">Pie Chart</h3>
+                                <!-- Adicione uma div ao redor do canvas para limitar tamanho -->
+                                <div style="width: 100%; max-width: 600px; height: 400px;">
+                                    <canvas id="pieChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                </div>
-
-                <!-- Dicas para Melhorar o Solo -->
-                <div class="card mb-4">
-                    <div class="card-body">
-                        <h5 class="card-title">Dicas para Melhorar o Solo</h5>
-                        <p class="card-text">A melhoria do solo pode incluir a adição de matéria orgânica, o uso de adubos verdes, a correção do pH e o manejo adequado da irrigação. Isso ajuda a maximizar a produtividade das culturas.</p>
-                        <canvas id="aplicacaoChart"></canvas>
-                    </div>
+                    <div class="col-lg-6">
+                        <div class="au-card m-b-30">
+                            <div class="au-card-inner">
+                                <h3 class="title-2 m-b-40">Radar Chart</h3>
+                                <!-- Adicione uma div ao redor do canvas para controlar o tamanho -->
+                                <div style="width: 100%; max-width: 600px; height: 400px;">
+                                    <canvas id="radarChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>  
+                    <div class="col-lg-6">
+                        <div class="au-card m-b-30">
+                            <div class="au-card-inner">
+                                <h3 class="title-2 m-b-40">Polar Chart</h3>
+                                <!-- Adicione uma div ao redor do canvas para controlar o tamanho -->
+                                <div style="width: 100%; max-width: 600px; height: 400px;">
+                                    <canvas id="polarChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>  
+                    <div class="col-lg-6">
+                        <div class="au-card m-b-30">
+                            <div class="au-card-inner">
+                                <h3 class="title-2 m-b-40">Single Bar Chart</h3>
+                                <!-- Adicione uma div ao redor do canvas para controlar o tamanho -->
+                                <div style="width: 100%; max-width: 600px; height: 400px;">
+                                    <canvas id="singelBarChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>                                                        
                 </div>
             </div>
         </div>
@@ -100,95 +126,179 @@
         <p>&copy; 2024 AgroLink. Todos os direitos reservados.</p>
     </footer>
 
-    <!-- Incluindo o JavaScript do Bootstrap via CDN -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <!-- Incluindo o Chart.js via CDN -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-    <!-- Scripts para os gráficos -->
-    <script>
-        // Gráfico de Tipos de Solo
-        const tipoSoloCtx = document.getElementById('tipoSoloChart').getContext('2d');
-        const tipoSoloChart = new Chart(tipoSoloCtx, {
-            type: 'pie',
-            data: {
-                labels: ['Argiloso', 'Arenoso', 'Siltoso'],
-                datasets: [{
-                    data: [10, 20, 30], // Dados de exemplo, substitua com os valores cadastrados
-                    backgroundColor: ['red', 'yellow', 'green']
-                }]
-            }
-        });
-
-        // Gráfico de pH do Solo
-        const phCtx = document.getElementById('phChart').getContext('2d');
-        const phChart = new Chart(phCtx, {
-            type: 'bar',
-            data: {
-                labels: ['Área 1', 'Área 2', 'Área 3'], // Nome das áreas cadastradas
-                datasets: [{
-                    label: 'pH do Solo',
-                    data: [5.5, 6.0, 6.5], // Valores de pH cadastrados
-                    backgroundColor: 'blue'
-                }]
-            }
-        });
-
-        // Gráfico de Nutrientes
-        const nutrientesCtx = document.getElementById('nutrientesChart').getContext('2d');
-        const nutrientesChart = new Chart(nutrientesCtx, {
-            type: 'bar',
-            data: {
-                labels: ['Área 1', 'Área 2', 'Área 3'], // Nome das áreas cadastradas
-                datasets: [{
-                    label: 'Nitrogênio (N)',
-                    data: [10, 15, 20],
-                    backgroundColor: 'purple'
-                }, {
-                    label: 'Fósforo (P)',
-                    data: [5, 7, 10],
-                    backgroundColor: 'orange'
-                }, {
-                    label: 'Potássio (K)',
-                    data: [3, 4, 6],
-                    backgroundColor: 'green'
-                }]
-            }
-        });
-
-        // Gráfico de Matéria Orgânica e CTC
-        const materiaOrganicaCTCCtx = document.getElementById('materiaOrganicaCTCChart').getContext('2d');
-        const materiaOrganicaCTCChart = new Chart(materiaOrganicaCTCCtx, {
-            type: 'scatter',
-            data: {
-                datasets: [{
-                    label: 'Áreas',
-                    data: [{ x: 3, y: 10 }, { x: 4, y: 15 }, { x: 5, y: 20 }], // Substitua com dados reais (Matéria Orgânica vs CTC)
-                    backgroundColor: 'gray'
-                }]
-            },
-            options: {
-                scales: {
-                    x: { title: { display: true, text: 'Matéria Orgânica (%)' } },
-                    y: { title: { display: true, text: 'CTC (cmol/kg)' } }
+</body>
+<!--doughutChart-->
+<script>
+    var ctx = document.getElementById("doughutChart").getContext('2d');
+    var myDoughnutChart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: ["Red", "Blue", "Yellow", "Green", "Purple", "Orange"],
+            datasets: [{
+                data: [12, 19, 3, 5, 2, 3],
+                backgroundColor: [
+                    'rgba(255, 99, 132, 0.2)',
+                    'rgba(54, 162, 235, 0.2)',
+                    'rgba(255, 206, 86, 0.2)',
+                    'rgba(75, 192, 192, 0.2)',
+                    'rgba(153, 102, 255, 0.2)',
+                    'rgba(255, 159, 64, 0.2)'
+                ],
+                borderColor: [
+                    'rgba(255, 99, 132, 1)',
+                    'rgba(54, 162, 235, 1)',
+                    'rgba(255, 206, 86, 1)',
+                    'rgba(75, 192, 192, 1)',
+                    'rgba(153, 102, 255, 1)',
+                    'rgba(255, 159, 64, 1)'
+                ],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+        }
+    });
+</script>
+<!--pieChart-->
+<script>
+    var ctx = document.getElementById("pieChart").getContext('2d');
+    var myPieChart = new Chart(ctx, {
+        type: 'pie',
+        data: {
+            labels: ["Red", "Blue", "Yellow", "Green", "Purple", "Orange"],
+            datasets: [{
+                data: [12, 19, 3, 5, 2, 3],
+                backgroundColor: [
+                    'rgba(255, 99, 132, 0.2)',
+                    'rgba(54, 162, 235, 0.2)',
+                    'rgba(255, 206, 86, 0.2)',
+                    'rgba(75, 192, 192, 0.2)',
+                    'rgba(153, 102, 255, 0.2)',
+                    'rgba(255, 159, 64, 0.2)'
+                ],
+                borderColor: [
+                    'rgba(255, 99, 132, 1)',
+                    'rgba(54, 162, 235, 1)',
+                    'rgba(255, 206, 86, 1)',
+                    'rgba(75, 192, 192, 1)',
+                    'rgba(153, 102, 255, 1)',
+                    'rgba(255, 159, 64, 1)'
+                ],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+        }
+    });
+</script>
+<!--radarChart-->
+<script>
+    var ctx = document.getElementById("radarChart").getContext('2d');
+    var myRadarChart = new Chart(ctx, {
+        type: 'radar',
+        data: {
+            labels: ["Eating", "Drinking", "Sleeping", "Designing", "Coding", "Cycling", "Running"],
+            datasets: [{
+                label: 'Person A',
+                data: [65, 59, 90, 81, 56, 55, 40],
+                backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                borderColor: 'rgba(255, 99, 132, 1)',
+                borderWidth: 1
+            }, {
+                label: 'Person B',
+                data: [28, 48, 40, 19, 96, 27, 100],
+                backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                r: {
+                    angleLines: {
+                        display: true
+                    },
+                    suggestedMin: 0,
+                    suggestedMax: 100
                 }
             }
-        });
-
-        // Gráfico de Aplicações Recomendadas
-        const aplicacaoCtx = document.getElementById('aplicacaoChart').getContext('2d');
-        const aplicacaoChart = new Chart(aplicacaoCtx, {
-            type: 'bar',
-            data: {
-                labels: ['Área 1', 'Área 2', 'Área 3'], // Nome das áreas cadastradas
-                datasets: [{
-                    label: 'Aplicação Recomendada (kg/ha)',
-                    data: [30, 40, 50], // Substitua com dados reais
-                    backgroundColor: 'brown'
-                }]
+        }
+    });
+</script>
+<!--polarChart-->
+<script>
+    var ctx = document.getElementById("polarChart").getContext('2d');
+    var myPolarChart = new Chart(ctx, {
+        type: 'polarArea',
+        data: {
+            labels: ["Red", "Green", "Yellow", "Grey", "Blue"],
+            datasets: [{
+                data: [11, 16, 7, 3, 14],
+                backgroundColor: [
+                    'rgba(255, 99, 132, 0.2)',
+                    'rgba(75, 192, 192, 0.2)',
+                    'rgba(255, 206, 86, 0.2)',
+                    'rgba(201, 203, 207, 0.2)',
+                    'rgba(54, 162, 235, 0.2)'
+                ],
+                borderColor: [
+                    'rgba(255, 99, 132, 1)',
+                    'rgba(75, 192, 192, 1)',
+                    'rgba(255, 206, 86, 1)',
+                    'rgba(201, 203, 207, 1)',
+                    'rgba(54, 162, 235, 1)'
+                ],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                r: {
+                    angleLines: {
+                        display: true
+                    },
+                    suggestedMin: 0,
+                    suggestedMax: 20
+                }
             }
-        });
-    </script>
-</body>
-
+        }
+    });
+</script>
+<!--singelBarChart-->
+<script>
+    var ctx = document.getElementById("singelBarChart").getContext('2d');
+    var myBarChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ["January", "February", "March", "April", "May", "June"],
+            datasets: [{
+                label: 'Dataset 1',
+                data: [12, 19, 3, 5, 2, 3],
+                backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+</script>
 </html>
