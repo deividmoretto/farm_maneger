@@ -1,0 +1,57 @@
+
+  
+{% extends "base_sistema.html" %}
+{% block subtitulo %} Usuarios {% endblock%}
+{% block conteudo %}
+<section class="content">
+  <div class="row">
+    <div class="col-xs-12">
+      <div class="box-header">
+        <h3 class="box-title">Cadastro de usuarios</h3>
+      </div><!-- /.box-header -->
+      <div class="box">
+        <div class="car">
+          {% with messages = get_flashed_messages()%}
+            {% if messages %}
+                {% for message in messages %}
+                <div class="alert alert-success">
+                  {{message}}                                          
+                </div>                                 
+                {% endfor %}
+             {% endif %}
+          {% endwith %}
+        </div>      
+          <div class="box-body">
+            <table id="example" class="display" style="width:100%">
+              <thead>
+                  <tr>
+                    <th scope="col">Id</th>
+                    <th scope="col">Email</th>
+                    <th scope="col">Nome</th>
+                    <th scope="col">Data</th>
+                    <th scope="col">Alterar</th>                     
+                    <th scope="col">Excluir</th>
+                  </tr>
+              </thead>
+              <tbody>
+                {% for users in usuarios %}
+                  <tr>
+                    <td>{{users.id}}</td>
+                    <td>{{users.email}}</td>
+                    <td>{{users.nome}}</td>
+                    <td>{{users.data}}</td>
+                    <td><a href="#"><span class="label label-success"><i class="fa-solid fa-pencil"></i> Alterar</span></a></td>
+                    <td><a href="{{url_for('excluir_user',id=users.id)}}"><span class="label label-danger"><i class="fa-solid fa-eraser"></i> Excluir</span></a></td>
+                  </tr>
+                {% endfor %}
+               
+                           
+              </tbody>
+          </table>
+          <a href="{{url_for('cad_user')}}" class="btn btn-primary btn-lg active" role="button" aria-pressed="true">Inserir usuarios</a>
+       </div>      
+    </div>        
+  </div>
+</section>
+{% endblock %}
+     
