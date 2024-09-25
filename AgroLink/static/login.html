@@ -3,37 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
     <link rel="icon" type="imagem/png" href="/AgroLink/static/images/trator branco vazio.png">
-    <link rel="stylesheet" href="/AgroLink/static/css/bootstrap-datetimepicker.min.css">
-    <link rel="stylesheet" href="/AgroLink/static/css/font-face.css">
-    <link rel="stylesheet" href="/AgroLink/static/css/theme.css">
-    <link rel="stylesheet" href="/AgroLink/static/css/accordion.css">
-    <link rel="stylesheet" href="/AgroLink/static/css/animate.css">
-    <link rel="stylesheet" href="/AgroLink/static/css/animsition.min.css">
-    <link rel="stylesheet" href="/AgroLink/static/css/bootstrap-progressbar-3.3.4.min.css">
-    <link rel="stylesheet" href="/AgroLink/static/css/font-awesome.css">
-    <link rel="stylesheet" href="/AgroLink/static/css/font-awesome.min.css">
-    <link rel="stylesheet" href="/AgroLink/static/css/font-awesome.css">
-    <link rel="stylesheet" href="/AgroLink/static/css/fontawesome-all.min.css">
-    <link rel="stylesheet" href="/AgroLink/static/css/fullcalendar.css"> 
-    <link rel="stylesheet" href="/AgroLink/static/css/fullcalendar.min.css">
-    <link rel="stylesheet" href="/AgroLink/static/css/fullcalendar.print.css">
-    <link rel="stylesheet" href="/AgroLink/static/css/fullcalendar.print.min.css">
-    <link rel="stylesheet" href="/AgroLink/static/css/hamburgers.css">
-    <link rel="stylesheet" href="/AgroLink/static/css/hamburgers.min.css">
-    <link rel="stylesheet" href="/AgroLink/static/css/jqvmap.min.css">
-    <link rel="stylesheet" href="/AgroLink/static/css/lightbox.css">
-    <link rel="stylesheet" href="/AgroLink/static/css/material-design-iconic-font.css">
-    <link rel="stylesheet" href="/AgroLink/static/css/material-design-iconic-font.min.css">
-    <link rel="stylesheet" href="/AgroLink/static/css/material-design-iconic-font.css">
-    <link rel="stylesheet" href="/AgroLink/static/css/material-design-iconic-font.min.css">
-    <link rel="stylesheet" href="/AgroLink/static/css/perfect-scrollbar.css">
-    <link rel="stylesheet" href="/AgroLink/static/css/select2.min.css">
-    <link rel="stylesheet" href="/AgroLink/static/css/slick-theme.css">
-    <link rel="stylesheet" href="/AgroLink/static/css/slick.css">
+    <title>Login</title>
+    
     <!-- Incluindo o Bootstrap via CDN -->
+    <link href="/AgroLink/static/css/font-face.css"rel="stylesheet" media="all">
+    <link href="/AgroLink/static/css/theme.css"rel="stylesheet" media="all">
+    <link href="/AgroLink/static/css/animate.css"rel="stylesheet" media="all">
+    <link href="/AgroLink/static/css/animsition.min.css"rel="stylesheet" media="all">
+    <link href="/AgroLink/static/css/bootstrap-progressbar-3.3.4.min.css"rel="stylesheet" media="all">
+    <link href="/AgroLink/static/css/font-awesome.min.css"rel="stylesheet" media="all">
+    <link href="/AgroLink/static/css/fontawesome-all.min.css"rel="stylesheet" media="all">
+    <link href="/AgroLink/static/css/hamburgers.min.css"rel="stylesheet" media="all">
+    <link href="/AgroLink/static/css/material-design-iconic-font.min.css"rel="stylesheet" media="all">
+    <link href="/AgroLink/static/css/perfect-scrollbar.css"rel="stylesheet" media="all">
+    <link href="/AgroLink/static/css/select2.min.css"rel="stylesheet" media="all">
+    <link href="/AgroLink/static/css/slick.css"rel="stylesheet" media="all">
+    <link href="/AgroLink/static/css/bootstrap.min.css" rel="stylesheet" media="all">
 
+  <!-- Estilos personalizados (opcional) -->
+  <style>
+    body {
+        padding-top: 50px;
+        padding-bottom: 50px;
+    }
+</style>
 
 </head>
 <body class="animsition">
@@ -44,39 +38,39 @@
                     <div class="login-content">
                         <div class="login-logo">
                             <a href="#">
-                                <img src="/AgroLink/static/images/Logo AgroLink Branco.png" alt="AgroLink">
+                                <img src="images/icon/logo.png" alt="CoolAdmin">
                             </a>
                         </div>
                         <div class="login-form">
                             <form action="" method="post">
                                 <div class="form-group">
-                                    <label>Email</label>
+                                    <label>Email Address</label>
                                     <input class="au-input au-input--full" type="email" name="email" placeholder="Email">
                                 </div>
                                 <div class="form-group">
-                                    <label>Senha</label>
+                                    <label>Password</label>
                                     <input class="au-input au-input--full" type="password" name="password" placeholder="Password">
                                 </div>
                                 <div class="login-checkbox">
                                     <label>
-                                        <input type="checkbox" name="remember">Lembre-se de mim
+                                        <input type="checkbox" name="remember">Remember Me
                                     </label>
                                     <label>
-                                        <a href="#">Esqueci a senha</a>
+                                        <a href="#">Forgotten Password?</a>
                                     </label>
                                 </div>
-                                <button class="au-btn au-btn--block au-btn--green m-b-20" type="submit">Entrar</button> 
+                                <button class="au-btn au-btn--block au-btn--green m-b-20" type="submit">sign in</button>
                                 <div class="social-login-content">
                                     <div class="social-button">
-                                        <!-- <button class="au-btn au-btn--block au-btn--blue m-b-20">sign in with facebook</button> --> 
-                                        <!-- <button class="au-btn au-btn--block au-btn--blue2">sign in with twitter</button> --> 
+                                        <button class="au-btn au-btn--block au-btn--blue m-b-20">sign in with facebook</button>
+                                        <button class="au-btn au-btn--block au-btn--blue2">sign in with twitter</button>
                                     </div>
                                 </div>
                             </form>
                             <div class="register-link">
                                 <p>
-                                    Não tem uma conta?
-                                    <a href="#">Cadastrar</a> <!-- COLOCAR LINK PARA PÁGINA DE CADASTRO -->
+                                    Don't you have account?
+                                    <a href="#">Sign Up Here</a>
                                 </p>
                             </div>
                         </div>
@@ -86,11 +80,28 @@
         </div>
 
     </div>
-    <footer class="text-center mt-4">
-        <p>&copy; 2024 MetaCore. Todos os direitos reservados.</p>
-    </footer>
-    <!-- Incluindo o JavaScript do Bootstrap via CDN (opcional) -->
 
+    <!-- Incluindo o JavaScript do Bootstrap via CDN (opcional) -->
+    <script src="AgroLink/static/js/jquery-3.2.1.min.js"></script>
+    <script src="AgroLink/static/js/popper.min.js"></script>
+    <script src="AgroLink/static/js/bootstrap.min.js"></script>
+    <script src="AgroLink/static/js/slick.min.js">
+    </script>
+    <script src="AgroLink/static/js/wow.min.js"></script>
+    <script src="AgroLink/static/js/animsition.min.js"></script>
+    <script src="AgroLink/static/js/bootstrap-progressbar.min.js">
+    </script>
+    <script src="AgroLink/static/js/jquery.waypoints.min.js"></script>
+    <script src="AgroLink/static/js/jquery.counterup.min.js">
+    </script>
+    <script src="AgroLink/static/js/circle-progress.min.js"></script>
+    <script src="AgroLink/static/js/perfect-scrollbar.js"></script>
+    <script src="AgroLink/static/js/Chart.bundle.min.js"></script>
+    <script src="AgroLink/static/js/select2.min.js">
+    </script>
+    <script src="AgroLink/static/js/main.js"></script>
 
 </body>
+
 </html>
+<!-- end document-->
