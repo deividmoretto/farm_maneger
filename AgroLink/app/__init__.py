@@ -1,3 +1,6 @@
+#CONEXÃO POSTGRESQL AO PGADMIN 4
+
+
 from flask import Flask, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager

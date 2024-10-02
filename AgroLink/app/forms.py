@@ -1,3 +1,6 @@
+#CADASTRO E LOGIN PARA CADA USUÁRIO
+
+
 from flask_wtf import FlaskForm 
 from wtforms.fields import StringField, EmailField, PasswordField, BooleanField, SubmitField, SelectField
 from wtforms.validators import Length, DataRequired
