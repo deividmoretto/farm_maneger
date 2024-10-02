@@ -1,5 +1,3 @@
-#CRIAÇÃO DE TABELAS
-
 from app import db, login_manager
 from flask_login import UserMixin
 
@@ -34,8 +32,3 @@ class informacao_solo(db.Model):
 
     # Relacionamento com a tabela "usuarios"
     usuario = db.relationship('usuario', backref=db.backref('informacoes_solo', lazy=True))
-
-# Criação das tabelas no banco de dados
-db.create_all()
-
-   
