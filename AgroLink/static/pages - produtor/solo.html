@@ -5,6 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Solo - Produtor</title>
+    
+    <!-- Estilos -->
     <link rel="stylesheet" href="/AgroLink/static/css/bootstrap-datetimepicker.min.css">
     <link rel="stylesheet" href="/AgroLink/static/css/font-face.css">
     <link rel="stylesheet" href="/AgroLink/static/css/theme.css">
@@ -12,36 +14,25 @@
     <link rel="stylesheet" href="/AgroLink/static/css/animate.css">
     <link rel="stylesheet" href="/AgroLink/static/css/animsition.min.css">
     <link rel="stylesheet" href="/AgroLink/static/css/bootstrap-progressbar-3.3.4.min.css">
-    <link rel="stylesheet" href="/AgroLink/static/css/font-awesome.css">
     <link rel="stylesheet" href="/AgroLink/static/css/font-awesome.min.css">
-    <link rel="stylesheet" href="/AgroLink/static/css/font-awesome.css">
     <link rel="stylesheet" href="/AgroLink/static/css/fontawesome-all.min.css">
-    <link rel="stylesheet" href="/AgroLink/static/css/fullcalendar.css"> 
     <link rel="stylesheet" href="/AgroLink/static/css/fullcalendar.min.css">
-    <link rel="stylesheet" href="/AgroLink/static/css/fullcalendar.print.css">
-    <link rel="stylesheet" href="/AgroLink/static/css/fullcalendar.print.min.css">
-    <link rel="stylesheet" href="/AgroLink/static/css/hamburgers.css">
     <link rel="stylesheet" href="/AgroLink/static/css/hamburgers.min.css">
     <link rel="stylesheet" href="/AgroLink/static/css/jqvmap.min.css">
     <link rel="stylesheet" href="/AgroLink/static/css/lightbox.css">
-    <link rel="stylesheet" href="/AgroLink/static/css/material-design-iconic-font.css">
-    <link rel="stylesheet" href="/AgroLink/static/css/material-design-iconic-font.min.css">
-    <link rel="stylesheet" href="/AgroLink/static/css/material-design-iconic-font.css">
     <link rel="stylesheet" href="/AgroLink/static/css/material-design-iconic-font.min.css">
     <link rel="stylesheet" href="/AgroLink/static/css/perfect-scrollbar.css">
     <link rel="stylesheet" href="/AgroLink/static/css/select2.min.css">
-    <link rel="stylesheet" href="/AgroLink/static/css/slick-theme.css">
     <link rel="stylesheet" href="/AgroLink/static/css/slick.css">
-    <link rel="icon" href="/AgroLink/static/images/3.ico" type="image/3.ico">
-    <link rel="shortcut icon" href="/AgroLink/static/images/3.ico" type="image/3.ico">
-     <link rel="stylesheet"  href="/AgroLink/static/css/theme.css">
-    <!-- Incluindo o Bootstrap via CDN -->
-
-    <!-- Estilos personalizados (opcional) -->
+    <link rel="stylesheet" href="/AgroLink/static/css/slick-theme.css">
+    
+    <link rel="icon" href="/AgroLink/static/images/3.ico" type="image/x-icon">
+    
+    <!-- Estilos personalizados -->
     <style>
         body {
-            padding-top: 50px;
-            padding-bottom: 50px;
+            padding: 50px 0;
+            font-family: Arial, sans-serif;
         }
 
         canvas {
@@ -49,146 +40,168 @@
             height: auto;
             margin: 20px 0;
         }
+
+        /* Container para ajustar a posição dos gráficos */
+        .chart-container {
+            margin-top: -240px; /* Ajuste para mover os gráficos para cima */
+            text-align: center; /* Centraliza os gráficos */
+        }
+
+        /* Estilo para cada gráfico */
+        .chart {
+            display: inline-block; /* Mantém os gráficos em linha */
+            width: 45%; /* Ajusta o tamanho dos gráficos */
+            margin: 20px; /* Adiciona espaçamento ao redor */
+        }
     </style>
 </head>
 
 <body>
-
-   <!-- HEADER MOBILE-->
-   <header class="header-mobile d-block d-lg-none">
-    <div class="header-mobile__bar">
-        <div class="container-fluid">
-            <div class="header-mobile-inner">
-                <a class="logo" href="home-agronomo.html">
-                    <!--IGNORA ESTÁ PORRA PLEASE-->
-                    <img src="Agrolink/static/images/Agrolink Branco.png" alt="AgroLink" />
-                </a>                    
-                <button class="hamburger hamburger--slider" type="button">
-                    <span class="hamburger-box">
-                        <span class="hamburger-inner"></span>
-                    </span>
-                </button>
+    <div class="container" style="margin-left: 500px;">
+        <div class="row">
+            <div class="col-md-12">
+                <h1 class="text-center">Gráficos do Solo</h1>
             </div>
         </div>
     </div>
-    <nav class="navbar-mobile">
-        <div class="container-fluid">
-            <ul class="navbar-mobile__list list-unstyled">
-                <li>
-                    <a href="home-produtor.html">
-                        <i class="fas fa-home"></i>Home</a>
-                </li>
-                <li>
-                    <a href="solo.html">
-                        <i class="fas fa-chart-bar"></i>Solo</a>
-                </li>
-            </ul>
-        </div>
-    </nav>
-</header>
-<!-- END HEADER MOBILE-->
 
-<!-- MENU SIDEBAR-->
-<aside class="menu-sidebar d-none d-lg-block">
-    <div class="logo">
-        <a href="home-agronomo.html">
-            <img src="/AgroLink/static/images/Logo Verde Escuro.png" alt="AgroLink" width="70" height="20" />
+    <!-- Container que mantém os gráficos -->
+    <div class="chart-container">
+        <!-- Primeiro gráfico -->
+        <div class="chart">
+            <canvas id="chart1"></canvas>
         </div>
-        <div class="title-7">
-            <p>AgroLink</p>
+
+        <!-- Segundo gráfico -->
+        <div class="chart">
+            <canvas id="chart2"></canvas>
+        </div>
+    </div>
+
+    <!-- HEADER MOBILE -->
+    <header class="header-mobile d-block d-lg-none">
+        <div class="header-mobile__bar">
+            <div class="container-fluid">
+                <div class="header-mobile-inner">
+                    <a class="logo" href="home-produtor.html">
+                        <img src="Agrolink/static/images/Agrolink Branco.png" alt="AgroLink" />
+                    </a>
+                    <button class="hamburger hamburger--slider" type="button">
+                        <span class="hamburger-box">
+                            <span class="hamburger-inner"></span>
+                        </span>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <nav class="navbar-mobile">
+            <div class="container-fluid">
+                <ul class="navbar-mobile__list list-unstyled">
+                    <li><a href="home-produtor.html"><i class="fas fa-home"></i>Home</a></li>
+                    <li><a href="solo.html"><i class="fas fa-chart-bar"></i>Solo</a></li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+    <!-- END HEADER MOBILE -->
+
+    <!-- MENU SIDEBAR -->
+    <aside class="menu-sidebar d-none d-lg-block">
+        <div class="logo">
+            <a href="home-produtor.html">
+                <img src="/AgroLink/static/images/Logo Verde Escuro.png" alt="AgroLink" width="70" height="20">
+            </a>
+            <div class="title-7">
+                <p>AgroLink</p>
+            </div>
+        </div>
+        <div class="menu-sidebar__content js-scrollbar1">
+            <nav class="navbar-sidebar">
+                <ul class="list-unstyled navbar__list">
+                    <li class="active"><a href="home-produtor.html"><i class="fas fa-home"></i>Home</a></li>
+                    <li><a href="solo.html"><i class="fas fa-chart-bar"></i>Solo</a></li>
+                </ul>
+            </nav>
         </div>
     </aside>
-        </a>
-    </div>
-    <div class="menu-sidebar__content js-scrollbar1">
-        <nav class="navbar-sidebar">
-            <ul class="list-unstyled navbar__list">
-                <li class="active">
-                    <a href="home-produtor.html">
-                        <i class="fas fa-home"></i>Home</a>
-                </li>
-                <li>
-                    <a href="solo.html">
-                        <i class="fas fa-chart-bar"></i>Solo</a>
-                </li>
-            </ul>
-        </nav>
-    </div>
-</aside>
-<!-- END MENU SIDEBAR-->
+    <!-- END MENU SIDEBAR -->
 
-    <!-- Conteúdo principal -->
+    <!-- MAIN CONTENT -->
     <div class="main-content">
         <div class="section__content section__content--p30" style="margin-left: 500px;">
             <div class="container-fluid">
                 <div class="row">
+                    <!-- Doughnut Chart -->
                     <div class="col-lg-6">
                         <div class="au-card m-b-30">
                             <div class="au-card-inner">
                                 <h3 class="title-2 m-b-40">Doughnut Chart</h3>
-                                <!-- Adicione uma div ao redor do canvas -->
                                 <div style="width: 100%; max-width: 600px; height: 400px;">
                                     <canvas id="doughutChart"></canvas>
                                 </div>
                             </div>
                         </div>
                     </div>
+
+                    <!-- Pie Chart -->
                     <div class="col-lg-6">
                         <div class="au-card m-b-30">
                             <div class="au-card-inner">
                                 <h3 class="title-2 m-b-40">Pie Chart</h3>
-                                <!-- Adicione uma div ao redor do canvas para limitar tamanho -->
                                 <div style="width: 100%; max-width: 600px; height: 400px;">
                                     <canvas id="pieChart"></canvas>
                                 </div>
                             </div>
                         </div>
                     </div>
+
+                    <!-- Radar Chart -->
                     <div class="col-lg-6">
                         <div class="au-card m-b-30">
                             <div class="au-card-inner">
                                 <h3 class="title-2 m-b-40">Radar Chart</h3>
-                                <!-- Adicione uma div ao redor do canvas para controlar o tamanho -->
                                 <div style="width: 100%; max-width: 600px; height: 400px;">
                                     <canvas id="radarChart"></canvas>
                                 </div>
                             </div>
                         </div>
-                    </div>  
+                    </div>
+
+                    <!-- Polar Chart -->
                     <div class="col-lg-6">
                         <div class="au-card m-b-30">
                             <div class="au-card-inner">
                                 <h3 class="title-2 m-b-40">Polar Chart</h3>
-                                <!-- Adicione uma div ao redor do canvas para controlar o tamanho -->
                                 <div style="width: 100%; max-width: 600px; height: 400px;">
                                     <canvas id="polarChart"></canvas>
                                 </div>
                             </div>
                         </div>
-                    </div>  
+                    </div>
+
+                    <!-- Single Bar Chart -->
                     <div class="col-lg-6">
                         <div class="au-card m-b-30">
                             <div class="au-card-inner">
                                 <h3 class="title-2 m-b-40">Single Bar Chart</h3>
-                                <!-- Adicione uma div ao redor do canvas para controlar o tamanho -->
                                 <div style="width: 100%; max-width: 600px; height: 400px;">
                                     <canvas id="singelBarChart"></canvas>
                                 </div>
                             </div>
                         </div>
-                    </div>                                                        
+                    </div>                    
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Rodapé -->
+    <!-- Footer -->
     <footer class="text-center mt-4 container-fluid" style="position: fixed; bottom: 0; width: calc(100% - 500px);">
         <p>&copy; 2024 MetaCore. Todos os direitos reservados.</p>
     </footer>
 
-    <!-- Incluindo o Chart.js via CDN -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!-- Incluindo biblioteca Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 </body>
 <!--doughutChart-->
@@ -362,4 +375,22 @@
         }
     });
 </script>
+    <!-- JavaScript -->
+    <script src="/static/js/jquery-3.2.1.min.js"></script>
+    <script src="/static/js/popper.min.js"></script>
+    <script src="/static/js/bootstrap.min.js"></script>
+    <script src="/static/js/slick.min.js"></script>
+    <script src="/static/js/wow.min.js"></script>
+    <script src="/static/js/animsition.min.js"></script>
+    <script src="/static/js/bootstrap-progressbar.min.js"></script>
+    <script src="/static/js/jquery.waypoints.min.js"></script>
+    <script src="/static/js/jquery.counterup.min.js"></script>
+    <script src="/static/js/circle-progress.min.js"></script>
+    <script src="/static/js/perfect-scrollbar.js"></script>
+    <script src="/static/js/Chart.bundle.min.js"></script>
+    <script src="/static/js/select2.min.js"></script>
+    <script src="js/main.js"></script>
+
+</body>
+
 </html>
