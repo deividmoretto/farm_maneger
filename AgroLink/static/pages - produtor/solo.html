@@ -137,21 +137,9 @@
                     <div class="col-lg-6">
                         <div class="au-card m-b-30">
                             <div class="au-card-inner">
-                                <h3 class="title-2 m-b-40">Doughnut Chart</h3>
+                                <h3 class="title-2 m-b-40">Tipos de Solo (%)</h3>
                                 <div style="width: 100%; max-width: 600px; height: 400px;">
                                     <canvas id="doughutChart"></canvas>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Pie Chart -->
-                    <div class="col-lg-6">
-                        <div class="au-card m-b-30">
-                            <div class="au-card-inner">
-                                <h3 class="title-2 m-b-40">Pie Chart</h3>
-                                <div style="width: 100%; max-width: 600px; height: 400px;">
-                                    <canvas id="pieChart"></canvas>
                                 </div>
                             </div>
                         </div>
@@ -161,7 +149,7 @@
                     <div class="col-lg-6">
                         <div class="au-card m-b-30">
                             <div class="au-card-inner">
-                                <h3 class="title-2 m-b-40">Radar Chart</h3>
+                                <h3 class="title-2 m-b-40">Níveis de nutrientes</h3>
                                 <div style="width: 100%; max-width: 600px; height: 400px;">
                                     <canvas id="radarChart"></canvas>
                                 </div>
@@ -173,7 +161,7 @@
                     <div class="col-lg-6">
                         <div class="au-card m-b-30">
                             <div class="au-card-inner">
-                                <h3 class="title-2 m-b-40">Polar Chart</h3>
+                                <h3 class="title-2 m-b-40">PH do solo</h3>
                                 <div style="width: 100%; max-width: 600px; height: 400px;">
                                     <canvas id="polarChart"></canvas>
                                 </div>
@@ -185,7 +173,7 @@
                     <div class="col-lg-6">
                         <div class="au-card m-b-30">
                             <div class="au-card-inner">
-                                <h3 class="title-2 m-b-40">Single Bar Chart</h3>
+                                <h3 class="title-2 m-b-40">Capacidade de Troca Catiônica (%) e Matéria Orgânica (%)</h3>
                                 <div style="width: 100%; max-width: 600px; height: 400px;">
                                     <canvas id="singelBarChart"></canvas>
                                 </div>
@@ -212,24 +200,20 @@
     var myDoughnutChart = new Chart(ctx, {
         type: 'doughnut',
         data: {
-            labels: ["Red", "Blue", "Yellow", "Green", "Purple", "Orange"],
+            labels: ["Arenoso", "Argiloso", "Sitoso"],
             datasets: [{
-                data: [12, 19, 3, 5, 2, 3],
+                data: [35, 56, 9],
                 backgroundColor: [
                     'rgba(255, 99, 132, 0.2)',
                     'rgba(54, 162, 235, 0.2)',
                     'rgba(255, 206, 86, 0.2)',
-                    'rgba(75, 192, 192, 0.2)',
-                    'rgba(153, 102, 255, 0.2)',
-                    'rgba(255, 159, 64, 0.2)'
+
                 ],
                 borderColor: [
                     'rgba(255, 99, 132, 1)',
                     'rgba(54, 162, 235, 1)',
                     'rgba(255, 206, 86, 1)',
-                    'rgba(75, 192, 192, 1)',
-                    'rgba(153, 102, 255, 1)',
-                    'rgba(255, 159, 64, 1)'
+
                 ],
                 borderWidth: 1
             }]
@@ -240,56 +224,23 @@
         }
     });
 </script>
-<!--pieChart-->
-<script>
-    var ctx = document.getElementById("pieChart").getContext('2d');
-    var myPieChart = new Chart(ctx, {
-        type: 'pie',
-        data: {
-            labels: ["Red", "Blue", "Yellow", "Green", "Purple", "Orange"],
-            datasets: [{
-                data: [12, 19, 3, 5, 2, 3],
-                backgroundColor: [
-                    'rgba(255, 99, 132, 0.2)',
-                    'rgba(54, 162, 235, 0.2)',
-                    'rgba(255, 206, 86, 0.2)',
-                    'rgba(75, 192, 192, 0.2)',
-                    'rgba(153, 102, 255, 0.2)',
-                    'rgba(255, 159, 64, 0.2)'
-                ],
-                borderColor: [
-                    'rgba(255, 99, 132, 1)',
-                    'rgba(54, 162, 235, 1)',
-                    'rgba(255, 206, 86, 1)',
-                    'rgba(75, 192, 192, 1)',
-                    'rgba(153, 102, 255, 1)',
-                    'rgba(255, 159, 64, 1)'
-                ],
-                borderWidth: 1
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-        }
-    });
-</script>
+
 <!--radarChart-->
 <script>
     var ctx = document.getElementById("radarChart").getContext('2d');
     var myRadarChart = new Chart(ctx, {
         type: 'radar',
         data: {
-            labels: ["Eating", "Drinking", "Sleeping", "Designing", "Coding", "Cycling", "Running"],
+            labels: ["Nitrogêneo", "Fósforo", "Potássio"],
             datasets: [{
-                label: 'Person A',
-                data: [65, 59, 90, 81, 56, 55, 40],
+                label: 'Níveis ideais',
+                data: [65, 59, 90],
                 backgroundColor: 'rgba(255, 99, 132, 0.2)',
                 borderColor: 'rgba(255, 99, 132, 1)',
                 borderWidth: 1
             }, {
-                label: 'Person B',
-                data: [28, 48, 40, 19, 96, 27, 100],
+                label: 'Níveis medidos',
+                data: [28, 48, 40],
                 backgroundColor: 'rgba(54, 162, 235, 0.2)',
                 borderColor: 'rgba(54, 162, 235, 1)',
                 borderWidth: 1
@@ -316,21 +267,19 @@
     var myPolarChart = new Chart(ctx, {
         type: 'polarArea',
         data: {
-            labels: ["Red", "Green", "Yellow", "Grey", "Blue"],
+            labels: ["Area 1", "Area 2", "Area 3", "Area 4"],
             datasets: [{
-                data: [11, 16, 7, 3, 14],
+                data: [11, 14, 7, 3],
                 backgroundColor: [
                     'rgba(255, 99, 132, 0.2)',
                     'rgba(75, 192, 192, 0.2)',
                     'rgba(255, 206, 86, 0.2)',
-                    'rgba(201, 203, 207, 0.2)',
                     'rgba(54, 162, 235, 0.2)'
                 ],
                 borderColor: [
                     'rgba(255, 99, 132, 1)',
                     'rgba(75, 192, 192, 1)',
                     'rgba(255, 206, 86, 1)',
-                    'rgba(201, 203, 207, 1)',
                     'rgba(54, 162, 235, 1)'
                 ],
                 borderWidth: 1
@@ -345,7 +294,7 @@
                         display: true
                     },
                     suggestedMin: 0,
-                    suggestedMax: 20
+                    suggestedMax: 14
                 }
             }
         }
@@ -357,12 +306,18 @@
     var myBarChart = new Chart(ctx, {
         type: 'bar',
         data: {
-            labels: ["January", "February", "March", "April", "May", "June"],
+            labels: ["Area 1", "Area 2", "Area 3", "Area 4"],
             datasets: [{
                 label: 'Dataset 1',
-                data: [12, 19, 3, 5, 2, 3],
+                data: [12, 19, 3, 5],
                 backgroundColor: 'rgba(54, 162, 235, 0.2)',
                 borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 1
+            }, {
+                label: 'Dataset 2',
+                data: [8, 15, 10, 7],  // Adicione os dados para o segundo dataset
+                backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                borderColor: 'rgba(255, 99, 132, 1)',
                 borderWidth: 1
             }]
         },
