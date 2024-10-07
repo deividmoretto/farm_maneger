@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Solo - Produtor</title>
+    
+ <!-- Fontfaces CSS-->
+ <link href="static/css/font-face.css" rel="stylesheet" media="all">
+ <link href="static/css/font-awesome.min.css" rel="stylesheet" media="all">
+ <link href="static/css/fontawesome-all.min.css" rel="stylesheet" media="all">
+ <link href="static/css/material-design-iconic-font.min.css" rel="stylesheet" media="all">
+
+ <!-- Bootstrap CSS-->
+ <link href="static/css/bootstrap.min.css" rel="stylesheet" media="all">
+
+ <!-- Vendor CSS-->
+ <link href="static/css/animsition.min.css" rel="stylesheet" media="all">
+ <link href="static/css/bootstrap-progressbar-3.3.4.min.css" rel="stylesheet" media="all">
+ <link href="static/css/animate.css" rel="stylesheet" media="all">
+ <link href="static/css/hamburgers.min.css" rel="stylesheet" media="all">
+ <link href="static/css/slick.css" rel="stylesheet" media="all">
+ <link href="static/css/select2.min.css" rel="stylesheet" media="all">
+ <link href="static/css/perfect-scrollbar.css" rel="stylesheet" media="all">
+ <link rel="icon" href="/AgroLink/static/images/3.ico" type="image/3.ico">
+ <link rel="stylesheet" href="/AgroLink/static/css/bootstrap.min.css">
+ <link rel="shortcut icon" href="/AgroLink/static/images/3.ico" type="image/3.ico">
+ <!-- Main CSS-->
+ <link rel="stylesheet" href="/AgroLink/static/css/theme.css">
+    
+    <link rel="icon" href="/AgroLink/static/images/3.ico" type="image/x-icon">
+    
+    <!-- Estilos personalizados -->
+    <style>
+        body {
+            padding: 50px 0;
+            font-family: Arial, sans-serif;
+        }
+
+        canvas {
+            max-width: 100%;
+            height: auto;
+            margin: 20px 0;
+        }
+
+        /* Container para ajustar a posição dos gráficos */
+        .chart-container {
+            margin-top: -240px; /* Ajuste para mover os gráficos para cima */
+            text-align: center; /* Centraliza os gráficos */
+        }
+
+        /* Estilo para cada gráfico */
+        .chart {
+            display: inline-block; /* Mantém os gráficos em linha */
+            width: 45%; /* Ajusta o tamanho dos gráficos */
+            margin: 20px; /* Adiciona espaçamento ao redor */
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container" style="margin-left: 500px;">
+        <div class="row">
+            <div class="col-md-12">
+                <h1 class="text-center">Gráficos do Solo</h1>
+            </div>
+        </div>
+    </div>
+
+    <!-- Container que mantém os gráficos -->
+    <div class="chart-container">
+        <!-- Primeiro gráfico -->
+        <div class="chart">
+            <canvas id="chart1"></canvas>
+        </div>
+
+        <!-- Segundo gráfico -->
+        <div class="chart">
+            <canvas id="chart2"></canvas>
+        </div>
+    </div>
+
+    <!-- HEADER MOBILE -->
+    <header class="header-mobile d-block d-lg-none">
+        <div class="header-mobile__bar">
+            <div class="container-fluid">
+                <div class="header-mobile-inner">
+                    <a class="logo" href="home-produtor.html">
+                        <img src="Agrolink/static/images/Agrolink Branco.png" alt="AgroLink" />
+                    </a>
+                    <button class="hamburger hamburger--slider" type="button">
+                        <span class="hamburger-box">
+                            <span class="hamburger-inner"></span>
+                        </span>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <nav class="navbar-mobile">
+            <div class="container-fluid">
+                <ul class="navbar-mobile__list list-unstyled">
+                    <li><a href="home-produtor.html"><i class="fas fa-home"></i>Home</a></li>
+                    <li><a href="solo.html"><i class="fas fa-chart-bar"></i>Solo</a></li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+    <!-- END HEADER MOBILE -->
+
+    <!-- MENU SIDEBAR -->
+    <aside class="menu-sidebar d-none d-lg-block">
+        <div class="logo">
+            <a href="home-produtor.html">
+                <img src="/AgroLink/static/images/Logo Verde Escuro.png" alt="AgroLink" width="70" height="20">
+            </a>
+            <div class="title-7">
+                <p>AgroLink</p>
+            </div>
+        </div>
+        <div class="menu-sidebar__content js-scrollbar1">
+            <nav class="navbar-sidebar">
+                <ul class="list-unstyled navbar__list">
+                    <li class="active"><a href="home-produtor.html"><i class="fas fa-home"></i>Home</a></li>
+                    <li><a href="solo.html"><i class="fas fa-chart-bar"></i>Solo</a></li>
+                </ul>
+            </nav>
+        </div>
+    </aside>
+    <!-- END MENU SIDEBAR -->
+
+    <!-- MAIN CONTENT -->
+    <div class="main-content">
+        <div class="section__content section__content--p30" style="margin-left: 500px;">
+            <div class="container-fluid">
+                <div class="row">
+                    <!-- Doughnut Chart -->
+                    <div class="col-lg-6">
+                        <div class="au-card m-b-30">
+                            <div class="au-card-inner">
+                                <h3 class="title-2 m-b-40">Tipos de Solo (%)</h3>
+                                <div style="width: 100%; max-width: 600px; height: 400px;">
+                                    <canvas id="doughutChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Radar Chart -->
+                    <div class="col-lg-6">
+                        <div class="au-card m-b-30">
+                            <div class="au-card-inner">
+                                <h3 class="title-2 m-b-40">Níveis de nutrientes</h3>
+                                <div style="width: 100%; max-width: 600px; height: 400px;">
+                                    <canvas id="radarChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Polar Chart -->
+                    <div class="col-lg-6">
+                        <div class="au-card m-b-30">
+                            <div class="au-card-inner">
+                                <h3 class="title-2 m-b-40">PH do solo</h3>
+                                <div style="width: 100%; max-width: 600px; height: 400px;">
+                                    <canvas id="polarChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Single Bar Chart -->
+                    <div class="col-lg-6">
+                        <div class="au-card m-b-30">
+                            <div class="au-card-inner">
+                                <h3 class="title-2 m-b-40">Capacidade de Troca Catiônica (%) e Matéria Orgânica (%)</h3>
+                                <div style="width: 100%; max-width: 600px; height: 400px;">
+                                    <canvas id="singelBarChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>                    
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="text-center mt-4 container-fluid" style="position: fixed; bottom: 0; width: calc(100% - 500px);">
+        <p>&copy; 2024 MetaCore. Todos os direitos reservados.</p>
+    </footer>
+
+<!-- Incluindo biblioteca Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+</body>
+<!--doughutChart-->
+<script>
+    var ctx = document.getElementById("doughutChart").getContext('2d');
+    var myDoughnutChart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: ["Arenoso", "Argiloso", "Sitoso"],
+            datasets: [{
+                data: [35, 56, 9],
+                backgroundColor: [
+                    'rgba(255, 99, 132, 0.2)',
+                    'rgba(54, 162, 235, 0.2)',
+                    'rgba(255, 206, 86, 0.2)',
+
+                ],
+                borderColor: [
+                    'rgba(255, 99, 132, 1)',
+                    'rgba(54, 162, 235, 1)',
+                    'rgba(255, 206, 86, 1)',
+
+                ],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+        }
+    });
+</script>
+
+<!--radarChart-->
+<script>
+    var ctx = document.getElementById("radarChart").getContext('2d');
+    var myRadarChart = new Chart(ctx, {
+        type: 'radar',
+        data: {
+            labels: ["Nitrogêneo", "Fósforo", "Potássio"],
+            datasets: [{
+                label: 'Níveis ideais',
+                data: [65, 59, 90],
+                backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                borderColor: 'rgba(255, 99, 132, 1)',
+                borderWidth: 1
+            }, {
+                label: 'Níveis medidos',
+                data: [28, 48, 40],
+                backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                r: {
+                    angleLines: {
+                        display: true
+                    },
+                    suggestedMin: 0,
+                    suggestedMax: 100
+                }
+            }
+        }
+    });
+</script>
+<!--polarChart-->
+<script>
+    var ctx = document.getElementById("polarChart").getContext('2d');
+    var myPolarChart = new Chart(ctx, {
+        type: 'polarArea',
+        data: {
+            labels: ["Area 1", "Area 2", "Area 3", "Area 4"],
+            datasets: [{
+                data: [11, 14, 7, 3],
+                backgroundColor: [
+                    'rgba(255, 99, 132, 0.2)',
+                    'rgba(75, 192, 192, 0.2)',
+                    'rgba(255, 206, 86, 0.2)',
+                    'rgba(54, 162, 235, 0.2)'
+                ],
+                borderColor: [
+                    'rgba(255, 99, 132, 1)',
+                    'rgba(75, 192, 192, 1)',
+                    'rgba(255, 206, 86, 1)',
+                    'rgba(54, 162, 235, 1)'
+                ],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                r: {
+                    angleLines: {
+                        display: true
+                    },
+                    suggestedMin: 0,
+                    suggestedMax: 14
+                }
+            }
+        }
+    });
+</script>
+<!--singelBarChart-->
+<script>
+    var ctx = document.getElementById("singelBarChart").getContext('2d');
+    var myBarChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ["Area 1", "Area 2", "Area 3", "Area 4"],
+            datasets: [{
+                label: 'Dataset 1',
+                data: [12, 19, 3, 5],
+                backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 1
+            }, {
+                label: 'Dataset 2',
+                data: [8, 15, 10, 7],  // Adicione os dados para o segundo dataset
+                backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                borderColor: 'rgba(255, 99, 132, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+</script>
+    <!-- Jquery JS-->
+    <script src="static/js/jquery-3.2.1.min.js"></script>
+    <!-- Bootstrap JS-->
+    <script src="static/js/popper.min.js"></script>
+    <script src="static/js/bootstrap.min.js"></script>
+    <!-- Vendor JS       -->
+    <script src="static/js/slick.min.js"></script>
+    <script src="static/js/wow.min.js"></script>
+    <script src="static/js/animsition.min.js"></script>
+    <script src="static/js/bootstrap-progressbar.min.js"></script>
+    <script src="static/js/jquery.waypoints.min.js"></script>
+    <script src="static/js/jquery.counterup.min.js"></script>
+    <script src="static/js/circle-progress.min.js"></script>
+    <script src="static/js/perfect-scrollbar.js"></script>
+    <script src="static/js/Chart.bundle.min.js"></script>
+    <script src="static/js/select2.min.js"></script>
+
+    <!-- Main JS-->
+    <script src="static/js/main.js"></script>
+
+</body>
+
+</html>
+<!-- MAIN CONTENT-->
+<div class="table-responsive table--no-card m-b-40" style="float: right;">
+    <table class="table table-borderless table-striped table-earning">
+
+
+        <thead>
+            <tr>
+                <th>date</th>
+                <th>order ID</th>
+                <th>name</th>
+                <th class="text-right">price</th>
+                <th class="text-right">quantity</th>
+                <th class="text-right">total</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- dados da tabela -->
+            <tr>
+                <td>2018-09-29 05:57</td>
+                <td>100398</td>
+                <td>iPhone X 64Gb Grey</td>
+                <td class="text-right">$999.00</td>
+                <td class="text-right">1</td>
+                <td class="text-right">$999.00</td>
+            </tr>
+            <tr>
+                <td>2018-09-28 01:22</td>
+                <td>100397</td>
+                <td>Samsung S8 Black</td>
+                <td class="text-right">$756.00</td>
+                <td class="text-right">1</td>
+                <td class="text-right">$756.00</td>
+            </tr>
+            <tr>
+                <td>2018-09-27 02:12</td>
+                <td>100396</td>
+                <td>Game Console Controller</td>
+                <td class="text-right">$22.00</td>
+                <td class="text-right">2</td>
+                <td class="text-right">$44.00</td>
+            </tr>
+            <tr>
+                <td>2018-09-26 23:06</td>
+                <td>100395</td>
+                <td>iPhone X 256Gb Black</td>
+                <td class="text-right">$1199.00</td>
+                <td class="text-right">1</td>
+                <td class="text-right">$1199.00</td>
+            </tr>
+            <tr>
+                <td>2018-09-25 19:03</td>
+                <td>100393</td>
+                <td>USB 3.0 Cable</td>
+                <td class="text-right">$10.00</td>
+                <td class="text-right">3</td>
+                <td class="text-right">$30.00</td>
+            </tr>
+            <tr>
+                <td>2018-09-29 05:57</td>
+                <td>100392</td>
+                <td>Smartwatch 4.0 LTE Wifi</td>
+                <td class="text-right">$199.00</td>
+                <td class="text-right">6</td>
+                <td class="text-right">$1494.00</td>
+            </tr>
+            <tr>
+                <td>2018-09-24 19:10</td>
+                <td>100391</td>
+                <td>Camera C430W 4k</td>
+                <td class="text-right">$699.00</td>
+                <td class="text-right">1</td>
+                <td class="text-right">$699.00</td>
+            </tr>
+            <tr>
+                <td>2018-09-22 00:43</td>
+                <td>100393</td>
+                <td>USB 3.0 Cable</td>
+                <td class="text-right">$10.00</td>
+                <td class="text-right">3</td>
+                <td class="text-right">$30.00</td>
+            </tr>
+
+        </tbody>
+    </table>
+</div>
