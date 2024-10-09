@@ -1,27 +1,21 @@
-#PASTA QUE LEVA O CAMINHO DO BANCO DE DADOS ATÉ O SOFTWARE
-
-
-
 from app.models import usuario, informacao_solo
 from app import db
-from flask import render_template, request, redirect, url_for, flash, jsonify
+from flask import render_template, request, redirect, url_for, flash
 from flask_login import login_required, login_user, logout_user
 from werkzeug.security import generate_password_hash, check_password_hash
-import secrets
+from .forms import LoginForm
 
 def init_app(app):
-    
     @app.route("/")
     def inicio():
-        # Lista de usuários
-        usuarios = db.session.execute(db.select(usuario).order_by(usuario.id)).scalars()
-        return render_template("/inicio.html", usuarios=usuarios)
+        # Exemplo de renderização de template
+        return render_template("inicio.html")
 
     @app.route("/conta")
     def conta():
         # Lista de informações de solo cadastradas
         informacoes = db.session.execute(db.select(informacao_solo).order_by(informacao_solo.id)).scalars()
-        return render_template("/conta01.html", informacoes=informacoes)
+        return render_template("conta01.html", informacoes=informacoes)
     
     @app.route("/excluir/<int:id>")
     def excluir_user(id):
@@ -41,23 +35,60 @@ def init_app(app):
             db.session.commit()
         return redirect(url_for("conta"))
     
+    @app.route("/login", methods=["GET", "POST"])
+    def login():
+        form = LoginForm()  # Cria a instância do formulário
+        
+        if form.validate_on_submit():  # Verifica se o formulário foi submetido corretamente
+            email = form.email.data
+            senha = form.senha.data
+
+            # Procurar usuário no banco de dados pelo email
+            user = usuario.query.filter_by(email=email).first()
+
+            if user and check_password_hash(user.senha, senha):  # Verificar se a senha bate
+                login_user(user)  # Fazer login do usuário
+                flash("Login bem-sucedido!", "success")  # Mensagem de sucesso
+                return redirect(url_for("inicio"))  # Redirecionar para a página inicial
+
+            flash("Email ou senha inválidos. Tente novamente.", "danger")  # Mensagem de erro
+        
+        return render_template("login.html", form=form)
+    
     @app.route("/cad_user", methods=["GET", "POST"])
     def cad_user():
         if request.method == "POST":
-            email = request.form["email"]
-            nome = request.form["nome"]
-            senha = generate_password_hash(request.form["senha"], method='sha256')
+            email = request.form.get("email")
+            nome = request.form.get("nome")
+            senha = request.form.get("senha")
             agro = request.form.get("agro", "Agrônomo")
             prod = request.form.get("prod", "Produtor")
-            
-            # Criar um novo usuário
-            novo_usuario = usuario(email=email, nome=nome, senha=senha, agro=agro, prod=prod)
-            db.session.add(novo_usuario)
-            db.session.commit()
+
+            if not email or not nome or not senha:
+                flash("Todos os campos são obrigatórios!", "danger")
+                return redirect(url_for("cad_user"))
+
+            # Verificar se o email já está cadastrado
+            if usuario.query.filter_by(email=email).first():
+                flash("Esse email já está registrado. Tente outro.", "danger")
+                return redirect(url_for("cad_user"))
+
+            senha_hash = generate_password_hash(senha, method='sha256')
+
+            novo_usuario = usuario(email=email, nome=nome, senha=senha_hash, agro=agro, prod=prod)
+
+            try:
+                db.session.add(novo_usuario)
+                db.session.commit()  # Commit para salvar no banco
+                flash("Usuário cadastrado com sucesso!", "success")
+            except Exception as e:
+                db.session.rollback()  # Desfaz a transação se ocorrer um erro
+                flash(f"Ocorreu um erro ao cadastrar o usuário: {e}", "danger")
+
             return redirect(url_for("inicio"))
-        
+
         return render_template("cad_user.html")
-    
+
     @app.route("/atualiza_user/<int:id>", methods=["GET", "POST"])
     def atualiza_user(id):
         user = usuario.query.get_or_404(id)
@@ -98,7 +129,3 @@ def init_app(app):
         # Listar usuários para associar o solo ao agrônomo
         usuarios = usuario.query.all()
         return render_template("cad_solo.html", usuarios=usuarios)
-
-    
-    
-    

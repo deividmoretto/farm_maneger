@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastrar Usuário</title>
+    <link href="{{ url_for('static', filename='css/font-face.css') }}" rel="stylesheet" media="all">
+    <link href="{{ url_for('static', filename='css/font-awesome.min.css') }}" rel="stylesheet" media="all">
+    <link href="{{ url_for('static', filename='css/fontawesome-all.min.css') }}" rel="stylesheet" media="all">
+    <link href="{{ url_for('static', filename='css/material-design-iconic-font.min.css') }}" rel="stylesheet" media="all">
+
+    <!-- Bootstrap CSS-->
+    <link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet" media="all">
+
+    <!-- Vendor CSS-->
+    <link href="{{ url_for('static', filename='css/animsition.min.css') }}" rel="stylesheet" media="all">
+    <link href="{{ url_for('static', filename='css/bootstrap-progressbar-3.3.4.min.css') }}" rel="stylesheet" media="all">
+    <link href="{{ url_for('static', filename='css/animate.css') }}" rel="stylesheet" media="all">
+    <link href="{{ url_for('static', filename='css/hamburgers.min.css') }}" rel="stylesheet" media="all">
+    <link href="{{ url_for('static', filename='css/slick.css') }}" rel="stylesheet" media="all">
+    <link href="{{ url_for('static', filename='css/select2.min.css') }}" rel="stylesheet" media="all">
+    <link href="{{ url_for('static', filename='css/perfect-scrollbar.css') }}" rel="stylesheet" media="all">
+    <link rel="icon" href="{{ url_for('static', filename='images/3.ico') }}" type="image/x-icon">
+    <!-- Main CSS-->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/theme.css') }}">
+</head>
+<body>
+    <div class="container mt-5">
+        <h2>Cadastrar Novo Usuário</h2>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="alert alert-info" role="alert">
+                    {% for category, message in messages %}
+                        <strong>{{ category.capitalize() }}:</strong> {{ message }}
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        <form method="POST" action="{{ url_for('cad_user') }}">
+            <div class="mb-3">
+                <label for="email" class="form-label">Email</label>
+                <input type="email" class="form-control" id="email" name="email" required>
+            </div>
+
+            <div class="mb-3">
+                <label for="nome" class="form-label">Nome</label>
+                <input type="text" class="form-control" id="nome" name="nome" required>
+            </div>
+
+            <div class="mb-3">
+                <label for="senha" class="form-label">Senha</label>
+                <input type="password" class="form-control" id="senha" name="senha" required>
+            </div>
+
+            <div class="mb-3">
+                <label for="agro" class="form-label">Tipo de Usuário</label><br>
+                <select class="form-select" id="agro" name="agro">
+                    <option value="Agrônomo">Agrônomo</option>
+                    <option value="Produtor">Produtor</option>
+                </select>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Cadastrar</button>
+        </form>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js" integrity="sha384-oBqDVmMz4fnFO9gybY5A6Dtr0v1bF5h0bd3Q4D4C1nP3n3g6t4c9g9dfdJJTk4tq" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.min.js" integrity="sha384-vYY4uMmrse2RfU3huNroUQy2yz11bNbaXsV7gF8gvPQbNcp6j6Gn5uLg3yRpR5RE" crossorigin="anonymous"></script>
+</body>
+</html>
