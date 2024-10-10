@@ -189,54 +189,47 @@
 <div class="table-responsive table--no-card m-b-40" style=" width: 1000px; margin-left: 400px;">
     <table class="table table-borderless table-striped table-earning">
 
-<!--Tabela Para informações dos gráficos-->
+<!-- Tabela Para informações dos gráficos -->
 
         <thead>
             <tr>
                 <th>Nome</th>
-                <th></th>
-                <th></th>
-                <th></th>
-                <th></th>
-                <th></th>
+                <th>Área 1</th>
+                <th>Área 2</th>
+                <th>Área 3</th>
+                <th>Área 4</th>
             </tr>
         </thead>
         <tbody>
-            <!-- dados da tabela -->
+            <!-- Dados da tabela -->
             <tr>
-                <td>Tipos de Solo (%)</td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
+                <td>Tipos de Solo</td>
+                <td>Arenoso </td>
+                <td>Argiloso </td>
+                <td>Sitoso </td>
+                <td>Arenoso </td> <!-- Não há um quarto tipo de solo -->
             </tr>
             <tr>
-                <td>Níveis de nutrientes</td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
+                <td>Níveis de nutrientes (NPK)</td>
+                <td>N: 28, P: 48, K: 40</td>
+                <td>N: 65, P: 59, K: 90</td>
+                <td>N: 51, P: 33, K: 44</td>
+                <td>N: 61, P: 15, K: 25</td>
             </tr>
             <tr>
                 <td>PH do solo</td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
+                <td>11</td>
+                <td>14</td>
+                <td>7</td>
+                <td>3</td>
             </tr>
             <tr>
-                <td>Capacidade de Troca Catiônica (%) e Matéria Orgânica (%)</td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
+                <td>Capacidade de Troca Catiônica e Matéria Orgânica</td>
+                <td>12% / 8%</td>
+                <td>19% / 15%</td>
+                <td>3% / 10%</td>
+                <td>5% / 7%</td>
             </tr>
-            
-
         </tbody>
     </table>
 </div>
@@ -257,7 +250,7 @@
         data: {
             labels: ["Arenoso", "Argiloso", "Sitoso"],
             datasets: [{
-                data: [35, 56, 9],
+                data: [50, 25, 25],
                 backgroundColor: [
                     'rgba(255, 99, 132, 0.2)',
                     'rgba(54, 162, 235, 0.2)',
@@ -288,16 +281,28 @@
         data: {
             labels: ["Nitrogêneo", "Fósforo", "Potássio"],
             datasets: [{
-                label: 'Níveis ideais',
+                label: 'Area 1',
                 data: [65, 59, 90],
                 backgroundColor: 'rgba(255, 99, 132, 0.2)',
                 borderColor: 'rgba(255, 99, 132, 1)',
                 borderWidth: 1
             }, {
-                label: 'Níveis medidos',
+                label: 'Area 2',
                 data: [28, 48, 40],
                 backgroundColor: 'rgba(54, 162, 235, 0.2)',
                 borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 1
+            }, {
+                label: 'Area 3',
+                data: [51, 33, 44],
+                backgroundColor: 'rgba(255, 206, 86, 0.2)',
+                borderColor: 'rgba(255, 206, 86, 1)',
+                borderWidth: 1
+            }, {
+                label: 'Area 3',
+                data: [61, 15, 25],
+                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                borderColor: 'rgba(75, 192, 192, 1)',
                 borderWidth: 1
             }]
         },
