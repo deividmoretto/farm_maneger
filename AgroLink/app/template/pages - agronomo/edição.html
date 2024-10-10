@@ -10,36 +10,30 @@
     <meta name="keywords" content="au theme template">
 
     <title>Solo - Agrônomo</title>
-    <!-- Incluindo o Bootstrap via CDN -->
-    <link rel="stylesheet" href="/AgroLink/static/css/bootstrap-datetimepicker.min.css">
-    <link rel="stylesheet" href="/AgroLink/static/css/font-face.css">
-    <link rel="stylesheet" href="/AgroLink/static/css/theme.css">
-    <link rel="stylesheet" href="/AgroLink/static/css/accordion.css">
-    <link rel="stylesheet" href="/AgroLink/static/css/animate.css">
-    <link rel="stylesheet" href="/AgroLink/static/css/animsition.min.css">
-    <link rel="stylesheet" href="/AgroLink/static/css/bootstrap-progressbar-3.3.4.min.css">
-    <link rel="stylesheet" href="/AgroLink/static/css/font-awesome.css">
-    <link rel="stylesheet" href="/AgroLink/static/css/font-awesome.min.css">
-    <link rel="stylesheet" href="/AgroLink/static/css/font-awesome.css">
-    <link rel="stylesheet" href="/AgroLink/static/css/fontawesome-all.min.css">
-    <link rel="stylesheet" href="/AgroLink/static/css/fullcalendar.css"> 
-    <link rel="stylesheet" href="/AgroLink/static/css/fullcalendar.min.css">
-    <link rel="stylesheet" href="/AgroLink/static/css/fullcalendar.print.css">
-    <link rel="stylesheet" href="/AgroLink/static/css/fullcalendar.print.min.css">
-    <link rel="stylesheet" href="/AgroLink/static/css/hamburgers.css">
-    <link rel="stylesheet" href="/AgroLink/static/css/hamburgers.min.css">
-    <link rel="stylesheet" href="/AgroLink/static/css/jqvmap.min.css">
-    <link rel="stylesheet" href="/AgroLink/static/css/lightbox.css">
-    <link rel="stylesheet" href="/AgroLink/static/css/material-design-iconic-font.css">
-    <link rel="stylesheet" href="/AgroLink/static/css/material-design-iconic-font.min.css">
-    <link rel="stylesheet" href="/AgroLink/static/css/material-design-iconic-font.css">
-    <link rel="stylesheet" href="/AgroLink/static/css/material-design-iconic-font.min.css">
-    <link rel="stylesheet" href="/AgroLink/static/css/perfect-scrollbar.css">
-    <link rel="stylesheet" href="/AgroLink/static/css/select2.min.css">
-    <link rel="stylesheet" href="/AgroLink/static/css/slick-theme.css">
-    <link rel="stylesheet" href="/AgroLink/static/css/slick.css">
-    <link rel="icon" href="/AgroLink/static/images/3.ico" type="image/3.ico">
-    <link rel="shortcut icon" href="/AgroLink/static/images/3.ico" type="image/3.ico">
+    <!-- Fontfaces CSS-->
+<link href="static/css/font-face.css" rel="stylesheet" media="all">
+<link href="static/css/font-awesome.min.css" rel="stylesheet" media="all">
+<link href="static/css/fontawesome-all.min.css" rel="stylesheet" media="all">
+<link href="static/css/material-design-iconic-font.min.css" rel="stylesheet" media="all">
+
+<!-- Bootstrap CSS-->
+<link href="static/css/bootstrap.min.css" rel="stylesheet" media="all">
+
+<!-- Vendor CSS-->
+<link href="static/css/animsition.min.css" rel="stylesheet" media="all">
+<link href="static/css/bootstrap-progressbar-3.3.4.min.css" rel="stylesheet" media="all">
+<link href="static/css/animate.css" rel="stylesheet" media="all">
+<link href="static/css/hamburgers.min.css" rel="stylesheet" media="all">
+<link href="static/css/slick.css" rel="stylesheet" media="all">
+<link href="static/css/select2.min.css" rel="stylesheet" media="all">
+<link href="static/css/perfect-scrollbar.css" rel="stylesheet" media="all">
+<link rel="icon" href="/AgroLink/static/images/3.ico" type="image/3.ico">
+<link rel="stylesheet" href="/AgroLink/static/css/bootstrap.min.css">
+<link rel="shortcut icon" href="/AgroLink/static/images/3.ico" type="image/3.ico">
+<!-- Main CSS-->
+<link rel="stylesheet" href="/AgroLink/static/css/theme.css">
+   
+   <link rel="icon" href="/AgroLink/static/images/3.ico" type="image/x-icon">
     <!-- Estilos personalizados (opcional) -->
     <style>
         body {
@@ -155,6 +149,15 @@
                     <label for="nutrientes" class="form-label">Aplicação Recomendada:</label>
                     <textarea class="form-control" id="nutrientes" name="nutrientes" rows="4" required>Adicionar fertilizante NPK nas proporções recomendadas.</textarea>
                 </div>
+                 <!-- Botões de ação -->
+                 <div class="card-footer">
+                    <button type="submit" class="btn btn-success btn-sm">
+                        <i class="fa fa-dot-circle-o"></i> Enviar
+                    </button>
+                    <button type="reset" class="btn btn-danger btn-sm">
+                        <i class="fa fa-ban"></i> Resetar
+                    </button>
+                </div>
                 <div class="d-grid">
                     <button type="submit" class="btn btn-primary">Salvar Alterações</button>
                 </div>
@@ -162,10 +165,10 @@
         </div>
     </div>
 
-    <!-- Rodapé -->
-    <footer class="text-center mt-4 container-fluid" style="position: fixed; bottom: 0; width: calc(100% - 500px);">
-        <p>&copy; 2024 MetaCore. Todos os direitos reservados.</p>
-    </footer>
+   <!-- Footer -->
+   <footer class="text-center mt-4 container-fluid" style= "bottom: 0; width: calc(100% - 500px); margin-left: 380px; ">
+    <p>&copy; 2024 MetaCore. Todos os direitos reservados.</p>
+</footer>
 
     <!-- Incluindo o JavaScript do Bootstrap via CDN -->
     <script src=""></script>
