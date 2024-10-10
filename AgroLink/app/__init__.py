@@ -2,14 +2,15 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from flask_mail import Mail, Message
-#from flask_bootstrap import Bootstrap
+from flask_bootstrap import Bootstrap
+
 
 # Instâncias globais
 db = SQLAlchemy()  
 login_manager = LoginManager()
 
 def create_app():
-    app = Flask(__name__, template_folder="app/template", static_folder="app/static")
+    app = Flask(__name__, template_folder="template", static_folder="../static")
 
     # Configurações de banco de dados
     app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:incorreta@localhost/AgroLink'
