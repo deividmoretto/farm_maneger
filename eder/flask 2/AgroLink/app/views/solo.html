@@ -1,0 +1,102 @@
+{% extends "base_sistema.html" %}
+{% block subtitulo %} Usuários {% endblock%}
+    {% block conteudo %}
+    <div class="container mt-5" style="margin-left: 500px;">
+        <div class="card">
+            <div class="card-body">
+                <h3 class="text-center">Informações do Solo</h3>
+                <form action="" method="post" class="form-horizontal">
+                    <!-- Área -->
+                    <div class="row form-group mb-3">
+                        <div class="col-md-12">
+                            <label for="area-solo" class="form-label">Área (Hectáres):</label>
+                            <input type="number" id="input1-group2" name="input1-group2" placeholder="Ex: 1,2,3" class="form-control">
+                        </div>
+                    </div>
+
+                    <!-- Tipo de Solo -->
+                    <div class="row form-group mb-3">
+                        <div class="col-md-12">
+                            <label for="tipo-solo" class="form-label">Tipo de solo:</label>
+                            <input type="text" id="input2-group2" name="input2-group2" placeholder="Ex: Arenoso, Argiloso, Siltoso" class="form-control">
+                        </div>
+                    </div>
+
+                    <!-- PH do Solo -->
+                    <div class="row form-group mb-3">
+                        <div class="col-md-12">
+                            <label for="ph-solo" class="form-label">PH do solo:</label>
+                            <input type="number" id="input3-group3" name="input3-group3" placeholder="Ex: 6.5" class="form-control">
+                        </div>
+                    </div>
+
+                    <!-- Matéria Orgânica -->
+                    <div class="row form-group mb-3">
+                        <div class="col-md-12">
+                            <label for="materia-organica" class="form-label">Matéria Orgânica (%):</label>
+                            <input type="number" id="input4-group4" name="input4-group4" placeholder="Ex: 3.2%" class="form-control">
+                        </div>
+                    </div>
+
+                    <!-- Capacidade de Troca Catiônica -->
+                    <div class="row form-group mb-3">
+                        <div class="col-md-12">
+                            <label for="capacidade-troca-cationica" class="form-label">Capacidade de Troca Catiônica (%):</label>
+                            <input type="number" id="input5-group5" name="input5-group5" placeholder="Ex: 12.3%" class="form-control">
+                        </div>
+                    </div>
+
+                    <!-- Nível de Nitrogênio -->
+                    <div class="row form-group mb-3">
+                        <div class="col-md-12">
+                            <label for="nivel-nitrogenio-solo" class="form-label">Nível de Nitrogênio (%):</label>
+                            <input type="number" id="input6-group6" name="input6-group6" placeholder="Ex: 5.3%" class="form-control">
+                        </div>
+                    </div>
+
+                    <!-- Nível de Fósforo -->
+                    <div class="row form-group mb-3">
+                        <div class="col-md-12">
+                            <label for="nivel-fosforo-solo" class="form-label">Nível de Fósforo (%):</label>
+                            <input type="number" id="input7-group7" name="input7-group7" placeholder="Ex: 4.5%" class="form-control">
+                        </div>
+                    </div>
+
+                    <!-- Nível de Potássio -->
+                    <div class="row form-group mb-3">
+                        <div class="col-md-12">
+                            <label for="nivel-potassio-solo" class="form-label">Nível de Potássio (%):</label>
+                            <input type="number" id="input8-group8" name="input8-group8" placeholder="Ex: 6.1%" class="form-control">
+                        </div>
+                    </div>
+
+                    <!-- Aplicação Recomendada -->
+                    <div class="mb-3">
+                        <label for="nutrientes" class="form-label">Aplicação recomendada:</label>
+                        <textarea class="form-control" id="nutrientes" name="nutrientes" rows="4" placeholder="Descrição da recomendação" required></textarea>
+                    </div>
+
+                    <!-- Botões de ação -->
+                    <div class="card-footer">
+                        <button type="submit" class="btn btn-success btn-sm">
+                            <i class="fa fa-dot-circle-o"></i> Enviar
+                        </button>
+                        <button type="reset" class="btn btn-danger btn-sm">
+                            <i class="fa fa-ban"></i> Resetar
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Botão para Salvar Informações -->
+        <div class="d-grid mt-4">
+            <button type="submit" class="btn btn-primary">Salvar Informações</button>
+        </div>
+
+        <!-- Botão para redirecionar para a página de edição -->
+        <div class="d-grid mt-4">
+            <button class="btn btn-secondary" onclick="window.location.href='https://bit.ly/PaginaEdicaoAgronomo'">Editar Informações Existentes</button>
+        </div>
+    </div>
+    {% endblock %}
