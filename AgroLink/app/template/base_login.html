@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="description" content="">
+        <meta name="author" content="">
+        <title>{% block subtitulo %} {% endblock%}</title>        
+        <!-- Vendors styles-->
+        <link href="{{url_for('static', filename='css/font-face.css')}}" rel="stylesheet" media="all">
+        <link href="{{url_for('static', filename='css/font-awesome.min.css')}}" rel="stylesheet" media="all">
+        <link href="{{url_for('static', filename='css/fontawesome-all.min.css')}}" rel="stylesheet" media="all">
+        <link href="{{url_for('static', filename='css/material-design-iconic-font.min.css')}}" rel="stylesheet" media="all">
+    
+        <!-- Bootstrap CSS-->
+        <link href="static/css/bootstrap.min.css" rel="stylesheet" media="all">
+    
+        <!-- Vendor CSS-->
+        <link href="{{url_for('static', filename='css/animsition.min.css')}}" rel="stylesheet" media="all">
+        <link href="{{url_for('static', filename='css/bootstrap-progressbar-3.3.4.min.css')}}" rel="stylesheet" media="all">
+        <link href="{{url_for('static', filename='css/animate.css')}}" rel="stylesheet" media="all">
+        <link href="{{url_for('static', filename='css/hamburgers.min.css')}}" rel="stylesheet" media="all">
+        <link href="{{url_for('static', filename='css/slick.css')}}" rel="stylesheet" media="all">
+        <link href="{{url_for('static', filename='css/select2.min.css')}}" rel="stylesheet" media="all">
+        <link href="{{url_for('static', filename='css/perfect-scrollbar.css')}}" rel="stylesheet" media="all">
+        <link rel="icon" href="/AgroLink/static/images/3.ico" type="image/3.ico">
+        <link rel="shortcut icon" href="/AgroLink/static/images/3.ico" type="image/3.ico">
+        <!-- Main CSS-->
+        <link rel="stylesheet" href="/AgroLink/static/css/theme.css">
+        <!-- Global site tag (gtag.js) - Google Analytics-->        
+        <script language="javascript">
+	        function acessa(link){
+			    window.location.href=link;
+			    //window.open(link);		
+		    }     
+        </script> 
+    </head>   
+    <body>
+        {% block conteudo %}
+
+        
+        {% endblock %}
+        <script src="{{url_for('static', filename='js2/jquery-3.2.1.min.js}}"></script>
+        <!-- Bootstrap JS-->
+        <script src="{{url_for('static', filename='js2/bootstrap-4.1/popper.min.js')}}"></script>
+        <script src="{{url_for('static', filename='js2/bootstrap-4.1/bootstrap.min.js')}}"></script>
+        <!-- Vendor JS       -->
+        <script src="{{url_for('static', filename='js2/slick/slick.min.js')}}"></script>
+        <script src="{{url_for('static', filename='js2/wow/wow.min.js')}}"></script>
+        <script src="{{url_for('static', filename='js2/animsition/animsition.min.js')}}"></script>
+        <script src="{{url_for('static', filename='js2/bootstrap-progressbar/bootstrap-progressbar.min.js')}}"></script>
+        <script src="{{url_for('static', filename='js2/counter-up/jquery.waypoints.min.js')}}"></script>
+        <script src="{{url_for('static', filename='js2/counter-up/jquery.counterup.min.js')}}"></script>
+        <script src="{{url_for('static', filename='js2/circle-progress/circle-progress.min.js')}}"></script>
+        <script src="{{url_for('static', filename='js2/perfect-scrollbar/perfect-scrollbar.js')}}"></script>
+        <script src="{{url_for('static', filename='js2/chartjs/Chart.bundle.min.js')}}"></script>
+        <script src="{{url_for('static', filename='js2/select2/select2.min.js')}}"></script>
+    
+        <!-- Main JS-->
+        <script src="{{url_for('static', filename='js2/main.js')}}"></script>
+    </body>
+
+</html>
