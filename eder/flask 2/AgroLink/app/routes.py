@@ -115,3 +115,8 @@ def init_app(app):
             return redirect(url_for("cad_solo"))
 
         return render_template("cad_solo.html")
+    
+    @app.route("/solo")
+    @login_required
+    def solo():        
+        return render_template("solo.html", solos=db.session.execute(db.select(informacao_solo).order_by(informacao_solo.id)).scalars())
