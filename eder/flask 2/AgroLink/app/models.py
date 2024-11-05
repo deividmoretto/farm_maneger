@@ -47,5 +47,5 @@ class informacao_solo(db.Model):
             'nivel_nitrogenio':self.nivel_nitrogenio,
             'nivel_fosforo':self.nivel_fosforo,
             'nivel_potassio':self.nivel_potassio,
-            'aplicacao_recomentada':self.aplicacao_recomendada                            
+            'aplicacao_recomendada':self.aplicacao_recomendada                            
         }    
