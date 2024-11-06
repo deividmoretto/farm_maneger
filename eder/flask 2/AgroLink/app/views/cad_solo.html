@@ -1,5 +1,5 @@
 {% extends "base_sistema.html" %}
-{% block subtitulo %} Usuarios {% endblock%}
+{% block subtitulo %} Solo {% endblock%}
     {% block conteudo %}
     <section class="content">
       <div class="row">
@@ -24,11 +24,10 @@
                         {% endfor %}
                      {% endif %}
                   {% endwith %}
-              </div>              
-              
+              </div>            
               <div class="col-md-4">
-                <label class="form-label">*ID</label>
-                <input class="form-control" type="text" name="id" id="id">
+                <label class="form-label" >Area</label>
+                <input class="form-control" type="text" name="area">
               </div>
               <div class="col-md-4">
                 <label class="form-label" >Tipo Solo</label>
@@ -61,10 +60,6 @@
               <div class="col-md-4">
                 <label class="form-label">Aplicação recomendada</label>
                 <input class="form-control" type="text" name="aplicacao_recomendada">
-              </div>
-              <div class="col-md-4">
-                <label class="form-label">Data/label>
-                <input class="form-control" type="text" name="data">
               </div>
               <div class="col-md-12">
                 <br>

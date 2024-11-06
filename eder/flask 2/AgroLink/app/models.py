@@ -26,15 +26,15 @@ class usuario(db.Model, UserMixin):
 class informacao_solo(db.Model):
     __tablename__ = "informacao_solo"
     id = db.Column(db.Integer, primary_key=True)
-    area = db.Column(db.Float, nullable=False)  # Ex: 1.2 hectares
-    tipo_solo = db.Column(db.String(255), nullable=False)  # Ex: Arenoso, Argiloso, Siltoso
-    ph_solo = db.Column(db.Float, nullable=False)  # Ex: 6.5
-    materia_organica = db.Column(db.Float, nullable=False)  # Ex: 3.2%
-    ctc = db.Column(db.Float, nullable=False)  # Capacidade de Troca Catiônica (%)
-    nivel_nitrogenio = db.Column(db.Float, nullable=False)  # Ex: 5.3%
-    nivel_fosforo = db.Column(db.Float, nullable=False)  # Ex: 4.5%
-    nivel_potassio = db.Column(db.Float, nullable=False)  # Nível de Potássio
-    aplicacao_recomendada = db.Column(db.Text, nullable=False)  # Instruções para o produtor
+    area = db.Column(db.Float, nullable=True)  # Ex: 1.2 hectares
+    tipo_solo = db.Column(db.String(255), nullable=True)  # Ex: Arenoso, Argiloso, Siltoso
+    ph_solo = db.Column(db.Float, nullable=True)  # Ex: 6.5
+    materia_organica = db.Column(db.Float, nullable=True)  # Ex: 3.2%
+    ctc = db.Column(db.Float, nullable=True)  # Capacidade de Troca Catiônica (%)
+    nivel_nitrogenio = db.Column(db.Float, nullable=True)  # Ex: 5.3%
+    nivel_fosforo = db.Column(db.Float, nullable=True)  # Ex: 4.5%
+    nivel_potassio = db.Column(db.Float, nullable=True)  # Nível de Potássio
+    aplicacao_recomendada = db.Column(db.Text, nullable=True)  # Instruções para o produtor
     data = db.Column(db.DateTime,  default=db.func.current_timestamp(), onupdate=db.func.current_timestamp()) 
     def json(self):
         return{

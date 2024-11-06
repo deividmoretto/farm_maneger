@@ -94,12 +94,16 @@ def init_app(app):
             return redirect(url_for("inicio"))
         return render_template("atualiza_user.html", usua=usua)
     
+    @app.route("/solo")
+    @login_required
+    def solo():        
+        return render_template("solo.html", solos=db.session.execute(db.select(informacao_solo).order_by(informacao_solo.id)).scalars())
+    
     # Cadastro de solo
     @app.route("/cad_solo", methods=["GET", "POST"])
     def cad_solo():
         if request.method == "POST":
             solo = informacao_solo()
-            solo.usuario_id = request.form["usuario_id"]
             solo.area = request.form["area"]
             solo.tipo_solo = request.form["tipo_solo"]
             solo.ph_solo = request.form["ph_solo"]
@@ -112,11 +116,7 @@ def init_app(app):
             db.session.add(solo)
             db.session.commit()
             flash("Informações de solo cadastradas com sucesso!")
-            return redirect(url_for("cad_solo"))
-
+            return redirect(url_for("solo"))
         return render_template("cad_solo.html")
     
-    @app.route("/solo")
-    @login_required
-    def solo():        
-        return render_template("solo.html", solos=db.session.execute(db.select(informacao_solo).order_by(informacao_solo.id)).scalars())
+    
