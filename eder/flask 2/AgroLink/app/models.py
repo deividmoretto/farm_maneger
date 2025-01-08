@@ -35,7 +35,7 @@ class informacao_solo(db.Model):
     nivel_fosforo = db.Column(db.Float, nullable=True)  # Ex: 4.5%
     nivel_potassio = db.Column(db.Float, nullable=True)  # Nível de Potássio
     aplicacao_recomendada = db.Column(db.Text, nullable=True)  # Instruções para o produtor
-    data = db.Column(db.DateTime,  default=db.func.current_timestamp(), onupdate=db.func.current_timestamp()) 
+    #data = db.Column(db.DateTime,  default=db.func.current_timestamp(), onupdate=db.func.current_timestamp()) 
     def json(self):
         return{
             'id':self.id,
