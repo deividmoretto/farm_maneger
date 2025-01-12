@@ -68,7 +68,7 @@ def init_app(app):
             db.session.commit()
                             
             flash("Usuário criado com sucesso!")       
-            return redirect(url_for("inicio"))
+            return redirect(url_for("index"))
         return render_template("cad_user.html")
     
     # Atualizar informações de usuário
