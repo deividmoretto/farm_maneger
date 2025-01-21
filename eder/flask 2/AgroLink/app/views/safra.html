@@ -1,0 +1,116 @@
+{% extends "base_sistema.html" %}
+{% block subtitulo %} Gestão de Safras {% endblock %}
+{% block conteudo %}
+<section class="content">
+  <!-- Título e botão de cadastro -->
+  <div class="row">
+    <div class="col-md-12">
+      <div class="box">
+        <div class="box-header with-border">
+          <h3 class="box-title">Resumo das Safras</h3>
+          <a href="{{ url_for('cad_safra') }}" class="btn btn-primary pull-right">
+            <i class="fa fa-plus"></i> Cadastrar Nova Safra
+          </a>
+        </div>
+        <div class="box-body">
+          <p>Acompanhe o desempenho das suas safras com dados detalhados, gráficos de produtividade e previsões.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tabela de Safras -->
+  <div class="row">
+    <div class="col-md-12">
+      <div class="box box-primary">
+        <div class="box-header with-border">
+          <h3 class="box-title">Safras Cadastradas</h3>
+        </div>
+        <div class="box-body">
+          <table class="table table-bordered table-hover">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Nome</th>
+                <th>Cultura</th>
+                <th>Área Total (ha)</th>
+                <th>Previsão de Plantio</th>
+                <th>Previsão de Colheita</th>
+                <th>Produtividade Estimada (kg/ha)</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for safra in safras %}
+              <tr>
+                <td>{{ safra.id }}</td>
+                <td>{{ safra.nome }}</td>
+                <td>{{ safra.cultura }}</td>
+                <td>{{ safra.area }}</td>
+                <td>{{ safra.previsao_plantio }}</td>
+                <td>{{ safra.previsao_colheita }}</td>
+                <td>{{ safra.produtividade_estimada }}</td>
+              </tr>
+              {% else %}
+              <tr>
+                <td colspan="7" class="text-center">Nenhuma safra cadastrada</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Gráficos -->
+  <div class="row">
+    <div class="col-md-12">
+      <div class="box box-info">
+        <div class="box-header with-border">
+          <h3 class="box-title">Gráficos de Desempenho</h3>
+        </div>
+        <div class="box-body">
+          <canvas id="grafico-produtividade"></canvas>
+          <canvas id="grafico-lucro"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Script para os gráficos -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  // Gráfico de Produtividade
+  const ctxProdutividade = document.getElementById('grafico-produtividade').getContext('2d');
+  const graficoProdutividade = new Chart(ctxProdutividade, {
+    type: 'line',
+    data: {
+      labels: {{ meses | tojson }},
+      datasets: [{
+        label: 'Produtividade (kg/ha)',
+        data: {{ produtividade_mensal | tojson }},
+        borderColor: 'rgba(75, 192, 192, 1)',
+        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+        borderWidth: 2
+      }]
+    }
+  });
+
+  // Gráfico de Lucro
+  const ctxLucro = document.getElementById('grafico-lucro').getContext('2d');
+  const graficoLucro = new Chart(ctxLucro, {
+    type: 'bar',
+    data: {
+      labels: {{ meses | tojson }},
+      datasets: [{
+        label: 'Lucro Mensal (R$)',
+        data: {{ lucro_mensal | tojson }},
+        backgroundColor: 'rgba(54, 162, 235, 0.2)',
+        borderColor: 'rgba(54, 162, 235, 1)',
+        borderWidth: 2
+      }]
+    }
+  });
+</script>
+{% endblock %}
