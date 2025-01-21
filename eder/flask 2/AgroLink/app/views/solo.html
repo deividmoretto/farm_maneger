@@ -1,5 +1,3 @@
-
-  
 {% extends "base_sistema.html" %}
 {% block subtitulo %} Solo {% endblock%}
 {% block conteudo %}
@@ -22,50 +20,48 @@
           {% endwith %}
         </div>      
           <div class="box-body">
-            <table id="example" class="display" style="width:100%">
-              <thead>
+            <div class="table-responsive">
+              <table id="example" class="display" style="width:100%">
+                <thead>
                   <tr>
-                    <th scope="col">Id</th>
-                    <th scope="col">Area</th>
-                    <th scope="col">Tipo Solo</th>
-                    <th scope="col">PH Solo</th>
-                    <th scope="col">Materia organica</th>
-                    <th scope="col">CTC</th>
-                    <th scope="col">Nitrogenio</th>
-                    <th scope="col">Fosforo</th>
-                    <th scope="col">Potassio</th>
-                    <th scope="col">Recomendação
-                    <th scope="col">Data</th>
-                    <th scope="col">Alterar</th>                     
-                    <th scope="col">Excluir</th>
+                      <th scope="col">Id</th>
+                      <th scope="col">Area</th>
+                      <th scope="col">Tipo Solo</th>
+                      <th scope="col">PH Solo</th>
+                      <th scope="col">Materia organica</th>
+                      <th scope="col">CTC</th>
+                      <th scope="col">Nitrogenio</th>
+                      <th scope="col">Fosforo</th>
+                      <th scope="col">Potassio</th>
+                      <th scope="col">Recomendação</th>
+                      <th scope="col">Alterar</th>
+                      <th scope="col">Excluir</th>
                   </tr>
               </thead>
               <tbody>
-                {% for sol in solos %}
+                  {% for sol in solos %}
                   <tr>
-                    <td>{{sol.id}}</td>
-                    <td>{{sol.area}}</td>
-                    <td>{{sol.tipo_solo}}</td>
-                    <td>{{sol.ph_solo}}</td>
-                    <td>{{sol.materia_organica}}</td>
-                    <td>{{sol.ctc}}</td>
-                    <td>{{sol.nivel_nitrogenio}}</td>
-                    <td>{{sol.nivel_fosforo}}</td>
-                    <td>{{sol.nivel_potassio}}</td>
-                    <td>{{sol.aplicacao_recomendada}}</td>
-                    <td>{{sol.data}}</td>
-                    <td><a href="()"><span class="label label-success"><i class="fa-solid fa-pencil"></i> Alterar</span></a></td>
-                    <td><a href="()"><span class="label label-danger"><i class="fa-solid fa-eraser"></i> Excluir</span></a></td>
+                      <td>{{ sol.id }}</td>
+                      <td>{{ sol.area }}</td>
+                      <td>{{ sol.tipo_solo }}</td>
+                      <td>{{ sol.ph_solo }}</td>
+                      <td>{{ sol.materia_organica }}</td>
+                      <td>{{ sol.ctc }}</td>
+                      <td>{{ sol.nivel_nitrogenio }}</td>
+                      <td>{{ sol.nivel_fosforo }}</td>
+                      <td>{{ sol.nivel_potassio }}</td>
+                      <td>{{ sol.aplicacao_recomendada }}</td>
+                      <td><a href="{{ url_for('alterar_solo', id=sol.id) }}" title="Alterar solo"><span class="label label-success"><i class="fa-solid fa-pencil"></i> Alterar</span></a></td>
+                      <td><a href="{{ url_for('excluir_solo', id=sol.id) }}" title="Excluir solo" onclick="return confirm('Tem certeza que deseja excluir este registro?');"><span class="label label-danger"><i class="fa-solid fa-eraser"></i> Excluir</span></a></td>
                   </tr>
-                {% endfor %}
-               
-                           
+                  {% endfor %}
               </tbody>
-          </table>
-          <a href="{{url_for('cad_solo')}}" class="btn btn-primary btn-lg active" role="button" aria-pressed="true">Inserir Solo</a>
-       </div>      
-    </div>        
+              </table>
+            </div>
+            <a href="{{url_for('cad_solo')}}" class="btn btn-primary btn-lg active" role="button" aria-pressed="true">Inserir Solo</a>
+          </div>      
+      </div>        
+    </div>
   </div>
 </section>
 {% endblock %}
-     

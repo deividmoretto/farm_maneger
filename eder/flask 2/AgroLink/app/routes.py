@@ -15,7 +15,7 @@ def init_app(app):
         form = LoginForm()
 
         if form.validate_on_submit():
-            user = usuario.query.filter_by(email=form.email.data).first()
+            user = usuario.query.filter_by(email=form.email).first()  # Alteração aqui
             
             if not user:
                 flash("Email do usuário incorreto, por favor verifique!")
@@ -118,5 +118,32 @@ def init_app(app):
             flash("Informações de solo cadastradas com sucesso!")
             return redirect(url_for("solo"))
         return render_template("cad_solo.html")
-    
-    
+
+    # Atualizar informações de solo
+    @app.route("/alterar_solo/<int:id>", methods=["GET", "POST"])
+    def alterar_solo(id):
+        solo = informacao_solo.query.get_or_404(id)  # Obter o solo pelo ID ou retornar erro 404
+        if request.method == "POST":
+            # Atualizar os valores com os dados do formulário
+            solo.area = request.form["area"]
+            solo.tipo_solo = request.form["tipo_solo"]
+            solo.ph_solo = request.form["ph_solo"]
+            solo.materia_organica = request.form["materia_organica"]
+            solo.ctc = request.form["ctc"]
+            solo.nivel_nitrogenio = request.form["nivel_nitrogenio"]
+            solo.nivel_fosforo = request.form["nivel_fosforo"]
+            solo.nivel_potassio = request.form["nivel_potassio"]
+            solo.aplicacao_recomendada = request.form["aplicacao_recomendada"]
+            db.session.commit()  # Salvar alterações no banco de dados
+            flash("Informações de solo atualizadas com sucesso!")
+            return redirect(url_for("solo"))  # Redirecionar para a página de listagem
+        return render_template("alterar_solo.html", solo=solo)
+
+    # Excluir informações de solo
+    @app.route("/excluir_solo/<int:id>", methods=["POST"])
+    def excluir_solo(id):
+        solo = informacao_solo.query.get_or_404(id)  # Obter o solo pelo ID ou retornar erro 404
+        db.session.delete(solo)  # Excluir o registro do banco de dados
+        db.session.commit()  # Salvar alterações no banco de dados
+        flash("Informações de solo excluídas com sucesso!")
+        return redirect(url_for("solo"))  # Redirecionar para a página de listagem
