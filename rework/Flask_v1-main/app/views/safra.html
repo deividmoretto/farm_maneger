@@ -1,0 +1,15 @@
+{% extends "base_sistema.html" %}
+{% block subtitulo %} Safra {% endblock %}
+{% block conteudo %}
+<section class="content">
+  <h3>Gerenciamento de Safra</h3>
+  <form method="POST" action="{{ url_for('adicionar_safra') }}">
+    <label for="cultura">Tipo de Cultura:</label>
+    <input type="text" id="cultura" name="cultura" required>
+    <label for="plantio">Data de Plantio:</label>
+    <input type="date" id="plantio" name="plantio" required>
+    <button type="submit">Adicionar</button>
+  </form>
+  <!-- Exibir lista de safras -->
+</section>
+{% endblock %} 
