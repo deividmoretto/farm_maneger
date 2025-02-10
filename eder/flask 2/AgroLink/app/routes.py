@@ -1,5 +1,6 @@
 from flask import render_template, request, redirect, url_for, flash, jsonify
 from flask_login import login_required, login_user, logout_user
+from psutil import users
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import timedelta
 from app import db
@@ -13,26 +14,78 @@ def init_app(app):
     def index():
         form = LoginForm()
         if form.validate_on_submit():
-            user = usuario.query.filter_by(email=form.email).first()
+
+            # Certifique-se de que 'usuario' está sendo atribuído corretamente
+            user = usuario.query.filter_by(email=form.email.data).first()
             if not user or not check_password_hash(user.senha, form.senha.data):
                 flash("Email ou senha incorretos!")
                 return redirect(url_for("index"))
+            
+             # Use a variável 'usuario' corretamente
             login_user(user, remember=form.remember.data, duration=timedelta(days=7))
             return redirect(url_for("inicio"))
+        
         return render_template("index.html", form=form)
+    
+    @app.route("/cad_user", methods=["GET", "POST"])
+    @login_required
+    def cad_user():
+        if request.method == "POST":
+            nome = request.form["nome"]
+            email = request.form["email"]
+            senha = generate_password_hash(request.form["senha"])
+            agro = request.form.get("agro", False)
+            prod = request.form.get("prod", False)
+
+            novo_usuario = usuario(nome=nome, email=email, senha=senha, agro=agro, prod=prod)
+            db.session.add(novo_usuario)
+            db.session.commit()
+            flash("Usuário cadastrado com sucesso!")
+            return redirect(url_for("inicio"))
+       
+        return render_template("cad_user.html")
+    
+    # Rota para atualizar usuário
+    @app.route("/atualiza_user/<int:id>", methods=["GET", "POST"])
+    @login_required
+    def atualiza_user(id):
+        user = usuario.query.get_or_404(id)
+        if request.method == "POST":
+            user.nome = request.form["nome"]
+            user.email = request.form["email"]
+            user.agro = request.form["agro"]
+            user.prod = request.form["prod"]
+        
+            if request.form["senha"]:
+                user.senha = generate_password_hash(request.form["senha"])
+        
+            db.session.commit()
+            flash("Usuário atualizado com sucesso!")
+            return redirect(url_for("inicio"))
+    
+        return render_template("atualiza_user.html", user=user)
+    
+    @app.route("/excluir_user/<int:id>", methods=["POST"])
+    @login_required
+    def excluir_user(id):
+        user = usuario.query.get_or_404(id)
+        db.session.delete(user)
+        db.session.commit()
+        flash("Usuário excluído com sucesso!")
+        return redirect(url_for("inicio"))
+
+    # Rota para a página inicial
+    @app.route("/inicio")
+    @login_required
+    def inicio():
+        usuarios = usuario.query.all()
+        return render_template("inicio.html", usuarios=usuarios)    
 
     # Rota de logout
     @app.route("/logout")
     def logout():
         logout_user()
         return redirect(url_for("index"))
-
-    # Página inicial após login
-    @app.route("/inicio")
-    @login_required
-    def inicio():
-        usuarios = usuario.query.all()
-        return render_template("inicio.html", usuarios=usuarios)
 
     # Página de gestão de solo
     @app.route("/solo")

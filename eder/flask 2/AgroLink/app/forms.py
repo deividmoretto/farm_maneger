@@ -1,15 +1,9 @@
-from flask_wtf import FlaskForm 
-from wtforms.fields import StringField, EmailField, PasswordField, BooleanField, SubmitField, SelectField
-from wtforms.validators import Length, DataRequired
-
-
+from flask_wtf import FlaskForm
+from wtforms import EmailField, PasswordField, BooleanField, SubmitField
+from wtforms.validators import DataRequired, Length
 
 class LoginForm(FlaskForm):
-    email = EmailField("Email")
-    senha = PasswordField("Senha", validators=[
-        Length(2, 16, "O campo deve conter entre 3 a 16 caracteres.")
-    ])
+    email = EmailField("Email", validators=[DataRequired()])
+    senha = PasswordField("Senha", validators=[DataRequired(), Length(min=3, max=16)])
     remember = BooleanField("Permanecer Conectado")
     submit = SubmitField("Entrar")
-
-
