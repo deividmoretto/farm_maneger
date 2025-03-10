@@ -94,8 +94,38 @@ def init_app(app):
         solos = informacao_solo.query.all()
         return render_template("solo.html", solos=solos)
 
-    # Cadastro de solo
+    @app.route("/alterar_solo/<int:id>", methods=["GET", "POST"])
+    @login_required
+    def alterar_solo(id):
+        solo = informacao_solo.query.get_or_404(id)
+        if request.method == "POST":
+            solo.area = request.form["area"]
+            solo.tipo_solo = request.form["tipo_solo"]
+            solo.ph_solo = request.form["ph_solo"]
+            solo.materia_organica = request.form["materia_organica"]
+            solo.ctc = request.form["ctc"]
+            solo.nivel_nitrogenio = request.form["nivel_nitrogenio"]
+            solo.nivel_fosforo = request.form["nivel_fosforo"]
+            solo.nivel_potassio = request.form["nivel_potassio"]
+            solo.aplicacao_recomendada = request.form["aplicacao_recomendada"]
+            
+            db.session.commit()
+            flash("Informações do solo atualizadas com sucesso!")
+            return redirect(url_for("solo"))
+        
+        return render_template("alterar_solo.html", solo=solo)
+
+    @app.route("/excluir_solo/<int:id>")
+    @login_required
+    def excluir_solo(id):
+        solo = informacao_solo.query.get_or_404(id)
+        db.session.delete(solo)
+        db.session.commit()
+        flash("Registro de solo excluído com sucesso!")
+        return redirect(url_for("solo"))
+
     @app.route("/cad_solo", methods=["GET", "POST"])
+    @login_required
     def cad_solo():
         if request.method == "POST":
             solo = informacao_solo(
@@ -107,7 +137,7 @@ def init_app(app):
                 nivel_nitrogenio=request.form["nivel_nitrogenio"],
                 nivel_fosforo=request.form["nivel_fosforo"],
                 nivel_potassio=request.form["nivel_potassio"],
-                aplicacao_recomendada=request.form["aplicacao_recomendada"],
+                aplicacao_recomendada=request.form["aplicacao_recomendada"]
             )
             db.session.add(solo)
             db.session.commit()
