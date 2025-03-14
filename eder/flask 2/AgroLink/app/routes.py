@@ -1,12 +1,24 @@
-from flask import render_template, request, redirect, url_for, flash, jsonify
-from flask_login import login_required, login_user, logout_user
+from flask import render_template, request, redirect, url_for, flash, jsonify, abort
+from flask_login import login_required, login_user, logout_user, current_user
 from psutil import users
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import timedelta, datetime
 from app import db
 from app.models import usuario, informacao_solo, Safra
 from app.forms import LoginForm
+import os
+from functools import wraps
 
+# Decorator para verificar se o usuário está ativo
+def require_active_user(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if not current_user.ativo:
+            flash("Sua conta está desativada. Entre em contato com o administrador.", "danger")
+            logout_user()
+            return redirect(url_for("index"))
+        return f(*args, **kwargs)
+    return decorated_function
 
 def init_app(app):
     # Rota de login
@@ -14,34 +26,46 @@ def init_app(app):
     def index():
         form = LoginForm()
         if form.validate_on_submit():
-
-            # Certifique-se de que 'usuario' está sendo atribuído corretamente
+            # Busca o usuário pelo email
             user = usuario.query.filter_by(email=form.email.data).first()
+            
+            # Verifica se o usuário existe e a senha está correta
             if not user or not check_password_hash(user.senha, form.senha.data):
-                flash("Email ou senha incorretos!")
+                flash("Email ou senha incorretos!", "danger")
                 return redirect(url_for("index"))
             
-             # Use a variável 'usuario' corretamente
+            # Verifica se o usuário está ativo
+            if not user.ativo:
+                flash("Sua conta está desativada. Entre em contato com o administrador.", "danger")
+                return redirect(url_for("index"))
+            
+            # Atualiza o último acesso
+            user.atualizar_ultimo_acesso()
+            
+            # Faz login do usuário
             login_user(user, remember=form.remember.data, duration=timedelta(days=7))
+            
+            # Redireciona para a página inicial
             return redirect(url_for("inicio"))
         
         return render_template("index.html", form=form)
     
     @app.route("/resumo")
     @login_required
+    @require_active_user
     def resumo():
-                # Obtém totais
+        # Obtém totais
         total_usuarios = usuario.query.count()
-        total_solos = informacao_solo.query.count()
-        total_safras = Safra.query.count()
+        total_solos = informacao_solo.query.filter_by(usuario_id=current_user.id).count()
+        total_safras = Safra.query.filter_by(usuario_id=current_user.id).count()
 
-        # Obtém as 5 últimas análises de solo
-        ultimos_solos = informacao_solo.query.order_by(
+        # Obtém as 5 últimas análises de solo do usuário atual
+        ultimos_solos = informacao_solo.query.filter_by(usuario_id=current_user.id).order_by(
             informacao_solo.id.desc()
         ).limit(5).all()
 
-        # Obtém as próximas 5 safras
-        proximas_safras = Safra.query.order_by(
+        # Obtém as próximas 5 safras do usuário atual
+        proximas_safras = Safra.query.filter_by(usuario_id=current_user.id).order_by(
             Safra.id.desc()
         ).limit(5).all()
 
