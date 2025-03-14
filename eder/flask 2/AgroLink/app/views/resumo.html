@@ -1,0 +1,111 @@
+{% extends "base_sistema.html" %}
+{% block subtitulo %} Resumo Geral {% endblock %}
+{% block conteudo %}
+<section class="content">
+  <!-- Informações Gerais -->
+  <div class="row">
+    <div class="col-lg-3 col-xs-6">
+      <div class="small-box bg-aqua">
+        <div class="inner">
+          <h3>{{total_usuarios}}</h3>
+          <p>Usuários Cadastrados</p>
+        </div>
+        <div class="icon">
+          <i class="fa-solid fa-users"></i>
+        </div>
+        <a href="{{url_for('inicio')}}" class="small-box-footer">Mais informações <i class="fa fa-arrow-circle-right"></i></a>
+      </div>
+    </div>
+
+    <div class="col-lg-3 col-xs-6">
+      <div class="small-box bg-green">
+        <div class="inner">
+          <h3>{{total_solos}}</h3>
+          <p>Análises de Solo</p>
+        </div>
+        <div class="icon">
+          <i class="fa-solid fa-leaf"></i>
+        </div>
+        <a href="{{url_for('solo')}}" class="small-box-footer">Mais informações <i class="fa fa-arrow-circle-right"></i></a>
+      </div>
+    </div>
+
+    <div class="col-lg-3 col-xs-6">
+      <div class="small-box bg-yellow">
+        <div class="inner">
+          <h3>{{total_safras}}</h3>
+          <p>Safras Registradas</p>
+        </div>
+        <div class="icon">
+          <i class="fa-solid fa-wheat-awn"></i>
+        </div>
+        <a href="{{url_for('safra')}}" class="small-box-footer">Mais informações <i class="fa fa-arrow-circle-right"></i></a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Últimas Análises de Solo -->
+  <div class="row">
+    <div class="col-md-6">
+      <div class="box box-primary">
+        <div class="box-header with-border">
+          <h3 class="box-title">Últimas Análises de Solo</h3>
+        </div>
+        <div class="box-body">
+          <table class="table table-bordered">
+            <thead>
+              <tr>
+                <th>Área</th>
+                <th>Tipo de Solo</th>
+                <th>pH</th>
+                <th>CTC</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for solo in ultimos_solos %}
+              <tr>
+                <td>{{ solo.area }}</td>
+                <td>{{ solo.tipo_solo }}</td>
+                <td>{{ solo.ph_solo }}</td>
+                <td>{{ solo.ctc }}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Próximas Safras -->
+    <div class="col-md-6">
+      <div class="box box-success">
+        <div class="box-header with-border">
+          <h3 class="box-title">Próximas Safras</h3>
+        </div>
+        <div class="box-body">
+          <table class="table table-bordered">
+            <thead>
+              <tr>
+                <th>Cultura</th>
+                <th>Área</th>
+                <th>Plantio</th>
+                <th>Colheita</th>
+              </tr>
+            </thead>
+            <tbody>
+                {% for safra in proximas_safras %}
+              <tr>
+                <td>{{ safra.cultura if safra.cultura else '' }}</td>
+                <td>{{ safra.area if safra.area else '' }}</td>
+                <td>{{ safra.previsao_plantio if safra.previsao_plantio else '' }}</td>
+                <td>{{ safra.previsao_colheita if safra.previsao_colheita else '' }}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

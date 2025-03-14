@@ -2,7 +2,7 @@ from flask import render_template, request, redirect, url_for, flash, jsonify
 from flask_login import login_required, login_user, logout_user
 from psutil import users
 from werkzeug.security import generate_password_hash, check_password_hash
-from datetime import timedelta
+from datetime import timedelta, datetime
 from app import db
 from app.models import usuario, informacao_solo, Safra
 from app.forms import LoginForm
@@ -27,6 +27,41 @@ def init_app(app):
         
         return render_template("index.html", form=form)
     
+    @app.route("/resumo")
+    @login_required
+    def resumo():
+                # Obtém totais
+        total_usuarios = usuario.query.count()
+        total_solos = informacao_solo.query.count()
+        total_safras = Safra.query.count()
+
+        # Obtém as 5 últimas análises de solo
+        ultimos_solos = informacao_solo.query.order_by(
+            informacao_solo.id.desc()
+        ).limit(5).all()
+
+        # Obtém as próximas 5 safras
+        proximas_safras = Safra.query.order_by(
+            Safra.id.desc()
+        ).limit(5).all()
+
+        # Formata as datas antes de enviar para o template
+        for safra in proximas_safras:
+            if safra.previsao_plantio:
+                safra.previsao_plantio = safra.previsao_plantio.strftime('%d/%m/%Y')
+            if safra.previsao_colheita:
+                safra.previsao_colheita = safra.previsao_colheita.strftime('%d/%m/%Y')
+
+        return render_template(
+            "resumo.html",
+            total_usuarios=total_usuarios,
+            total_solos=total_solos,
+            total_safras=total_safras,
+            ultimos_solos=ultimos_solos,
+            proximas_safras=proximas_safras
+        )
+    
+    # Cadastro de Usuário
     @app.route("/cad_user", methods=["GET", "POST"])
     @login_required
     def cad_user():
@@ -94,8 +129,38 @@ def init_app(app):
         solos = informacao_solo.query.all()
         return render_template("solo.html", solos=solos)
 
-    # Cadastro de solo
+    @app.route("/alterar_solo/<int:id>", methods=["GET", "POST"])
+    @login_required
+    def alterar_solo(id):
+        solo = informacao_solo.query.get_or_404(id)
+        if request.method == "POST":
+            solo.area = request.form["area"]
+            solo.tipo_solo = request.form["tipo_solo"]
+            solo.ph_solo = request.form["ph_solo"]
+            solo.materia_organica = request.form["materia_organica"]
+            solo.ctc = request.form["ctc"]
+            solo.nivel_nitrogenio = request.form["nivel_nitrogenio"]
+            solo.nivel_fosforo = request.form["nivel_fosforo"]
+            solo.nivel_potassio = request.form["nivel_potassio"]
+            solo.aplicacao_recomendada = request.form["aplicacao_recomendada"]
+            
+            db.session.commit()
+            flash("Informações do solo atualizadas com sucesso!")
+            return redirect(url_for("solo"))
+        
+        return render_template("alterar_solo.html", solo=solo)
+
+    @app.route("/excluir_solo/<int:id>")
+    @login_required
+    def excluir_solo(id):
+        solo = informacao_solo.query.get_or_404(id)
+        db.session.delete(solo)
+        db.session.commit()
+        flash("Registro de solo excluído com sucesso!")
+        return redirect(url_for("solo"))
+
     @app.route("/cad_solo", methods=["GET", "POST"])
+    @login_required
     def cad_solo():
         if request.method == "POST":
             solo = informacao_solo(
@@ -107,7 +172,7 @@ def init_app(app):
                 nivel_nitrogenio=request.form["nivel_nitrogenio"],
                 nivel_fosforo=request.form["nivel_fosforo"],
                 nivel_potassio=request.form["nivel_potassio"],
-                aplicacao_recomendada=request.form["aplicacao_recomendada"],
+                aplicacao_recomendada=request.form["aplicacao_recomendada"]
             )
             db.session.add(solo)
             db.session.commit()
@@ -117,28 +182,27 @@ def init_app(app):
 
     # Página de gestão de safra
     @app.route("/safra")
+    @login_required
     def safra():
         safras = Safra.query.all()
 
-        # Processar dados para os gráficos
-        meses = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun"]
-        produtividade_mensal = [0] * len(meses)
-        lucro_mensal = [0] * len(meses)
-
-        for i, mes in enumerate(meses):
-            produtividade_mensal[i] = sum(
-                safra.produtividade_estimada for safra in safras
-            )
-            lucro_mensal[i] = sum(
-                safra.produtividade_estimada * safra.area for safra in safras
-            )
-
+        # Preparar dados mais detalhados para os gráficos
+        dados_graficos = {
+            'nomes': [s.nome for s in safras],
+            'culturas': [s.cultura for s in safras],
+            'areas': [float(s.area) for s in safras],
+            'produtividades': [float(s.produtividade_estimada) for s in safras],
+            'producao_total': [float(s.area * s.produtividade_estimada) for s in safras],
+            # Cálculo básico de lucro: produção total * preço médio - custos
+            'lucros': [float(s.area * s.produtividade_estimada * 100) for s in safras],
+            'datas_plantio': [s.previsao_plantio.strftime('%d/%m/%Y') for s in safras],
+            'datas_colheita': [s.previsao_colheita.strftime('%d/%m/%Y') for s in safras]
+        }
+    
         return render_template(
             "safra.html",
             safras=safras,
-            meses=meses,
-            produtividade_mensal=produtividade_mensal,
-            lucro_mensal=lucro_mensal,
+            dados_graficos=dados_graficos
         )
 
     # Cadastro de safra
@@ -161,18 +225,26 @@ def init_app(app):
 
     # Alterar safra
     @app.route("/alterar_safra/<int:id>", methods=["GET", "POST"])
+    @login_required
     def alterar_safra(id):
         safra = Safra.query.get_or_404(id)
+        
         if request.method == "POST":
-            safra.nome = request.form["nome"]
-            safra.cultura = request.form["cultura"]
-            safra.area = float(request.form["area"])
-            safra.previsao_plantio = request.form["previsao_plantio"]
-            safra.previsao_colheita = request.form["previsao_colheita"]
-            safra.produtividade_estimada = float(request.form["produtividade_estimada"])
-            db.session.commit()
-            flash("Safra atualizada com sucesso!")
-            return redirect(url_for("safra"))
+            try:
+                safra.nome = request.form["nome"]
+                safra.cultura = request.form["cultura"]
+                safra.area = float(request.form["area"])
+                safra.previsao_plantio = datetime.strptime(request.form["previsao_plantio"], '%Y-%m-%d')
+                safra.previsao_colheita = datetime.strptime(request.form["previsao_colheita"], '%Y-%m-%d')
+                safra.produtividade_estimada = float(request.form["produtividade_estimada"])
+                
+                db.session.commit()
+                flash("Safra alterada com sucesso!")
+                return redirect(url_for("safra"))
+            except Exception as e:
+                flash(f"Erro ao alterar safra: {str(e)}")
+                db.session.rollback()
+        
         return render_template("alterar_safra.html", safra=safra)
 
     # Excluir safra
