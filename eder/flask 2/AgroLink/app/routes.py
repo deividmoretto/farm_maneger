@@ -233,53 +233,13 @@ def init_app(app):
     @app.route("/cad_safra", methods=["GET", "POST"])
     def cad_safra():
         if request.method == "POST":
-            nome = request.form["nome"]
-            cultura = request.form["cultura"]
-            area = request.form["area"]
-            previsao_plantio = request.form["previsao_plantio"]
-            previsao_colheita = request.form["previsao_colheita"]
-            produtividade_estimada = request.form["produtividade_estimada"]
-
-            # Validações
-            if not nome or not cultura:
-                flash("Nome e cultura são obrigatórios.")
-                return redirect(url_for('cad_safra'))
-
-            try:
-                area = float(area)
-                if area <= 0:
-                    flash("A área deve ser um número positivo.")
-                    return redirect(url_for('cad_safra'))
-            except ValueError:
-                flash("A área deve ser um número válido.")
-                return redirect(url_for('cad_safra'))
-
-            try:
-                previsao_plantio = datetime.strptime(previsao_plantio, '%Y-%m-%d')
-                previsao_colheita = datetime.strptime(previsao_colheita, '%Y-%m-%d')
-                if previsao_plantio >= previsao_colheita:
-                    flash("A data de plantio deve ser anterior à data de colheita.")
-                    return redirect(url_for('cad_safra'))
-            except ValueError:
-                flash("As datas devem estar no formato correto (YYYY-MM-DD).")
-                return redirect(url_for('cad_safra'))
-
-            try:
-                produtividade_estimada = float(produtividade_estimada)
-                if produtividade_estimada <= 0:
-                    flash("A produtividade estimada deve ser um número positivo.")
-                    return redirect(url_for('cad_safra'))
-            except ValueError:
-                flash("A produtividade estimada deve ser um número válido.")
-                return redirect(url_for('cad_safra'))
-
             nova_safra = Safra(
-                nome=nome,
-                cultura=cultura,
-                area=area,
-                previsao_plantio=previsao_plantio,
-                previsao_colheita=previsao_colheita,
-                produtividade_estimada=produtividade_estimada,
+                nome=request.form["nome"],
+                cultura=request.form["cultura"],
+                area=float(request.form["area"]),
+                previsao_plantio=request.form["previsao_plantio"],
+                previsao_colheita=request.form["previsao_colheita"],
+                produtividade_estimada=float(request.form["produtividade_estimada"]),
             )
             db.session.add(nova_safra)
             db.session.commit()
@@ -319,4 +279,3 @@ def init_app(app):
         db.session.commit()
         flash("Safra excluída com sucesso!")
         return redirect(url_for("safra"))
-    
