@@ -1,0 +1,26 @@
+# Importa todas as dependências do requirements.txt
+-r requirements.txt
+
+# Ferramentas de desenvolvimento
+black==23.10.0
+flake8==6.1.0
+isort==5.12.0
+mypy==1.6.1
+pre-commit==3.5.0
+
+# Testes
+pytest==7.4.3
+pytest-flask==1.3.0
+pytest-cov==4.1.0
+pytest-mock==3.12.0
+coverage==7.3.2
+
+# Documentação
+Sphinx==7.2.6
+sphinx-rtd-theme==1.3.0
+sphinx-autodoc-typehints==1.24.0
+
+# Análise de código
+bandit==1.7.5
+safety==2.3.5
+pylint==3.0.2 
