@@ -1,0 +1,373 @@
+{% extends "base.html" %}
+
+{% block title %}Análises - Sistema Agro{% endblock %}
+
+{% block head %}
+{{ super() }}
+<!-- Adicionar Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    {% if resultados_calculadora %}
+    <div class="alert alert-info alert-dismissible fade show" role="alert">
+        <h5><i class="bi bi-calculator"></i> Resultados da Calculadora de Solo</h5>
+        <div class="row mt-3">
+            <div class="col-md-4">
+                <div class="card mb-3">
+                    <div class="card-header bg-info text-white">
+                        <h6 class="mb-0">Parâmetros Gerais</h6>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item d-flex justify-content-between">
+                                <span>CTC:</span>
+                                <strong>{{ resultados_calculadora.ctc }} cmolc/dm³</strong>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between">
+                                <span>Saturação por Bases (V%):</span>
+                                <strong>{{ resultados_calculadora.v }}%</strong>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between">
+                                <span>Saturação por Alumínio (m%):</span>
+                                <strong>{{ resultados_calculadora.m }}%</strong>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between">
+                                <span>Relação Ca/Mg:</span>
+                                <strong>{{ resultados_calculadora.relacao_ca_mg }}</strong>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card mb-3">
+                    <div class="card-header bg-success text-white">
+                        <h6 class="mb-0">Interpretações</h6>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item d-flex justify-content-between">
+                                <span>pH:</span>
+                                <strong>{{ resultados_calculadora.interpretacao_ph }}</strong>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between">
+                                <span>Fósforo:</span>
+                                <strong>{{ resultados_calculadora.interpretacao_p }}</strong>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between">
+                                <span>Potássio:</span>
+                                <strong>{{ resultados_calculadora.interpretacao_k }}</strong>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between">
+                                <span>Cálcio:</span>
+                                <strong>{{ resultados_calculadora.interpretacao_ca }}</strong>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between">
+                                <span>Magnésio:</span>
+                                <strong>{{ resultados_calculadora.interpretacao_mg }}</strong>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-header bg-warning">
+                        <h6 class="mb-0">Recomendação de Calagem</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="alert alert-info">
+                            <h6>Necessidade de Calcário:</h6>
+                            <p class="mb-0">
+                                <strong>{{ resultados_calculadora.nc }} toneladas/hectare</strong>
+                                {% if resultados_calculadora.area and resultados_calculadora.area > 0 %}
+                                <br>
+                                <small>Total para {{ resultados_calculadora.area }} hectares: 
+                                    <strong>{{ (resultados_calculadora.nc * resultados_calculadora.area)|round(2) }} toneladas</strong>
+                                </small>
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="d-grid gap-2 mt-2">
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#saveResultModal">
+                        <i class="bi bi-save"></i> Salvar como Análise
+                    </button>
+                </div>
+            </div>
+        </div>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fechar"></button>
+    </div>
+    {% endif %}
+
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Gráficos de Análises</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <canvas id="phChart"></canvas>
+                        </div>
+                        <div class="col-md-6">
+                            <canvas id="nutrientesChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Lista de Análises -->
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Análises de Solo</h5>
+                    <a href="{{ url_for('nova_analise') }}" class="btn btn-sm btn-light">
+                        <i class="bi bi-plus-circle"></i> Nova Análise
+                    </a>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Data</th>
+                                    <th>Área</th>
+                                    <th class="bg-light">pH</th>
+                                    <th class="bg-light">P (mg/dm³)</th>
+                                    <th class="bg-light">K (cmolc/dm³)</th>
+                                    <th class="bg-light">Ca (cmolc/dm³)</th>
+                                    <th class="bg-light">Mg (cmolc/dm³)</th>
+                                    <th>Al (cmolc/dm³)</th>
+                                    <th>S (mg/dm³)</th>
+                                    <th>M.O. (%)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for analise in analyses %}
+                                <tr>
+                                    <td>{{ analise.date.strftime('%d/%m/%Y') }}</td>
+                                    <td>{{ analise.area.name }}</td>
+                                    <td class="table-light fw-bold">{{ "%.1f"|format(analise.ph) }}</td>
+                                    <td class="table-light fw-bold">{{ "%.1f"|format(analise.phosphorus) }}</td>
+                                    <td class="table-light fw-bold">{{ "%.3f"|format(analise.potassium) }}</td>
+                                    <td class="table-light fw-bold">{{ "%.1f"|format(analise.calcium) }}</td>
+                                    <td class="table-light fw-bold">{{ "%.1f"|format(analise.magnesium) }}</td>
+                                    <td>{% if analise.aluminum %}{{ "%.1f"|format(analise.aluminum) }}{% else %}-{% endif %}</td>
+                                    <td>{% if analise.sulfur %}{{ "%.1f"|format(analise.sulfur) }}{% else %}-{% endif %}</td>
+                                    <td>{% if analise.organic_matter %}{{ "%.1f"|format(analise.organic_matter) }}{% else %}-{% endif %}</td>
+                                </tr>
+                                {% else %}
+                                <tr>
+                                    <td colspan="10" class="text-center">Nenhuma análise cadastrada</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para salvar resultados da calculadora -->
+{% if resultados_calculadora %}
+<div class="modal fade" id="saveResultModal" tabindex="-1" aria-labelledby="saveResultModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="saveResultModalLabel">Salvar como Análise</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+            </div>
+            <form action="{{ url_for('salvar_calculo') }}" method="POST">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="area_id" class="form-label">Selecione uma área</label>
+                        <select id="area_id" name="area_id" class="form-select" required>
+                            <option value="" disabled selected>Escolha uma área...</option>
+                            {% for area in current_user.areas %}
+                            <option value="{{ area.id }}">{{ area.name }} ({{ area.size }} ha)</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <p>Os seguintes valores serão salvos:</p>
+                    <ul class="list-group">
+                        <li class="list-group-item d-flex justify-content-between">
+                            <span>pH:</span>
+                            <strong>{{ resultados_calculadora.ph }}</strong>
+                            <input type="hidden" name="ph" value="{{ resultados_calculadora.ph }}">
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between">
+                            <span>Fósforo (P):</span>
+                            <strong>{{ resultados_calculadora.fosforo }} mg/dm³</strong>
+                            <input type="hidden" name="fosforo" value="{{ resultados_calculadora.fosforo }}">
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between">
+                            <span>Potássio (K):</span>
+                            <strong>{{ resultados_calculadora.potassio }} cmolc/dm³</strong>
+                            <input type="hidden" name="potassio" value="{{ resultados_calculadora.potassio }}">
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between">
+                            <span>Cálcio (Ca):</span>
+                            <strong>{{ resultados_calculadora.calcio }} cmolc/dm³</strong>
+                            <input type="hidden" name="calcio" value="{{ resultados_calculadora.calcio }}">
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between">
+                            <span>Magnésio (Mg):</span>
+                            <strong>{{ resultados_calculadora.magnesio }} cmolc/dm³</strong>
+                            <input type="hidden" name="magnesio" value="{{ resultados_calculadora.magnesio }}">
+                        </li>
+                        {% if resultados_calculadora.aluminio is defined %}
+                        <li class="list-group-item d-flex justify-content-between">
+                            <span>Alumínio (Al):</span>
+                            <strong>{{ resultados_calculadora.aluminio }} cmolc/dm³</strong>
+                            <input type="hidden" name="aluminio" value="{{ resultados_calculadora.aluminio }}">
+                        </li>
+                        {% endif %}
+                        {% if resultados_calculadora.enxofre is defined %}
+                        <li class="list-group-item d-flex justify-content-between">
+                            <span>Enxofre (S):</span>
+                            <strong>{{ resultados_calculadora.enxofre }} mg/dm³</strong>
+                            <input type="hidden" name="enxofre" value="{{ resultados_calculadora.enxofre }}">
+                        </li>
+                        {% endif %}
+                        {% if resultados_calculadora.materia_organica is defined %}
+                        <li class="list-group-item d-flex justify-content-between">
+                            <span>Matéria Orgânica:</span>
+                            <strong>{{ resultados_calculadora.materia_organica }} %</strong>
+                            <input type="hidden" name="materia_organica" value="{{ resultados_calculadora.materia_organica }}">
+                        </li>
+                        {% endif %}
+                    </ul>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Salvar Análise</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Scripts para os gráficos -->
+<script>
+// Gráfico de pH
+const ctxPh = document.getElementById('phChart').getContext('2d');
+const phChart = new Chart(ctxPh, {
+    type: 'line',
+    data: {
+        labels: {{ datas|tojson }},
+        datasets: [{
+            label: 'pH',
+            data: {{ valores_ph|tojson }},
+            fill: false,
+            borderColor: 'rgb(75, 192, 192)',
+            tension: 0.1
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: {
+            title: {
+                display: true,
+                text: 'Evolução do pH'
+            },
+            legend: {
+                position: 'top'
+            }
+        },
+        scales: {
+            y: {
+                min: 4,
+                max: 8,
+                title: {
+                    display: true,
+                    text: 'pH'
+                }
+            },
+            x: {
+                title: {
+                    display: true,
+                    text: 'Data'
+                }
+            }
+        }
+    }
+});
+
+// Gráfico de nutrientes
+const ctxNutrientes = document.getElementById('nutrientesChart').getContext('2d');
+const nutrientesChart = new Chart(ctxNutrientes, {
+    type: 'bar',
+    data: {
+        labels: {{ datas|tojson }},
+        datasets: [
+            {
+                label: 'Fósforo (P)',
+                data: {{ valores_p|tojson }},
+                backgroundColor: 'rgba(255, 99, 132, 0.5)',
+                borderColor: 'rgb(255, 99, 132)',
+                borderWidth: 1
+            },
+            {
+                label: 'Potássio (K)',
+                data: {{ valores_k|tojson }},
+                backgroundColor: 'rgba(255, 159, 64, 0.5)',
+                borderColor: 'rgb(255, 159, 64)',
+                borderWidth: 1
+            },
+            {
+                label: 'Cálcio (Ca)',
+                data: {{ valores_ca|tojson }},
+                backgroundColor: 'rgba(255, 205, 86, 0.5)',
+                borderColor: 'rgb(255, 205, 86)',
+                borderWidth: 1
+            },
+            {
+                label: 'Magnésio (Mg)',
+                data: {{ valores_mg|tojson }},
+                backgroundColor: 'rgba(75, 192, 192, 0.5)',
+                borderColor: 'rgb(75, 192, 192)',
+                borderWidth: 1
+            }
+        ]
+    },
+    options: {
+        responsive: true,
+        plugins: {
+            title: {
+                display: true,
+                text: 'Evolução dos Nutrientes'
+            },
+            legend: {
+                position: 'top'
+            }
+        },
+        scales: {
+            y: {
+                title: {
+                    display: true,
+                    text: 'Valor'
+                }
+            },
+            x: {
+                title: {
+                    display: true,
+                    text: 'Data'
+                }
+            }
+        }
+    }
+});
+</script>
+{% endblock %} 

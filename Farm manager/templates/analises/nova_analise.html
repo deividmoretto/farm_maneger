@@ -1,0 +1,310 @@
+{% extends 'base.html' %}
+
+{% block title %}Nova Análise de Solo{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="mb-4">Nova Análise de Solo</h1>
+    
+    <div class="alert alert-info">
+        <i class="fas fa-info-circle me-2"></i>
+        Preencha os parâmetros da análise de solo para obter recomendações de correção e adubação.
+    </div>
+    
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <form method="post" action="{{ url_for('nova_analise') }}">
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <div class="form-group mb-3">
+                            <label for="area_id" class="form-label">Área</label>
+                            <select class="form-control" id="area_id" name="area_id" required>
+                                <option value="" selected disabled>Selecione uma área</option>
+                                {% for area in areas %}
+                                <option value="{{ area.id }}">{{ area.name }} ({{ area.location }})</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group mb-3">
+                            <label for="date" class="form-label">Data da Coleta</label>
+                            <input type="date" class="form-control" id="date" name="date" required>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card mb-4">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">Parâmetros Principais</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="alert alert-light border small">
+                            <i class="fas fa-lightbulb me-2 text-warning"></i>
+                            Os parâmetros principais determinam a maior parte da fertilidade do solo e são essenciais para qualquer análise.
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group mb-3">
+                                    <label for="ph" class="form-label fw-bold">pH</label>
+                                    <input type="number" step="0.1" class="form-control" id="ph" name="ph" required min="0" max="14">
+                                    <small class="form-text text-muted">
+                                        <i class="fas fa-info-circle me-1"></i> Acidez do solo
+                                        <div class="mt-1">
+                                            <span class="badge bg-danger me-1">≤ 5.0</span>
+                                            <span class="badge bg-warning text-dark me-1">5.1-5.4</span>
+                                            <span class="badge bg-success me-1">5.5-6.5</span>
+                                            <span class="badge bg-warning text-dark me-1">6.6-7.0</span>
+                                            <span class="badge bg-danger">≥ 7.1</span>
+                                        </div>
+                                    </small>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-4">
+                                <div class="form-group mb-3">
+                                    <label for="phosphorus" class="form-label fw-bold">Fósforo (P)</label>
+                                    <div class="input-group">
+                                        <input type="number" step="0.1" class="form-control" id="phosphorus" name="phosphorus" required min="0">
+                                        <span class="input-group-text">mg/dm³</span>
+                                    </div>
+                                    <small class="form-text text-muted">
+                                        <i class="fas fa-info-circle me-1"></i> Nutriente essencial para energia
+                                        <div class="mt-1">
+                                            <span class="badge bg-danger me-1">≤ 5.0</span>
+                                            <span class="badge bg-warning text-dark me-1">5.1-10</span>
+                                            <span class="badge bg-success me-1">10.1-20</span>
+                                            <span class="badge bg-primary">≥ 20.1</span>
+                                        </div>
+                                    </small>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-4">
+                                <div class="form-group mb-3">
+                                    <label for="potassium" class="form-label fw-bold">Potássio (K)</label>
+                                    <div class="input-group">
+                                        <input type="number" step="0.001" class="form-control" id="potassium" name="potassium" required min="0">
+                                        <span class="input-group-text">cmolc/dm³</span>
+                                    </div>
+                                    <small class="form-text text-muted">
+                                        <i class="fas fa-info-circle me-1"></i> Resistência e regulação hídrica
+                                        <div class="mt-1">
+                                            <span class="badge bg-danger me-1">≤ 0.07</span>
+                                            <span class="badge bg-warning text-dark me-1">0.08-0.15</span>
+                                            <span class="badge bg-success me-1">0.16-0.30</span>
+                                            <span class="badge bg-primary">≥ 0.31</span>
+                                        </div>
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label for="calcium" class="form-label fw-bold">Cálcio (Ca)</label>
+                                    <div class="input-group">
+                                        <input type="number" step="0.1" class="form-control" id="calcium" name="calcium" required min="0">
+                                        <span class="input-group-text">cmolc/dm³</span>
+                                    </div>
+                                    <small class="form-text text-muted">
+                                        <i class="fas fa-info-circle me-1"></i> Estrutura celular e raízes
+                                        <div class="mt-1">
+                                            <span class="badge bg-danger me-1">≤ 1.5</span>
+                                            <span class="badge bg-warning text-dark me-1">1.6-3.0</span>
+                                            <span class="badge bg-success me-1">3.1-6.0</span>
+                                            <span class="badge bg-primary">≥ 6.1</span>
+                                        </div>
+                                    </small>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label for="magnesium" class="form-label fw-bold">Magnésio (Mg)</label>
+                                    <div class="input-group">
+                                        <input type="number" step="0.1" class="form-control" id="magnesium" name="magnesium" required min="0">
+                                        <span class="input-group-text">cmolc/dm³</span>
+                                    </div>
+                                    <small class="form-text text-muted">
+                                        <i class="fas fa-info-circle me-1"></i> Fotossíntese e clorofila
+                                        <div class="mt-1">
+                                            <span class="badge bg-danger me-1">≤ 0.5</span>
+                                            <span class="badge bg-warning text-dark me-1">0.6-1.0</span>
+                                            <span class="badge bg-success me-1">1.1-2.0</span>
+                                            <span class="badge bg-primary">≥ 2.1</span>
+                                        </div>
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card mb-4">
+                    <div class="card-header bg-secondary text-white">
+                        <h5 class="mb-0">Parâmetros Adicionais</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="alert alert-light border small">
+                            <i class="fas fa-lightbulb me-2 text-warning"></i>
+                            Estes parâmetros complementam a análise e são importantes para uma avaliação mais completa da fertilidade do solo.
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group mb-3">
+                                    <label for="aluminum" class="form-label fw-bold">Alumínio (Al)</label>
+                                    <div class="input-group">
+                                        <input type="number" step="0.1" class="form-control" id="aluminum" name="aluminum" min="0">
+                                        <span class="input-group-text">cmolc/dm³</span>
+                                    </div>
+                                    <small class="form-text text-muted">
+                                        <i class="fas fa-info-circle me-1"></i> Toxicidade para plantas
+                                        <div class="mt-1">
+                                            <span class="badge bg-success me-1">≤ 0.2</span>
+                                            <span class="badge bg-warning text-dark me-1">0.3-0.5</span>
+                                            <span class="badge bg-danger">≥ 0.6</span>
+                                        </div>
+                                    </small>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-4">
+                                <div class="form-group mb-3">
+                                    <label for="sulfur" class="form-label fw-bold">Enxofre (S)</label>
+                                    <div class="input-group">
+                                        <input type="number" step="0.1" class="form-control" id="sulfur" name="sulfur" min="0">
+                                        <span class="input-group-text">mg/dm³</span>
+                                    </div>
+                                    <small class="form-text text-muted">
+                                        <i class="fas fa-info-circle me-1"></i> Proteínas e enzimas
+                                        <div class="mt-1">
+                                            <span class="badge bg-danger me-1">≤ 4.0</span>
+                                            <span class="badge bg-warning text-dark me-1">4.1-10</span>
+                                            <span class="badge bg-success">≥ 10.1</span>
+                                        </div>
+                                    </small>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-4">
+                                <div class="form-group mb-3">
+                                    <label for="organic_matter" class="form-label fw-bold">Matéria Orgânica</label>
+                                    <div class="input-group">
+                                        <input type="number" step="0.1" class="form-control" id="organic_matter" name="organic_matter" min="0" max="100">
+                                        <span class="input-group-text">%</span>
+                                    </div>
+                                    <small class="form-text text-muted">
+                                        <i class="fas fa-info-circle me-1"></i> Fertilidade e estrutura
+                                        <div class="mt-1">
+                                            <span class="badge bg-danger me-1">≤ 1.5</span>
+                                            <span class="badge bg-warning text-dark me-1">1.6-2.5</span>
+                                            <span class="badge bg-success me-1">2.6-5.0</span>
+                                            <span class="badge bg-primary">≥ 5.1</span>
+                                        </div>
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label for="cation_exchange" class="form-label fw-bold">CTC (Capacidade de Troca Catiônica)</label>
+                                    <div class="input-group">
+                                        <input type="number" step="0.1" class="form-control" id="cation_exchange" name="cation_exchange" min="0">
+                                        <span class="input-group-text">cmolc/dm³</span>
+                                    </div>
+                                    <small class="form-text text-muted">
+                                        <i class="fas fa-info-circle me-1"></i> Capacidade de retenção de nutrientes
+                                        <div class="mt-1">
+                                            <span class="badge bg-danger me-1">≤ 5.0</span>
+                                            <span class="badge bg-warning text-dark me-1">5.1-10.0</span>
+                                            <span class="badge bg-success me-1">10.1-15.0</span>
+                                            <span class="badge bg-primary">≥ 15.1</span>
+                                        </div>
+                                    </small>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label for="base_saturation" class="form-label fw-bold">Saturação por Bases (V%)</label>
+                                    <div class="input-group">
+                                        <input type="number" step="0.1" class="form-control" id="base_saturation" name="base_saturation" min="0" max="100">
+                                        <span class="input-group-text">%</span>
+                                    </div>
+                                    <small class="form-text text-muted">
+                                        <i class="fas fa-info-circle me-1"></i> Disponibilidade de nutrientes
+                                        <div class="mt-1">
+                                            <span class="badge bg-danger me-1">≤ 30%</span>
+                                            <span class="badge bg-warning text-dark me-1">31-50%</span>
+                                            <span class="badge bg-success me-1">51-70%</span>
+                                            <span class="badge bg-primary">≥ 71%</span>
+                                        </div>
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group mb-4">
+                    <label for="notes" class="form-label fw-bold">Observações</label>
+                    <textarea class="form-control" id="notes" name="notes" rows="3" placeholder="Observações adicionais sobre a análise..."></textarea>
+                    <small class="form-text text-muted">
+                        <i class="fas fa-info-circle me-1"></i> Registre informações relevantes como condições climáticas, histórico da área, etc.
+                    </small>
+                </div>
+                
+                <div class="d-flex justify-content-between">
+                    <a href="{{ url_for('analises') }}" class="btn btn-secondary">Cancelar</a>
+                    <button type="submit" class="btn btn-primary">Salvar Análise</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <div class="card mt-4">
+        <div class="card-header bg-light">
+            <h5 class="mb-0">Dicas para Coleta de Solo</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <h6 class="mb-2"><i class="fas fa-check-circle text-success me-2"></i>Procedimento correto:</h6>
+                    <ol>
+                        <li>Divida a área em porções homogêneas considerando topografia, tipo de solo e histórico de cultivo.</li>
+                        <li>Faça a coleta em 15-20 pontos aleatórios em cada área homogênea.</li>
+                        <li>Remova a camada superficial (3-5 cm) antes de coletar a amostra.</li>
+                        <li>Colete amostras a uma profundidade de 0-20 cm para culturas anuais e 0-40 cm para culturas perenes.</li>
+                        <li>Misture bem as amostras para formar uma amostra composta representativa.</li>
+                        <li>Utilize recipientes limpos e evite contaminação.</li>
+                        <li>Identifique claramente cada amostra com data, área e profundidade de coleta.</li>
+                    </ol>
+                </div>
+                <div class="col-md-6">
+                    <h6 class="mb-2"><i class="fas fa-times-circle text-danger me-2"></i>Erros comuns a evitar:</h6>
+                    <ul>
+                        <li>Coletar apenas em um ou poucos pontos da área.</li>
+                        <li>Incluir a camada superficial com matéria orgânica não decomposta.</li>
+                        <li>Utilizar ferramentas enferrujadas ou contaminadas.</li>
+                        <li>Misturar amostras de áreas com características diferentes.</li>
+                        <li>Coletar amostras em locais próximos a formigueiros, cupinzeiros ou cercas.</li>
+                        <li>Realizar a coleta em solo muito úmido ou muito seco.</li>
+                        <li>Armazenar as amostras em embalagens inadequadas (como sacos de adubo).</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="alert alert-warning mt-3">
+                <i class="fas fa-calendar-alt me-2"></i>
+                <strong>Época ideal para coleta:</strong> Preferencialmente 3-6 meses antes do plantio ou após a colheita da cultura anterior.
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

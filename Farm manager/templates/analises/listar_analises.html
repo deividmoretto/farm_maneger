@@ -1,0 +1,335 @@
+{% extends "base.html" %}
+
+{% block title %}Análises de Solo{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="mb-4">Listagem de Análises de Solo</h1>
+    
+    <div class="row">
+        <div class="col-md-12 mb-4">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Evolução dos Parâmetros</h5>
+                </div>
+                <div class="card-body">
+                    {% if analyses|length > 1 %}
+                        <div class="mb-3">
+                            <div class="btn-group" role="group">
+                                <button type="button" class="btn btn-outline-primary parameter-btn active" id="btn-ph" data-param="ph">pH</button>
+                                <button type="button" class="btn btn-outline-primary parameter-btn" id="btn-phosphorus" data-param="phosphorus">Fósforo (P)</button>
+                                <button type="button" class="btn btn-outline-primary parameter-btn" id="btn-potassium" data-param="potassium">Potássio (K)</button>
+                                <button type="button" class="btn btn-outline-primary parameter-btn" id="btn-calcium" data-param="calcium">Cálcio (Ca)</button>
+                                <button type="button" class="btn btn-outline-primary parameter-btn" id="btn-magnesium" data-param="magnesium">Magnésio (Mg)</button>
+                                {% if any_organic_matter %}
+                                <button type="button" class="btn btn-outline-primary parameter-btn" id="btn-organic_matter" data-param="organic_matter">Matéria Orgânica</button>
+                                {% endif %}
+                                {% if any_base_saturation %}
+                                <button type="button" class="btn btn-outline-primary parameter-btn" id="btn-base_saturation" data-param="base_saturation">Saturação por Bases</button>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div style="height: 400px;">
+                            <canvas id="evolutionChart"></canvas>
+                        </div>
+                        <div class="text-center mt-3">
+                            <small class="text-muted">Selecione um parâmetro acima para visualizar sua evolução ao longo do tempo.</small>
+                        </div>
+                    {% else %}
+                        <div class="alert alert-info">
+                            É necessário ter pelo menos duas análises para visualizar gráficos de evolução.
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        {% for analysis in analyses %}
+        <div class="col-md-6 mb-4">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Análise de {{ analysis.date.strftime('%d/%m/%Y') }}</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6 class="border-bottom pb-2 mb-3">Parâmetros Principais</h6>
+                            <p><strong>pH:</strong> {{ analysis.ph }}</p>
+                            <p><strong>Fósforo (P):</strong> {{ analysis.phosphorus }} mg/dm³</p>
+                            <p><strong>Potássio (K):</strong> {{ analysis.potassium }} cmolc/dm³</p>
+                            <p><strong>Cálcio (Ca):</strong> {{ analysis.calcium }} cmolc/dm³</p>
+                            <p><strong>Magnésio (Mg):</strong> {{ analysis.magnesium }} cmolc/dm³</p>
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="border-bottom pb-2 mb-3">Parâmetros Adicionais</h6>
+                            <p><strong>Alumínio (Al):</strong> {{ analysis.aluminum }} cmolc/dm³</p>
+                            <p><strong>Enxofre (S):</strong> {{ analysis.sulfur }} mg/dm³</p>
+                            <p><strong>Matéria Orgânica:</strong> {{ analysis.organic_matter }} %</p>
+                            {% if analysis.cation_exchange %}
+                            <p><strong>CTC:</strong> {{ analysis.cation_exchange }} cmolc/dm³</p>
+                            {% endif %}
+                            {% if analysis.base_saturation %}
+                            <p><strong>Saturação por Bases (V%):</strong> {{ analysis.base_saturation }} %</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% if analysis.notes %}
+                    <div class="mt-3">
+                        <h6 class="border-bottom pb-2 mb-3">Observações</h6>
+                        <p>{{ analysis.notes }}</p>
+                    </div>
+                    {% endif %}
+                    <div class="mt-3">
+                        <a href="{{ url_for('analises_bp.editar_analise', id=analysis.id) }}" class="btn btn-primary btn-sm">Editar</a>
+                        <a href="#" class="btn btn-danger btn-sm" onclick="return confirm('Deseja realmente excluir esta análise?');" data-bs-toggle="modal" data-bs-target="#deleteModal{{ analysis.id }}">Excluir</a>
+                    </div>
+                    
+                    <!-- Modal de Confirmar Exclusão -->
+                    <div class="modal fade" id="deleteModal{{ analysis.id }}" tabindex="-1" aria-labelledby="deleteModalLabel{{ analysis.id }}" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="deleteModalLabel{{ analysis.id }}">Confirmar Exclusão</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                                </div>
+                                <div class="modal-body">
+                                    Tem certeza que deseja excluir esta análise de solo da área <strong>{{ analysis.area.name }}</strong> 
+                                    realizada em <strong>{{ analysis.date.strftime('%d/%m/%Y') }}</strong>?
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                    <form action="{{ url_for('analises_bp.excluir_analise', id=analysis.id) }}" method="post">
+                                        <button type="submit" class="btn btn-danger">Excluir</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    
+    <div class="row mt-3 mb-5">
+        <div class="col-12">
+            <a href="{{ url_for('analises_bp.nova_analise') }}" class="btn btn-success">Adicionar Nova Análise</a>
+            <a href="{{ url_for('index') }}" class="btn btn-secondary">Voltar</a>
+        </div>
+    </div>
+</div>
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Definição das variáveis com dados do servidor
+    var dates = [];
+    var phValues = [];
+    var phosphorusValues = [];
+    var potassiumValues = [];
+    var calciumValues = [];
+    var magnesiumValues = [];
+    var organicMatterValues = [];
+    var baseSaturationValues = [];
+    var anyOrganicMatter = false;
+    var anyBaseSaturation = false;
+    
+    // Atribuição de valores do servidor
+    {% if dates is defined %}
+    dates = {{ dates|tojson }};
+    {% endif %}
+    
+    {% if ph_values is defined %}
+    phValues = {{ ph_values|tojson }};
+    {% endif %}
+    
+    {% if phosphorus_values is defined %}
+    phosphorusValues = {{ phosphorus_values|tojson }};
+    {% endif %}
+    
+    {% if potassium_values is defined %}
+    potassiumValues = {{ potassium_values|tojson }};
+    {% endif %}
+    
+    {% if calcium_values is defined %}
+    calciumValues = {{ calcium_values|tojson }};
+    {% endif %}
+    
+    {% if magnesium_values is defined %}
+    magnesiumValues = {{ magnesium_values|tojson }};
+    {% endif %}
+    
+    {% if organic_matter_values is defined %}
+    organicMatterValues = {{ organic_matter_values|tojson }};
+    {% endif %}
+    
+    {% if base_saturation_values is defined %}
+    baseSaturationValues = {{ base_saturation_values|tojson }};
+    {% endif %}
+    
+    {% if any_organic_matter %}
+    anyOrganicMatter = true;
+    {% endif %}
+    
+    {% if any_base_saturation %}
+    anyBaseSaturation = true;
+    {% endif %}
+    
+    // Dados consolidados
+    var chartData = {
+        dates: dates,
+        ph: phValues,
+        phosphorus: phosphorusValues,
+        potassium: potassiumValues,
+        calcium: calciumValues,
+        magnesium: magnesiumValues,
+        organic_matter: organicMatterValues,
+        base_saturation: baseSaturationValues
+    };
+    
+    // Verificação de existência de dados
+    var hasOrganic = anyOrganicMatter;
+    var hasBaseSaturation = anyBaseSaturation;
+    
+    // Verificação adicional nos arrays
+    if (organicMatterValues && organicMatterValues.length > 0) {
+        for (var i = 0; i < organicMatterValues.length; i++) {
+            if (organicMatterValues[i] !== null && organicMatterValues[i] !== undefined) {
+                hasOrganic = true;
+                break;
+            }
+        }
+    }
+    
+    if (baseSaturationValues && baseSaturationValues.length > 0) {
+        for (var i = 0; i < baseSaturationValues.length; i++) {
+            if (baseSaturationValues[i] !== null && baseSaturationValues[i] !== undefined) {
+                hasBaseSaturation = true;
+                break;
+            }
+        }
+    }
+    
+    // Verifica se temos pelo menos duas análises para mostrar o gráfico
+    if (chartData.dates && chartData.dates.length > 1) {
+        let ctx = document.getElementById('evolutionChart').getContext('2d');
+        let chartConfig = {
+            labels: chartData.dates,
+            datasets: [{
+                label: 'pH',
+                data: chartData.ph,
+                borderColor: 'rgba(75, 192, 192, 1)',
+                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                borderWidth: 2,
+                tension: 0.1
+            }]
+        };
+        
+        let evolutionChart = new Chart(ctx, {
+            type: 'line',
+            data: chartConfig,
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Evolução do pH ao longo do tempo',
+                        font: {
+                            size: 16
+                        }
+                    },
+                    tooltip: {
+                        mode: 'index',
+                        intersect: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: false
+                    }
+                }
+            }
+        });
+        
+        // Função para atualizar o gráfico
+        function updateChart(parameter) {
+            let datasetValues;
+            let title;
+            let color;
+            
+            switch(parameter) {
+                case 'ph':
+                    datasetValues = chartData.ph;
+                    title = 'Evolução do pH ao longo do tempo';
+                    color = 'rgba(75, 192, 192, 1)';
+                    break;
+                case 'phosphorus':
+                    datasetValues = chartData.phosphorus;
+                    title = 'Evolução do Fósforo ao longo do tempo';
+                    color = 'rgba(255, 159, 64, 1)';
+                    break;
+                case 'potassium':
+                    datasetValues = chartData.potassium;
+                    title = 'Evolução do Potássio ao longo do tempo';
+                    color = 'rgba(153, 102, 255, 1)';
+                    break;
+                case 'calcium':
+                    datasetValues = chartData.calcium;
+                    title = 'Evolução do Cálcio ao longo do tempo';
+                    color = 'rgba(54, 162, 235, 1)';
+                    break;
+                case 'magnesium':
+                    datasetValues = chartData.magnesium;
+                    title = 'Evolução do Magnésio ao longo do tempo';
+                    color = 'rgba(255, 99, 132, 1)';
+                    break;
+                case 'organic_matter':
+                    if (hasOrganic) {
+                        datasetValues = chartData.organic_matter;
+                        title = 'Evolução da Matéria Orgânica ao longo do tempo';
+                        color = 'rgba(46, 204, 113, 1)';
+                    }
+                    break;
+                case 'base_saturation':
+                    if (hasBaseSaturation) {
+                        datasetValues = chartData.base_saturation;
+                        title = 'Evolução da Saturação por Bases ao longo do tempo';
+                        color = 'rgba(243, 156, 18, 1)';
+                    }
+                    break;
+            }
+            
+            // Atualiza dados do gráfico
+            evolutionChart.data.datasets[0].data = datasetValues;
+            evolutionChart.data.datasets[0].label = title.split('Evolução do ')[1].split(' ao longo')[0];
+            evolutionChart.data.datasets[0].borderColor = color;
+            evolutionChart.data.datasets[0].backgroundColor = color.replace('1)', '0.2)');
+            
+            evolutionChart.options.plugins.title.text = title;
+            evolutionChart.update();
+            
+            // Atualiza a classe ativa no grupo de botões
+            document.querySelectorAll('.parameter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.querySelector(`[data-param="${parameter}"]`).classList.add('active');
+        }
+        
+        // Adiciona eventos para os botões de parâmetros
+        document.querySelectorAll('.parameter-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                let parameter = this.getAttribute('data-param');
+                updateChart(parameter);
+            });
+        });
+        
+        // Inicializa com pH
+        updateChart('ph');
+    }
+});
+</script>
+{% endblock %}

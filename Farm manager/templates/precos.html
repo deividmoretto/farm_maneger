@@ -1,0 +1,197 @@
+{% extends "base.html" %}
+
+{% block title %}Preços de Mercado - Sistema Agro{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Preços de Mercado</h3>
+                    <div class="card-tools">
+                        <a href="{{ url_for('main.atualizar_precos') }}" class="btn btn-primary">
+                            <i class="fas fa-sync"></i> Atualizar Preços
+                        </a>
+                    </div>
+                </div>
+                <div class="card-body">
+                    {% if precos %}
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Produto</th>
+                                        <th>Preço (R$)</th>
+                                        <th>Data</th>
+                                        <th>Região</th>
+                                        <th>Fonte</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for preco in precos %}
+                                    <tr>
+                                        <td>{{ preco.produto|title }}</td>
+                                        <td>R$ {{ "%.2f"|format(preco.preco) }}</td>
+                                        <td>{{ preco.data }}</td>
+                                        <td>{{ preco.regiao or 'Nacional' }}</td>
+                                        <td>{{ preco.fonte }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="alert alert-info">
+                            Nenhum preço registrado ainda. Clique em "Atualizar Preços" para buscar as cotações mais recentes.
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Gráfico de Preços</h3>
+                    <div class="card-tools">
+                        <select id="selectProduto" class="form-select">
+                            <option value="">Todos os produtos</option>
+                            <option value="soja">Soja</option>
+                            <option value="milho">Milho</option>
+                            <option value="trigo_pr">Trigo PR</option>
+                            <option value="trigo_rs">Trigo RS</option>
+                            <option value="arroz">Arroz</option>
+                            <option value="algodao">Algodão</option>
+                            <option value="feijao">Feijão</option>
+                            <option value="cafe_arabica">Café Arábica</option>
+                            <option value="cafe_robusta">Café Robusta</option>
+                        </select>
+                        <select id="selectPeriodo" class="form-select ms-2">
+                            <option value="7">Última semana</option>
+                            <option value="30" selected>Último mês</option>
+                            <option value="90">Últimos 3 meses</option>
+                            <option value="180">Últimos 6 meses</option>
+                            <option value="365">Último ano</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <canvas id="graficoPrecos"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Informações Adicionais</h3>
+                </div>
+                <div class="card-body">
+                    <ul>
+                        <li>Os preços são atualizados a cada 6 horas.</li>
+                        <li>Fonte: CEPEA - Centro de Estudos Avançados em Economia Aplicada</li>
+                        <li>Os preços são baseados em médias regionais.</li>
+                        <li>Conversões automáticas são realizadas para diferentes unidades (saca, tonelada, etc).</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+let graficoPrecos;
+
+function atualizarGrafico() {
+    const produto = document.getElementById('selectProduto').value;
+    const dias = document.getElementById('selectPeriodo').value;
+    
+    fetch(`/precos/api?produto=${produto}&dias=${dias}`)
+        .then(response => response.json())
+        .then(data => {
+            const datasets = [];
+            const produtos = [...new Set(data.map(p => p.produto))];
+            
+            produtos.forEach((prod, index) => {
+                const dadosProduto = data.filter(p => p.produto === prod);
+                datasets.push({
+                    label: prod.charAt(0).toUpperCase() + prod.slice(1).replace('_', ' '),
+                    data: dadosProduto.map(p => ({
+                        x: p.data,
+                        y: p.preco
+                    })),
+                    borderColor: getColor(index),
+                    fill: false
+                });
+            });
+            
+            if (graficoPrecos) {
+                graficoPrecos.destroy();
+            }
+            
+            const ctx = document.getElementById('graficoPrecos').getContext('2d');
+            graficoPrecos = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    datasets: datasets
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        x: {
+                            type: 'time',
+                            time: {
+                                unit: 'day'
+                            },
+                            title: {
+                                display: true,
+                                text: 'Data'
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Preço (R$)'
+                            }
+                        }
+                    },
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Evolução dos Preços'
+                        }
+                    }
+                }
+            });
+        });
+}
+
+function getColor(index) {
+    const colors = [
+        '#4CAF50', // Verde - Soja
+        '#FFC107', // Amarelo - Milho
+        '#795548', // Marrom - Café
+        '#2196F3', // Azul - Trigo
+        '#FF5722', // Laranja - Arroz
+        '#9C27B0', // Roxo - Algodão
+        '#F44336', // Vermelho - Feijão
+        '#607D8B'  // Cinza azulado - Outros
+    ];
+    return colors[index % colors.length];
+}
+
+document.getElementById('selectProduto').addEventListener('change', atualizarGrafico);
+document.getElementById('selectPeriodo').addEventListener('change', atualizarGrafico);
+
+// Carrega o gráfico inicial
+document.addEventListener('DOMContentLoaded', atualizarGrafico);</script>
+{% endblock %} 

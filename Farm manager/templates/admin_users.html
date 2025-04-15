@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+
+{% block title %}Gerenciar Usuários - Sistema Agro{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <div class="card">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">Gerenciar Usuários</h5>
+            <div>
+                <a href="{{ url_for('reset_db') }}" class="btn btn-sm btn-danger me-2">
+                    <i class="fas fa-database"></i> Reset BD
+                </a>
+                <a href="{{ url_for('create_user') }}" class="btn btn-sm btn-light">
+                    <i class="fas fa-user-plus"></i> Novo Usuário
+                </a>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Usuário</th>
+                            <th>Email</th>
+                            <th>Admin</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for user in users %}
+                        <tr>
+                            <td>{{ user.id }}</td>
+                            <td>{{ user.username }}</td>
+                            <td>{{ user.email }}</td>
+                            <td>
+                                {% if user.is_admin %}
+                                <span class="badge bg-success">Sim</span>
+                                {% else %}
+                                <span class="badge bg-secondary">Não</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <a href="#" class="btn btn-sm btn-info me-1">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                {% if not user.is_admin or current_user.id != user.id %}
+                                <a href="#" class="btn btn-sm btn-danger" data-confirm="Tem certeza que deseja excluir este usuário?">
+                                    <i class="fas fa-trash"></i>
+                                </a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="5" class="text-center">Nenhum usuário encontrado.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

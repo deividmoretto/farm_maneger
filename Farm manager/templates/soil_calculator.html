@@ -1,0 +1,254 @@
+{% extends "base.html" %}
+
+{% block title %}Calculadora de Solo - Sistema Agro{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Calculadora de Solo</h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST">
+                        {{ form.hidden_tag() }}
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">{{ form.ph.label }}</label>
+                                {{ form.ph(class="form-control") }}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">{{ form.fosforo.label }}</label>
+                                {{ form.fosforo(class="form-control") }}
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">{{ form.potassio.label }}</label>
+                                {{ form.potassio(class="form-control") }}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">{{ form.calcio.label }}</label>
+                                {{ form.calcio(class="form-control") }}
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">{{ form.magnesio.label }}</label>
+                                {{ form.magnesio(class="form-control") }}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">{{ form.aluminio.label }}</label>
+                                {{ form.aluminio(class="form-control") }}
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">{{ form.hidrogenio.label }}</label>
+                                {{ form.hidrogenio(class="form-control") }}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">{{ form.tipo_solo.label }}</label>
+                                {{ form.tipo_solo(class="form-control") }}
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">{{ form.prnt.label }}</label>
+                                {{ form.prnt(class="form-control") }}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">{{ form.v_desejado.label }}</label>
+                                {{ form.v_desejado(class="form-control") }}
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">{{ form.cultura.label }}</label>
+                                {{ form.cultura(class="form-control") }}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">{{ form.area.label }}</label>
+                                {{ form.area(class="form-control") }}
+                            </div>
+                        </div>
+                        <div class="text-center">
+                            {{ form.submit(class="btn btn-primary") }}
+                        </div>
+                    </form>
+
+                    {% if resultados %}
+                    <div class="mt-4">
+                        <h5>Resultados da Análise</h5>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="card mb-3">
+                                    <div class="card-header bg-info text-white">
+                                        <h6 class="mb-0">Parâmetros Gerais</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <ul class="list-group list-group-flush">
+                                            <li class="list-group-item d-flex justify-content-between">
+                                                <span>CTC:</span>
+                                                <strong>{{ resultados.ctc }} cmolc/dm³</strong>
+                                            </li>
+                                            <li class="list-group-item d-flex justify-content-between">
+                                                <span>Saturação por Bases (V%):</span>
+                                                <strong>{{ resultados.v }}%</strong>
+                                            </li>
+                                            <li class="list-group-item d-flex justify-content-between">
+                                                <span>Saturação por Alumínio (m%):</span>
+                                                <strong>{{ resultados.m }}%</strong>
+                                            </li>
+                                            <li class="list-group-item d-flex justify-content-between">
+                                                <span>Relação Ca/Mg:</span>
+                                                <strong>{{ resultados.relacao_ca_mg }}</strong>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="card mb-3">
+                                    <div class="card-header bg-success text-white">
+                                        <h6 class="mb-0">Interpretações</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <ul class="list-group list-group-flush">
+                                            <li class="list-group-item d-flex justify-content-between">
+                                                <span>pH:</span>
+                                                <strong>{{ resultados.interpretacao_ph }}</strong>
+                                            </li>
+                                            <li class="list-group-item d-flex justify-content-between">
+                                                <span>Fósforo:</span>
+                                                <strong>{{ resultados.interpretacao_p }}</strong>
+                                            </li>
+                                            <li class="list-group-item d-flex justify-content-between">
+                                                <span>Potássio:</span>
+                                                <strong>{{ resultados.interpretacao_k }}</strong>
+                                            </li>
+                                            <li class="list-group-item d-flex justify-content-between">
+                                                <span>Cálcio:</span>
+                                                <strong>{{ resultados.interpretacao_ca }}</strong>
+                                            </li>
+                                            <li class="list-group-item d-flex justify-content-between">
+                                                <span>Magnésio:</span>
+                                                <strong>{{ resultados.interpretacao_mg }}</strong>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="card">
+                            <div class="card-header bg-warning">
+                                <h6 class="mb-0">Recomendação de Calagem</h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="alert alert-info">
+                                    <h6>Necessidade de Calcário:</h6>
+                                    <p class="mb-0">
+                                        <strong>{{ resultados.nc }} toneladas/hectare</strong>
+                                        {% if resultados.area and resultados.area > 0 %}
+                                        <br>
+                                        <small>Total para {{ resultados.area }} hectares: 
+                                            <strong>{{ (resultados.nc * resultados.area)|round(2) }} toneladas</strong>
+                                        </small>
+                                        {% endif %}
+                                    </p>
+                                </div>
+                                
+                                <div class="alert alert-warning">
+                                    <h6>Observações:</h6>
+                                    <ul class="mb-0">
+                                        <li>PRNT do calcário considerado: {{ resultados.prnt }}%</li>
+                                        <li>Saturação por bases desejada: {{ resultados.v_desejado }}%</li>
+                                        <li>Cultura: {{ resultados.cultura|title }}</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Botões de ação -->
+                        <div class="mt-4 d-flex justify-content-center">
+                            <form method="POST">
+                                <input type="hidden" name="salvar" value="true">
+                                <button type="submit" class="btn btn-success me-2">
+                                    <i class="bi bi-graph-up"></i> Ver em gráficos
+                                </button>
+                            </form>
+                            
+                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#saveResultModal">
+                                <i class="bi bi-save"></i> Salvar como análise
+                            </button>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para salvar como análise -->
+{% if resultados %}
+<div class="modal fade" id="saveResultModal" tabindex="-1" aria-labelledby="saveResultModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="saveResultModalLabel">Salvar como Análise</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+            </div>
+            <form action="{{ url_for('salvar_calculo') }}" method="POST">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="area_id" class="form-label">Selecione uma área</label>
+                        <select id="area_id" name="area_id" class="form-select" required>
+                            <option value="" disabled selected>Escolha uma área...</option>
+                            {% for area in current_user.areas %}
+                            <option value="{{ area.id }}">{{ area.name }} ({{ area.size }} ha)</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <p>Os seguintes valores serão salvos:</p>
+                    <ul class="list-group">
+                        <li class="list-group-item d-flex justify-content-between">
+                            <span>pH:</span>
+                            <strong>{{ resultados.ph }}</strong>
+                            <input type="hidden" name="ph" value="{{ resultados.ph }}">
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between">
+                            <span>Fósforo (P):</span>
+                            <strong>{{ resultados.fosforo }} mg/dm³</strong>
+                            <input type="hidden" name="fosforo" value="{{ resultados.fosforo }}">
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between">
+                            <span>Potássio (K):</span>
+                            <strong>{{ resultados.potassio }} cmolc/dm³</strong>
+                            <input type="hidden" name="potassio" value="{{ resultados.potassio }}">
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between">
+                            <span>Cálcio (Ca):</span>
+                            <strong>{{ resultados.calcio }} cmolc/dm³</strong>
+                            <input type="hidden" name="calcio" value="{{ resultados.calcio }}">
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between">
+                            <span>Magnésio (Mg):</span>
+                            <strong>{{ resultados.magnesio }} cmolc/dm³</strong>
+                            <input type="hidden" name="magnesio" value="{{ resultados.magnesio }}">
+                        </li>
+                    </ul>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Salvar Análise</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %} 

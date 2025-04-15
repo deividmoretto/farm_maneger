@@ -1,0 +1,395 @@
+{% extends 'base.html' %}
+
+{% block title %}Análise de Solo{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>Análise de Solo</h1>
+        <div>
+            <a href="{{ url_for('analises_bp.listar_analises') }}" class="btn btn-secondary me-2">
+                <i class="bi bi-arrow-left"></i> Voltar
+            </a>
+            {% if current_user.is_authenticated %}
+            <a href="{{ url_for('analises_bp.editar_analise', id=analysis.id) }}" class="btn btn-primary">
+                <i class="bi bi-pencil"></i> Editar
+            </a>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Informações Gerais</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <h6 class="text-muted">Área</h6>
+                        <p class="lead">{{ analysis.area.name }}</p>
+                    </div>
+                    <div class="mb-3">
+                        <h6 class="text-muted">Data da Coleta</h6>
+                        <p class="lead">{{ analysis.date.strftime('%d/%m/%Y') }}</p>
+                    </div>
+                    {% if analysis.notes %}
+                    <div class="mb-3">
+                        <h6 class="text-muted">Observações</h6>
+                        <p>{{ analysis.notes }}</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-8">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Parâmetros Principais</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <!-- pH -->
+                        <div class="col-md-6 mb-4">
+                            <div class="card h-100">
+                                <div class="card-header bg-light text-center">
+                                    <h5 class="card-title mb-0">pH</h5>
+                                </div>
+                                <div class="card-body text-center">
+                                    <div class="display-4 mb-2">{{ analysis.ph|round(1) }}</div>
+                                    
+                                    <div class="progress mb-2" style="height: 15px;">
+                                        {% if analysis.ph < 5.0 %}
+                                            <div class="progress-bar bg-danger" role="progressbar" style="width: {{ (analysis.ph / 7.0) * 100 }}%"></div>
+                                        {% elif analysis.ph < 5.5 %}
+                                            <div class="progress-bar bg-warning" role="progressbar" style="width: {{ (analysis.ph / 7.0) * 100 }}%"></div>
+                                        {% elif analysis.ph < 6.5 %}
+                                            <div class="progress-bar bg-success" role="progressbar" style="width: {{ (analysis.ph / 7.0) * 100 }}%"></div>
+                                        {% elif analysis.ph < 7.5 %}
+                                            <div class="progress-bar bg-primary" role="progressbar" style="width: {{ (analysis.ph / 7.0) * 100 }}%"></div>
+                                        {% else %}
+                                            <div class="progress-bar bg-warning" role="progressbar" style="width: {{ (analysis.ph / 7.0) * 100 }}%"></div>
+                                        {% endif %}
+                                    </div>
+                                    
+                                    <div class="d-flex justify-content-between small">
+                                        <span>Ácido</span>
+                                        <span>Neutro</span>
+                                        <span>Básico</span>
+                                    </div>
+                                    
+                                    {% if analysis.ph < 5.0 %}
+                                        <span class="badge bg-danger mt-2">Muito Ácido</span>
+                                    {% elif analysis.ph < 5.5 %}
+                                        <span class="badge bg-warning mt-2">Ácido</span>
+                                    {% elif analysis.ph < 6.5 %}
+                                        <span class="badge bg-success mt-2">Ideal</span>
+                                    {% elif analysis.ph < 7.5 %}
+                                        <span class="badge bg-primary mt-2">Neutro</span>
+                                    {% else %}
+                                        <span class="badge bg-warning mt-2">Alcalino</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Fósforo -->
+                        <div class="col-md-6 mb-4">
+                            <div class="card h-100">
+                                <div class="card-header bg-light text-center">
+                                    <h5 class="card-title mb-0">Fósforo (P)</h5>
+                                </div>
+                                <div class="card-body text-center">
+                                    <div class="display-4 mb-2">{{ analysis.phosphorus|round(1) }}</div>
+                                    <div class="small text-muted mb-2">mg/dm³</div>
+                                    
+                                    <div class="progress mb-2" style="height: 15px;">
+                                        {% if analysis.phosphorus < 5.0 %}
+                                            <div class="progress-bar bg-danger" role="progressbar" style="width: {{ (analysis.phosphorus / 15) * 50 }}%"></div>
+                                        {% elif analysis.phosphorus < 10.0 %}
+                                            <div class="progress-bar bg-warning" role="progressbar" style="width: {{ (analysis.phosphorus / 15) * 50 }}%"></div>
+                                        {% elif analysis.phosphorus < 15.0 %}
+                                            <div class="progress-bar bg-info" role="progressbar" style="width: {{ (analysis.phosphorus / 15) * 50 }}%"></div>
+                                        {% else %}
+                                            <div class="progress-bar bg-success" role="progressbar" style="width: min(100%, {{ (analysis.phosphorus / 30) * 100 }}%)"></div>
+                                        {% endif %}
+                                    </div>
+                                    
+                                    <div class="d-flex justify-content-between small">
+                                        <span>Baixo</span>
+                                        <span>Médio</span>
+                                        <span>Alto</span>
+                                    </div>
+                                    
+                                    {% if analysis.phosphorus < 5.0 %}
+                                        <span class="badge bg-danger mt-2">Muito Baixo</span>
+                                    {% elif analysis.phosphorus < 10.0 %}
+                                        <span class="badge bg-warning mt-2">Baixo</span>
+                                    {% elif analysis.phosphorus < 15.0 %}
+                                        <span class="badge bg-info mt-2">Médio</span>
+                                    {% elif analysis.phosphorus < 30.0 %}
+                                        <span class="badge bg-success mt-2">Bom</span>
+                                    {% else %}
+                                        <span class="badge bg-success mt-2">Muito Bom</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Potássio -->
+                        <div class="col-md-4 mb-4">
+                            <div class="card h-100">
+                                <div class="card-header bg-light text-center">
+                                    <h5 class="card-title mb-0">Potássio (K)</h5>
+                                </div>
+                                <div class="card-body text-center">
+                                    <div class="display-4 mb-2">{{ analysis.potassium|round(3) }}</div>
+                                    <div class="small text-muted mb-2">cmolc/dm³</div>
+                                    
+                                    <div class="progress mb-2" style="height: 15px;">
+                                        {% if analysis.potassium < 0.08 %}
+                                            <div class="progress-bar bg-danger" role="progressbar" style="width: {{ (analysis.potassium / 0.15) * 50 }}%"></div>
+                                        {% elif analysis.potassium < 0.15 %}
+                                            <div class="progress-bar bg-warning" role="progressbar" style="width: {{ (analysis.potassium / 0.15) * 50 }}%"></div>
+                                        {% elif analysis.potassium < 0.25 %}
+                                            <div class="progress-bar bg-info" role="progressbar" style="width: {{ (analysis.potassium / 0.25) * 75 }}%"></div>
+                                        {% else %}
+                                            <div class="progress-bar bg-success" role="progressbar" style="width: min(100%, {{ (analysis.potassium / 0.40) * 100 }}%)"></div>
+                                        {% endif %}
+                                    </div>
+                                    
+                                    {% if analysis.potassium < 0.08 %}
+                                        <span class="badge bg-danger mt-2">Muito Baixo</span>
+                                    {% elif analysis.potassium < 0.15 %}
+                                        <span class="badge bg-warning mt-2">Baixo</span>
+                                    {% elif analysis.potassium < 0.25 %}
+                                        <span class="badge bg-info mt-2">Médio</span>
+                                    {% elif analysis.potassium < 0.40 %}
+                                        <span class="badge bg-success mt-2">Bom</span>
+                                    {% else %}
+                                        <span class="badge bg-success mt-2">Muito Bom</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Cálcio -->
+                        <div class="col-md-4 mb-4">
+                            <div class="card h-100">
+                                <div class="card-header bg-light text-center">
+                                    <h5 class="card-title mb-0">Cálcio (Ca)</h5>
+                                </div>
+                                <div class="card-body text-center">
+                                    <div class="display-4 mb-2">{{ analysis.calcium|round(1) }}</div>
+                                    <div class="small text-muted mb-2">cmolc/dm³</div>
+                                    
+                                    <div class="progress mb-2" style="height: 15px;">
+                                        {% if analysis.calcium < 1.0 %}
+                                            <div class="progress-bar bg-danger" role="progressbar" style="width: {{ (analysis.calcium / 3) * 33 }}%"></div>
+                                        {% elif analysis.calcium < 2.0 %}
+                                            <div class="progress-bar bg-warning" role="progressbar" style="width: {{ (analysis.calcium / 3) * 33 }}%"></div>
+                                        {% elif analysis.calcium < 4.0 %}
+                                            <div class="progress-bar bg-info" role="progressbar" style="width: {{ (analysis.calcium / 4) * 66 }}%"></div>
+                                        {% else %}
+                                            <div class="progress-bar bg-success" role="progressbar" style="width: min(100%, {{ (analysis.calcium / 7) * 100 }}%)"></div>
+                                        {% endif %}
+                                    </div>
+                                    
+                                    {% if analysis.calcium < 1.0 %}
+                                        <span class="badge bg-danger mt-2">Muito Baixo</span>
+                                    {% elif analysis.calcium < 2.0 %}
+                                        <span class="badge bg-warning mt-2">Baixo</span>
+                                    {% elif analysis.calcium < 4.0 %}
+                                        <span class="badge bg-info mt-2">Médio</span>
+                                    {% elif analysis.calcium < 7.0 %}
+                                        <span class="badge bg-success mt-2">Bom</span>
+                                    {% else %}
+                                        <span class="badge bg-success mt-2">Muito Bom</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Magnésio -->
+                        <div class="col-md-4 mb-4">
+                            <div class="card h-100">
+                                <div class="card-header bg-light text-center">
+                                    <h5 class="card-title mb-0">Magnésio (Mg)</h5>
+                                </div>
+                                <div class="card-body text-center">
+                                    <div class="display-4 mb-2">{{ analysis.magnesium|round(1) }}</div>
+                                    <div class="small text-muted mb-2">cmolc/dm³</div>
+                                    
+                                    <div class="progress mb-2" style="height: 15px;">
+                                        {% if analysis.magnesium < 0.4 %}
+                                            <div class="progress-bar bg-danger" role="progressbar" style="width: {{ (analysis.magnesium / 0.8) * 33 }}%"></div>
+                                        {% elif analysis.magnesium < 0.8 %}
+                                            <div class="progress-bar bg-warning" role="progressbar" style="width: {{ (analysis.magnesium / 0.8) * 33 }}%"></div>
+                                        {% elif analysis.magnesium < 1.5 %}
+                                            <div class="progress-bar bg-info" role="progressbar" style="width: {{ (analysis.magnesium / 1.5) * 66 }}%"></div>
+                                        {% else %}
+                                            <div class="progress-bar bg-success" role="progressbar" style="width: min(100%, {{ (analysis.magnesium / 3) * 100 }}%)"></div>
+                                        {% endif %}
+                                    </div>
+                                    
+                                    {% if analysis.magnesium < 0.4 %}
+                                        <span class="badge bg-danger mt-2">Muito Baixo</span>
+                                    {% elif analysis.magnesium < 0.8 %}
+                                        <span class="badge bg-warning mt-2">Baixo</span>
+                                    {% elif analysis.magnesium < 1.5 %}
+                                        <span class="badge bg-info mt-2">Médio</span>
+                                    {% elif analysis.magnesium < 3.0 %}
+                                        <span class="badge bg-success mt-2">Bom</span>
+                                    {% else %}
+                                        <span class="badge bg-success mt-2">Muito Bom</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Parâmetros Adicionais (se existirem) -->
+            {% if analysis.aluminum is not none or analysis.sulfur is not none or analysis.organic_matter is not none %}
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-secondary text-white">
+                    <h5 class="mb-0">Parâmetros Adicionais</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        {% if analysis.aluminum is not none %}
+                        <!-- Alumínio -->
+                        <div class="col-md-4">
+                            <div class="card mb-3">
+                                <div class="card-header bg-light text-center">
+                                    <h6 class="mb-0">Alumínio (Al)</h6>
+                                </div>
+                                <div class="card-body text-center">
+                                    <h3>{{ analysis.aluminum|round(2) }}</h3>
+                                    <div class="small text-muted mb-2">cmolc/dm³</div>
+                                    
+                                    {% if analysis.aluminum > 1.0 %}
+                                        <span class="badge bg-danger">Alto (Tóxico)</span>
+                                    {% elif analysis.aluminum > 0.5 %}
+                                        <span class="badge bg-warning">Moderado</span>
+                                    {% else %}
+                                        <span class="badge bg-success">Adequado</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+                        
+                        {% if analysis.sulfur is not none %}
+                        <!-- Enxofre -->
+                        <div class="col-md-4">
+                            <div class="card mb-3">
+                                <div class="card-header bg-light text-center">
+                                    <h6 class="mb-0">Enxofre (S)</h6>
+                                </div>
+                                <div class="card-body text-center">
+                                    <h3>{{ analysis.sulfur|round(2) }}</h3>
+                                    <div class="small text-muted mb-2">mg/dm³</div>
+                                    
+                                    {% if analysis.sulfur < 5 %}
+                                        <span class="badge bg-danger">Muito Baixo</span>
+                                    {% elif analysis.sulfur < 10 %}
+                                        <span class="badge bg-warning">Baixo</span>
+                                    {% else %}
+                                        <span class="badge bg-success">Adequado</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+                        
+                        {% if analysis.organic_matter is not none %}
+                        <!-- Matéria Orgânica -->
+                        <div class="col-md-4">
+                            <div class="card mb-3">
+                                <div class="card-header bg-light text-center">
+                                    <h6 class="mb-0">Matéria Orgânica</h6>
+                                </div>
+                                <div class="card-body text-center">
+                                    <h3>{{ analysis.organic_matter|round(2) }}</h3>
+                                    <div class="small text-muted mb-2">%</div>
+                                    
+                                    {% if analysis.organic_matter < 1.5 %}
+                                        <span class="badge bg-danger">Muito Baixo</span>
+                                    {% elif analysis.organic_matter < 2.5 %}
+                                        <span class="badge bg-warning">Baixo</span>
+                                    {% elif analysis.organic_matter < 4.0 %}
+                                        <span class="badge bg-success">Adequado</span>
+                                    {% else %}
+                                        <span class="badge bg-success">Alto</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+            
+            <!-- CTC e Saturação por Bases (se existirem) -->
+            {% if analysis.cation_exchange is not none or analysis.base_saturation is not none %}
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">Índices de Fertilidade</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        {% if analysis.cation_exchange is not none %}
+                        <div class="col-md-6">
+                            <div class="card mb-3">
+                                <div class="card-header bg-light text-center">
+                                    <h6 class="mb-0">Capacidade de Troca Catiônica (CTC)</h6>
+                                </div>
+                                <div class="card-body text-center">
+                                    <h3>{{ analysis.cation_exchange|round(2) }}</h3>
+                                    <div class="small text-muted mb-2">cmolc/dm³</div>
+                                    
+                                    {% if analysis.cation_exchange < 5 %}
+                                        <span class="badge bg-warning">Baixa</span>
+                                    {% elif analysis.cation_exchange < 15 %}
+                                        <span class="badge bg-success">Média</span>
+                                    {% else %}
+                                        <span class="badge bg-primary">Alta</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+                        
+                        {% if analysis.base_saturation is not none %}
+                        <div class="col-md-6">
+                            <div class="card mb-3">
+                                <div class="card-header bg-light text-center">
+                                    <h6 class="mb-0">Saturação por Bases (V%)</h6>
+                                </div>
+                                <div class="card-body text-center">
+                                    <h3>{{ analysis.base_saturation|round(2) }}</h3>
+                                    <div class="small text-muted mb-2">%</div>
+                                    
+                                    {% if analysis.base_saturation < 40 %}
+                                        <span class="badge bg-danger">Baixa</span>
+                                    {% elif analysis.base_saturation < 70 %}
+                                        <span class="badge bg-warning">Média</span>
+                                    {% else %}
+                                        <span class="badge bg-success">Alta</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %} 

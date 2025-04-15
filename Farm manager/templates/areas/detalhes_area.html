@@ -1,0 +1,210 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card mb-4">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h2 class="mb-0">{{ area.nome }}</h2>
+                    <div>
+                        <a href="{{ url_for('areas.editar_area', id=area.id) }}" class="btn btn-sm btn-outline-primary me-1">
+                            <i class="fas fa-edit"></i> Editar
+                        </a>
+                        <button type="button" class="btn btn-sm btn-outline-danger" 
+                                onclick="confirmarExclusao({{ area.id }}, '{{ area.nome }}')">
+                            <i class="fas fa-trash"></i> Excluir
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <p><strong>Cultura:</strong> {{ area.cultura }}</p>
+                            <p><strong>Tamanho:</strong> {{ area.tamanho }} hectares</p>
+                        </div>
+                        <div class="col-md-6">
+                            {% if area.endereco %}
+                            <p><strong>Localização:</strong> {{ area.endereco }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    {% if area.descricao %}
+                    <div class="mb-4">
+                        <h5>Descrição</h5>
+                        <p>{{ area.descricao }}</p>
+                    </div>
+                    {% endif %}
+
+                    {% if area.latitude and area.longitude %}
+                    <div class="mb-4">
+                        <h5>Mapa</h5>
+                        <div id="map" style="height: 400px; width: 100%; border-radius: 5px; border: 1px solid #ddd;"></div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Seção de análises da área -->
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h3 class="mb-0">Análises de Solo</h3>
+                    <a href="{{ url_for('nova_analise', area_id=area.id) }}" class="btn btn-sm btn-primary">
+                        <i class="fas fa-plus"></i> Nova Análise
+                    </a>
+                </div>
+                <div class="card-body">
+                    {% if area.analyses %}
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Data</th>
+                                        <th>pH</th>
+                                        <th>Fósforo</th>
+                                        <th>Potássio</th>
+                                        <th>Cálcio</th>
+                                        <th>Magnésio</th>
+                                        <th>Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for analise in area.analyses %}
+                                    <tr>
+                                        <td>{{ analise.date.strftime('%d/%m/%Y') }}</td>
+                                        <td>{{ analise.ph }}</td>
+                                        <td>{{ analise.phosphorus }}</td>
+                                        <td>{{ analise.potassium }}</td>
+                                        <td>{{ analise.calcium }}</td>
+                                        <td>{{ analise.magnesium }}</td>
+                                        <td>
+                                            <a href="#" class="btn btn-sm btn-outline-secondary">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="alert alert-info">
+                            Nenhuma análise de solo registrada para esta área.
+                            <a href="{{ url_for('nova_analise', area_id=area.id) }}" class="alert-link">Registrar primeira análise</a>.
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <!-- Informações resumidas e guia de cultivo -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h4 class="mb-0">Informações para Cultivo</h4>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <h5>Cultura: {{ area.cultura }}</h5>
+                        <p><strong>Tamanho:</strong> {{ area.tamanho }} hectares</p>
+                        
+                        <!-- Informações específicas para cada cultura -->
+                        {% if area.cultura == 'milho' %}
+                        <div class="mt-3">
+                            <h6>Recomendações para Milho:</h6>
+                            <ul>
+                                <li>pH ideal: 5.8 - 6.2</li>
+                                <li>Espaçamento: 70-90 cm entre linhas</li>
+                                <li>Período de plantio recomendado: Setembro a Novembro</li>
+                            </ul>
+                        </div>
+                        {% elif area.cultura == 'soja' %}
+                        <div class="mt-3">
+                            <h6>Recomendações para Soja:</h6>
+                            <ul>
+                                <li>pH ideal: 6.0 - 6.5</li>
+                                <li>Espaçamento: 40-50 cm entre linhas</li>
+                                <li>Período de plantio recomendado: Outubro a Dezembro</li>
+                            </ul>
+                        </div>
+                        {% elif area.cultura == 'cafe' %}
+                        <div class="mt-3">
+                            <h6>Recomendações para Café:</h6>
+                            <ul>
+                                <li>pH ideal: 5.5 - 6.5</li>
+                                <li>Espaçamento: 3m x 1m (3.333 plantas/ha)</li>
+                                <li>Adubação: Rica em nitrogênio e potássio</li>
+                            </ul>
+                        </div>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Calculadora rápida -->
+                    <div class="mt-4">
+                        <h5>Calculadora Rápida</h5>
+                        <a href="{{ url_for('calculadora') }}" class="btn btn-primary btn-sm w-100 mb-2">
+                            <i class="fas fa-calculator"></i> Calculadora de Solo
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de Confirmação de Exclusão -->
+<div class="modal fade" id="modalConfirmacao" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Confirmar Exclusão</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Tem certeza que deseja excluir a área "<span id="areaNome"></span>"?</p>
+                <p class="text-danger"><small>Esta ação não poderá ser desfeita. Todas as análises associadas a esta área também serão excluídas.</small></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <form id="formExclusao" method="POST" style="display: inline;">
+                    <button type="submit" class="btn btn-danger">Confirmar Exclusão</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block styles %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" 
+      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+{% endblock %}
+
+{% block scripts %}
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" 
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        {% if area.latitude and area.longitude %}
+        // Inicializar mapa
+        const map = L.map('map').setView([{{ area.latitude }}, {{ area.longitude }}], 15);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+        
+        // Adicionar marcador
+        L.marker([{{ area.latitude }}, {{ area.longitude }}]).addTo(map)
+         .bindPopup('{{ area.nome }}');
+        {% endif %}
+    });
+    
+    function confirmarExclusao(id, nome) {
+        document.getElementById('areaNome').textContent = nome;
+        const url = "{{ url_for('areas.excluir_area', id=0) }}".replace('/0', '/' + id);
+        document.getElementById('formExclusao').action = url;
+        var modal = new bootstrap.Modal(document.getElementById('modalConfirmacao'));
+        modal.show();
+    }
+</script>
+{% endblock %} 

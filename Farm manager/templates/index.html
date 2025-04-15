@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Sistema Agro{% endblock %}
+
+{% block content %}
+<div class="dashboard">
+    <h1><i class="bi bi-tractor"></i> Bem-vindo, {{ current_user.username }}!</h1>
+    
+    <div class="dashboard-grid">
+        <div class="dashboard-card">
+            <h2><i class="bi bi-graph-up"></i> Análises de Solo</h2>
+            <p>Registre e visualize análises de solo, acompanhe a evolução da qualidade do terreno.</p>
+            <a href="{{ url_for('analises') }}" class="btn">
+                <i class="bi bi-arrow-right"></i> Ver Análises
+            </a>
+        </div>
+
+        <div class="dashboard-card">
+            <h2><i class="bi bi-calculator"></i> Calculadora de Solo</h2>
+            <p>Use nossa calculadora para determinar as necessidades do seu solo.</p>
+            <a href="{{ url_for('calculadora') }}" class="btn">
+                <i class="bi bi-arrow-right"></i> Calculadora
+            </a>
+        </div>
+
+        <div class="dashboard-card">
+            <h2><i class="bi bi-currency-dollar"></i> Preços</h2>
+            <p>Consulte os preços atuais de insumos e serviços.</p>
+            <a href="{{ url_for('precos') }}" class="btn">
+                <i class="bi bi-arrow-right"></i> Ver Preços
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %} 
