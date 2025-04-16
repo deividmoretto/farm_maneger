@@ -33,6 +33,7 @@ pip install -r requirements.txt
 4. Configure o banco de dados PostgreSQL:
 - Crie um banco de dados chamado `farmdb`
 - Ajuste as configurações de conexão no arquivo `.env`
+- Comando para secret key: python -c "import secrets; print(secrets.token_hex(32))"
 
 5. Inicialize o banco de dados:
 ```bash
