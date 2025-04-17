@@ -1,7 +1,0 @@
-Flask
-Flask-SQLAlchemy
-Flask-Login
-Flask-Mail
-Flask-WTF
-email-validator
-psycopg2-binary 
