@@ -1,0 +1,448 @@
+{% extends 'base.html' %}
+
+{% block title %}Gestão de Silos{% endblock %}
+
+{% block styles %}
+<style>
+    .silo-card {
+        transition: all 0.3s ease;
+        border-radius: 10px;
+        overflow: hidden;
+    }
+    
+    .silo-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    }
+    
+    .progress {
+        height: 25px;
+        border-radius: 5px;
+    }
+    
+    .capacity-info {
+        font-size: 0.9rem;
+        color: #555;
+    }
+    
+    .silo-icon {
+        font-size: 2.5rem;
+        color: #f8b400;
+    }
+    
+    .silo-type-badge {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+    }
+    
+    .dashboard-stats {
+        background: linear-gradient(to right, #4286f4, #373B44);
+        color: white;
+        border-radius: 10px;
+        padding: 20px;
+        margin-bottom: 20px;
+    }
+    
+    .dashboard-value {
+        font-size: 2.2rem;
+        font-weight: bold;
+    }
+    
+    .dashboard-label {
+        font-size: 0.9rem;
+        opacity: 0.9;
+    }
+    
+    .grain-icon {
+        font-size: 1.5rem;
+        margin-right: 0.5rem;
+    }
+    
+    #ocupacaoGrafico {
+        height: 250px;
+        max-width: 100%;
+    }
+    
+    #culturaGrafico {
+        height: 250px;
+        max-width: 100%;
+    }
+    
+    .cultura-milho { color: #F9A825; }
+    .cultura-soja { color: #66BB6A; }
+    .cultura-trigo { color: #FFCA28; }
+    .cultura-sorgo { color: #8D6E63; }
+    .cultura-aveia { color: #BDBDBD; }
+    .cultura-feijao { color: #5D4037; }
+    .cultura-cevada { color: #D4E157; }
+    .cultura-outro { color: #78909C; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>Gestão de Silos e Armazenamento</h1>
+        <a href="{{ url_for('silos.novo_silo') }}" class="btn btn-primary">
+            <i class="fas fa-plus"></i> Novo Silo
+        </a>
+    </div>
+    
+    <!-- Dashboard -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="dashboard-stats">
+                <h6 class="dashboard-label">Capacidade Total</h6>
+                <div class="dashboard-value" id="capacidadeTotal">...</div>
+                <small>toneladas</small>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="dashboard-stats">
+                <h6 class="dashboard-label">Total Armazenado</h6>
+                <div class="dashboard-value" id="totalArmazenado">...</div>
+                <small>toneladas</small>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="dashboard-stats">
+                <h6 class="dashboard-label">Ocupação Média</h6>
+                <div class="dashboard-value" id="ocupacaoMedia">...</div>
+                <small>percentual</small>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="dashboard-stats">
+                <h6 class="dashboard-label">Valor Estimado</h6>
+                <div class="dashboard-value" id="valorTotal">...</div>
+                <small>em R$</small>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Gráficos -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title">Ocupação dos Silos</h5>
+                </div>
+                <div class="card-body">
+                    <div id="ocupacaoGrafico"></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title">Distribuição por Cultura</h5>
+                </div>
+                <div class="card-body">
+                    <div id="culturaGrafico"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    {% if silos %}
+        <div class="row">
+            {% for silo in silos %}
+                <div class="col-md-4 mb-4">
+                    <div class="card silo-card">
+                        <div class="card-body position-relative">
+                            <span class="badge bg-secondary silo-type-badge">{{ silo.tipo|capitalize }}</span>
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="me-3">
+                                    <i class="fas fa-warehouse silo-icon"></i>
+                                </div>
+                                <div>
+                                    <h4 class="card-title mb-0">{{ silo.nome }}</h4>
+                                    <p class="text-muted mb-0">{{ silo.capacidade }} toneladas</p>
+                                </div>
+                            </div>
+                            
+                            {% set percentual = (silo.estoque_atual() / silo.capacidade * 100) if silo.capacidade > 0 else 0 %}
+                            
+                            <div class="mb-2">
+                                <div class="d-flex justify-content-between mb-1">
+                                    <strong>Ocupação</strong>
+                                    <span>{{ percentual|round(1) }}%</span>
+                                </div>
+                                <div class="progress mb-2">
+                                    {% if percentual < 50 %}
+                                        {% set cor = "success" %}
+                                    {% elif percentual < 80 %}
+                                        {% set cor = "warning" %}
+                                    {% else %}
+                                        {% set cor = "danger" %}
+                                    {% endif %}
+                                    
+                                    <div class="progress-bar bg-{{ cor }}" role="progressbar" 
+                                         style="width: {{ percentual }}%" 
+                                         aria-valuenow="{{ percentual }}" aria-valuemin="0" aria-valuemax="100">
+                                        {{ percentual|round(1) }}%
+                                    </div>
+                                </div>
+                                <div class="capacity-info">
+                                    {{ silo.estoque_atual()|round(2) }} / {{ silo.capacidade }} toneladas
+                                </div>
+                            </div>
+                            
+                            {% if silo.armazenamentos|selectattr('ativo')|list %}
+                                <div class="mt-3">
+                                    <h6>Conteúdo Atual:</h6>
+                                    {% for armazenamento in silo.armazenamentos if armazenamento.ativo %}
+                                        <div class="d-flex align-items-center mb-1">
+                                            <i class="fas fa-seedling cultura-{{ armazenamento.cultura }} grain-icon"></i>
+                                            <div>
+                                                <strong>{{ armazenamento.cultura|capitalize }}</strong>
+                                                <div class="text-muted small">{{ armazenamento.quantidade_atual()|round(2) }} ton. (Safra: {{ armazenamento.safra or "N/A" }})</div>
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                <div class="alert alert-light mt-3">
+                                    <i class="fas fa-info-circle"></i> Silo vazio
+                                </div>
+                            {% endif %}
+                            
+                            <div class="mt-3">
+                                <a href="{{ url_for('silos.detalhes_silo', id=silo.id) }}" class="btn btn-outline-primary">
+                                    <i class="fas fa-eye"></i> Detalhes
+                                </a>
+                                <a href="{{ url_for('silos.novo_armazenamento') }}?silo_id={{ silo.id }}" class="btn btn-outline-success">
+                                    <i class="fas fa-plus-circle"></i> Armazenar
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="card">
+            <div class="card-body text-center py-5">
+                <i class="fas fa-warehouse fa-3x text-muted mb-3"></i>
+                <h5>Você ainda não possui silos cadastrados</h5>
+                <p class="text-muted">Cadastre um silo para começar a gerenciar seu armazenamento de grãos</p>
+                <a href="{{ url_for('silos.novo_silo') }}" class="btn btn-primary mt-2">
+                    <i class="fas fa-plus"></i> Cadastrar Primeiro Silo
+                </a>
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Carregar dados dos silos para gráficos
+        const silosData = {{ dados_grafico|safe }};
+        
+        // Carregar estatísticas gerais
+        fetch("{{ url_for('silos.estatisticas_silos') }}")
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('capacidadeTotal').textContent = data.capacidade_total.toLocaleString('pt-BR', {maximumFractionDigits: 2});
+                document.getElementById('totalArmazenado').textContent = data.total_armazenado.toLocaleString('pt-BR', {maximumFractionDigits: 2});
+                document.getElementById('ocupacaoMedia').textContent = data.ocupacao_media.toLocaleString('pt-BR', {maximumFractionDigits: 1}) + '%';
+                document.getElementById('valorTotal').textContent = 'R$ ' + data.valor_total.toLocaleString('pt-BR', {maximumFractionDigits: 2});
+                
+                // Criar gráfico de distribuição por cultura
+                criarGraficoCulturas(data.culturas);
+            });
+        
+        // Criar gráfico de ocupação dos silos
+        if (silosData.length > 0) {
+            criarGraficoOcupacao(silosData);
+        }
+        
+        // Função para criar gráfico de ocupação
+        function criarGraficoOcupacao(silos) {
+            const options = {
+                series: [{
+                    name: 'Ocupação',
+                    data: silos.map(silo => silo.percentual)
+                }],
+                chart: {
+                    type: 'bar',
+                    height: 250,
+                    toolbar: {
+                        show: false
+                    }
+                },
+                plotOptions: {
+                    bar: {
+                        horizontal: false,
+                        columnWidth: '55%',
+                        borderRadius: 5,
+                        dataLabels: {
+                            position: 'top',
+                        },
+                    },
+                },
+                colors: ['#4e73df'],
+                dataLabels: {
+                    enabled: true,
+                    formatter: function (val) {
+                        return val.toFixed(1) + "%";
+                    },
+                    offsetY: -20,
+                    style: {
+                        fontSize: '12px',
+                        colors: ["#304758"]
+                    }
+                },
+                xaxis: {
+                    categories: silos.map(silo => silo.nome),
+                    position: 'bottom',
+                    labels: {
+                        rotateAlways: false,
+                        rotate: -45,
+                        style: {
+                            fontSize: '12px'
+                        }
+                    },
+                    axisBorder: {
+                        show: false
+                    },
+                    axisTicks: {
+                        show: false
+                    },
+                    crosshairs: {
+                        fill: {
+                            type: 'gradient',
+                            gradient: {
+                                colorFrom: '#D8E3F0',
+                                colorTo: '#BED1E6',
+                                stops: [0, 100],
+                                opacityFrom: 0.4,
+                                opacityTo: 0.5,
+                            }
+                        }
+                    },
+                    tooltip: {
+                        enabled: true,
+                    }
+                },
+                yaxis: {
+                    labels: {
+                        formatter: function (val) {
+                            return val.toFixed(0) + "%";
+                        }
+                    },
+                    max: 100
+                },
+                title: {
+                    text: 'Percentual de Ocupação por Silo',
+                    floating: false,
+                    offsetY: 0,
+                    align: 'center',
+                    style: {
+                        color: '#444'
+                    }
+                }
+            };
+
+            const chart = new ApexCharts(document.querySelector("#ocupacaoGrafico"), options);
+            chart.render();
+        }
+        
+        // Função para criar gráfico de distribuição por cultura
+        function criarGraficoCulturas(culturas) {
+            // Mapear cores para culturas
+            const coresCulturas = {
+                'milho': '#F9A825',
+                'soja': '#66BB6A',
+                'trigo': '#FFCA28',
+                'sorgo': '#8D6E63',
+                'aveia': '#BDBDBD',
+                'feijao': '#5D4037',
+                'cevada': '#D4E157',
+                'outro': '#78909C'
+            };
+            
+            // Preparar dados para o gráfico
+            const labels = [];
+            const valores = [];
+            const cores = [];
+            
+            for (const [cultura, quantidade] of Object.entries(culturas)) {
+                labels.push(cultura.charAt(0).toUpperCase() + cultura.slice(1));
+                valores.push(quantidade);
+                cores.push(coresCulturas[cultura] || '#78909C');
+            }
+            
+            // Se não houver dados, mostra mensagem vazia
+            if (valores.length === 0) {
+                labels.push("Sem dados");
+                valores.push(1);
+                cores.push("#e0e0e0");
+            }
+            
+            const options = {
+                series: valores,
+                chart: {
+                    type: 'donut',
+                    height: 250
+                },
+                labels: labels,
+                colors: cores,
+                plotOptions: {
+                    pie: {
+                        donut: {
+                            size: '55%',
+                            labels: {
+                                show: true,
+                                total: {
+                                    show: true,
+                                    showAlways: true,
+                                    label: 'Total',
+                                    formatter: function (w) {
+                                        return w.globals.seriesTotals.reduce((a, b) => a + b, 0).toLocaleString('pt-BR', {maximumFractionDigits: 2}) + ' ton';
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                dataLabels: {
+                    enabled: true,
+                    formatter: function (val, opts) {
+                        return opts.w.globals.labels[opts.seriesIndex] + ': ' + val.toFixed(1) + '%';
+                    }
+                },
+                legend: {
+                    position: 'bottom'
+                },
+                title: {
+                    text: 'Distribuição por Tipo de Grão',
+                    align: 'center',
+                    style: {
+                        color: '#444'
+                    }
+                },
+                responsive: [{
+                    breakpoint: 480,
+                    options: {
+                        chart: {
+                            width: 200
+                        },
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }]
+            };
+            
+            const chart = new ApexCharts(document.querySelector("#culturaGrafico"), options);
+            chart.render();
+        }
+    });
+</script>
+{% endblock %} 

@@ -1,0 +1,216 @@
+{% extends 'base.html' %}
+
+{% block title %}Registrar Armazenamento{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{{ url_for('silos.listar_silos') }}">Silos</a></li>
+                    {% if request.args.get('silo_id') %}
+                    <li class="breadcrumb-item">
+                        <a href="{{ url_for('silos.detalhes_silo', id=request.args.get('silo_id')) }}">
+                            {{ form.silo_id.choices|selectattr('0', 'equalto', form.silo_id.data|int)|map(attribute='1')|first|default('Silo') }}
+                        </a>
+                    </li>
+                    {% endif %}
+                    <li class="breadcrumb-item active">Novo Armazenamento</li>
+                </ol>
+            </nav>
+            <h1>Registrar Novo Armazenamento</h1>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-body">
+                    <form method="POST" class="needs-validation" novalidate>
+                        {{ form.csrf_token }}
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    {{ form.silo_id.label(class="form-label") }}
+                                    {{ form.silo_id(class="form-select" + (" is-invalid" if form.silo_id.errors else "")) }}
+                                    {% if form.silo_id.errors %}
+                                        <div class="invalid-feedback">
+                                            {% for error in form.silo_id.errors %}
+                                                {{ error }}
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    {{ form.cultura.label(class="form-label") }}
+                                    {{ form.cultura(class="form-select" + (" is-invalid" if form.cultura.errors else "")) }}
+                                    {% if form.cultura.errors %}
+                                        <div class="invalid-feedback">
+                                            {% for error in form.cultura.errors %}
+                                                {{ error }}
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    {{ form.safra.label(class="form-label") }}
+                                    {{ form.safra(class="form-control" + (" is-invalid" if form.safra.errors else ""), placeholder="Ex: 2023/2024") }}
+                                    {% if form.safra.errors %}
+                                        <div class="invalid-feedback">
+                                            {% for error in form.safra.errors %}
+                                                {{ error }}
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    {{ form.data_entrada.label(class="form-label") }}
+                                    {{ form.data_entrada(class="form-control" + (" is-invalid" if form.data_entrada.errors else ""), type="date") }}
+                                    {% if form.data_entrada.errors %}
+                                        <div class="invalid-feedback">
+                                            {% for error in form.data_entrada.errors %}
+                                                {{ error }}
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    {{ form.quantidade.label(class="form-label") }}
+                                    <div class="input-group">
+                                        {{ form.quantidade(class="form-control" + (" is-invalid" if form.quantidade.errors else ""), placeholder="0.0") }}
+                                        <span class="input-group-text">toneladas</span>
+                                    </div>
+                                    {% if form.quantidade.errors %}
+                                        <div class="invalid-feedback">
+                                            {% for error in form.quantidade.errors %}
+                                                {{ error }}
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    {{ form.umidade.label(class="form-label") }}
+                                    <div class="input-group">
+                                        {{ form.umidade(class="form-control" + (" is-invalid" if form.umidade.errors else ""), placeholder="0.0") }}
+                                        <span class="input-group-text">%</span>
+                                    </div>
+                                    {% if form.umidade.errors %}
+                                        <div class="invalid-feedback">
+                                            {% for error in form.umidade.errors %}
+                                                {{ error }}
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    {{ form.impureza.label(class="form-label") }}
+                                    <div class="input-group">
+                                        {{ form.impureza(class="form-control" + (" is-invalid" if form.impureza.errors else ""), placeholder="0.0") }}
+                                        <span class="input-group-text">%</span>
+                                    </div>
+                                    {% if form.impureza.errors %}
+                                        <div class="invalid-feedback">
+                                            {% for error in form.impureza.errors %}
+                                                {{ error }}
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <div class="form-group">
+                                {{ form.preco_unitario.label(class="form-label") }}
+                                <div class="input-group">
+                                    <span class="input-group-text">R$</span>
+                                    {{ form.preco_unitario(class="form-control" + (" is-invalid" if form.preco_unitario.errors else ""), placeholder="0.00") }}
+                                    <span class="input-group-text">/tonelada</span>
+                                </div>
+                                {% if form.preco_unitario.errors %}
+                                    <div class="invalid-feedback">
+                                        {% for error in form.preco_unitario.errors %}
+                                            {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                                <small class="text-muted">Opcional - valor de referência para cálculo do patrimônio</small>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <div class="form-group">
+                                {{ form.observacoes.label(class="form-label") }}
+                                {{ form.observacoes(class="form-control" + (" is-invalid" if form.observacoes.errors else ""), rows="3", placeholder="Observações sobre este armazenamento...") }}
+                                {% if form.observacoes.errors %}
+                                    <div class="invalid-feedback">
+                                        {% for error in form.observacoes.errors %}
+                                            {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a href="{{ url_for('silos.listar_silos') }}" class="btn btn-outline-secondary me-md-2">Cancelar</a>
+                            {{ form.submit(class="btn btn-primary") }}
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title">Dicas para Armazenamento</h5>
+                </div>
+                <div class="card-body">
+                    <p>O armazenamento adequado é importante para manter a qualidade dos grãos:</p>
+                    
+                    <h6 class="mt-3">Umidade Ideal por Cultura</h6>
+                    <ul class="list-group mb-3">
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <span><i class="fas fa-seedling cultura-milho me-2"></i> Milho</span>
+                            <span class="badge bg-primary rounded-pill">13-14%</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <span><i class="fas fa-seedling cultura-soja me-2"></i> Soja</span>
+                            <span class="badge bg-primary rounded-pill">11-13%</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <span><i class="fas fa-seedling cultura-trigo me-2"></i> Trigo</span>
+                            <span class="badge bg-primary rounded-pill">12-13%</span>
+                        </li>
+                    </ul>
+                    
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i> A quantidade informada será validada em relação à capacidade disponível do silo selecionado.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

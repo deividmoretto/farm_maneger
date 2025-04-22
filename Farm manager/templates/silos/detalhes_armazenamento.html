@@ -1,0 +1,357 @@
+{% extends 'base.html' %}
+
+{% block title %}Detalhes do Armazenamento{% endblock %}
+
+{% block styles %}
+<style>
+    .card-stat {
+        text-align: center;
+        border-radius: 10px;
+        padding: 20px;
+        margin-bottom: 20px;
+        transition: all 0.3s ease;
+    }
+    
+    .card-stat:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    }
+    
+    .stat-value {
+        font-size: 1.8rem;
+        font-weight: bold;
+        color: #2c3e50;
+    }
+    
+    .stat-label {
+        font-size: 0.85rem;
+        color: #7f8c8d;
+    }
+    
+    .cultura-milho { color: #F9A825; }
+    .cultura-soja { color: #66BB6A; }
+    .cultura-trigo { color: #FFCA28; }
+    .cultura-sorgo { color: #8D6E63; }
+    .cultura-aveia { color: #BDBDBD; }
+    .cultura-feijao { color: #5D4037; }
+    .cultura-cevada { color: #D4E157; }
+    .cultura-outro { color: #78909C; }
+    
+    .timeline {
+        position: relative;
+        margin: 0 auto;
+    }
+    
+    .timeline::after {
+        content: '';
+        position: absolute;
+        width: 2px;
+        background-color: #e9ecef;
+        top: 0;
+        bottom: 0;
+        left: 25px;
+        margin-left: -1px;
+    }
+    
+    .timeline-item {
+        position: relative;
+        padding-left: 40px;
+        margin-bottom: 20px;
+    }
+    
+    .timeline-dot {
+        position: absolute;
+        width: 12px;
+        height: 12px;
+        left: 19px;
+        background-color: #4e73df;
+        border-radius: 50%;
+        z-index: 1;
+        top: 12px;
+    }
+    
+    .timeline-entry {
+        position: relative;
+        padding: 15px;
+        background-color: #f8f9fa;
+        border-radius: 6px;
+        border-left: 3px solid #4e73df;
+    }
+    
+    .timeline-date {
+        font-size: 0.8rem;
+        color: #6c757d;
+        margin-bottom: 5px;
+    }
+    
+    .tipo-saida { border-left-color: #e74a3b; }
+    .tipo-ajuste { border-left-color: #f6c23e; }
+    
+    .dot-saida { background-color: #e74a3b; }
+    .dot-ajuste { background-color: #f6c23e; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{{ url_for('silos.listar_silos') }}">Silos</a></li>
+                    <li class="breadcrumb-item">
+                        <a href="{{ url_for('silos.detalhes_silo', id=armazenamento.silo_id) }}">
+                            {{ armazenamento.silo.nome }}
+                        </a>
+                    </li>
+                    <li class="breadcrumb-item active">Armazenamento</li>
+                </ol>
+            </nav>
+            
+            <div class="d-flex justify-content-between align-items-center">
+                <h1>
+                    <i class="fas fa-seedling cultura-{{ armazenamento.cultura }} me-2"></i>
+                    {{ armazenamento.cultura|capitalize }}
+                    {% if armazenamento.safra %}
+                    <small class="text-muted">(Safra {{ armazenamento.safra }})</small>
+                    {% endif %}
+                </h1>
+                <div>
+                    {% if armazenamento.ativo %}
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalMovimentacao">
+                        <i class="fas fa-dolly"></i> Registrar Saída
+                    </button>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Status do Armazenamento -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card card-stat bg-light">
+                <div>
+                    <div class="stat-value">{{ quantidade_atual|round(2) }} ton</div>
+                    <div class="stat-label">Quantidade Atual</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card card-stat bg-light">
+                <div>
+                    <div class="stat-value">{{ armazenamento.quantidade|round(2) }} ton</div>
+                    <div class="stat-label">Quantidade Total Armazenada</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card card-stat bg-light">
+                <div>
+                    <div class="stat-value">{{ armazenamento.data_entrada.strftime('%d/%m/%Y') }}</div>
+                    <div class="stat-label">Data de Entrada</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card card-stat bg-light">
+                <div>
+                    <div class="stat-value">
+                        {% if armazenamento.ativo %}
+                        <span class="badge bg-success">Ativo</span>
+                        {% else %}
+                        <span class="badge bg-secondary">Concluído</span>
+                        {% endif %}
+                    </div>
+                    <div class="stat-label">Status</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Informações Detalhadas -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title">Detalhes do Armazenamento</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <small class="d-block text-muted">Cultura</small>
+                            <div class="fw-bold">{{ armazenamento.cultura|capitalize }}</div>
+                        </div>
+                        <div class="col-md-6">
+                            <small class="d-block text-muted">Safra</small>
+                            <div>{{ armazenamento.safra or "Não informada" }}</div>
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <small class="d-block text-muted">Umidade</small>
+                            <div>{{ armazenamento.umidade|round(1) if armazenamento.umidade else "N/A" }}%</div>
+                        </div>
+                        <div class="col-md-6">
+                            <small class="d-block text-muted">Impureza</small>
+                            <div>{{ armazenamento.impureza|round(1) if armazenamento.impureza else "N/A" }}%</div>
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <small class="d-block text-muted">Preço de Entrada</small>
+                            <div>{% if armazenamento.preco_unitario %}R$ {{ armazenamento.preco_unitario|round(2)|string|replace('.', ',') }}/ton{% else %}Não informado{% endif %}</div>
+                        </div>
+                        <div class="col-md-6">
+                            <small class="d-block text-muted">Valor Total</small>
+                            <div>{% if armazenamento.preco_unitario %}R$ {{ (armazenamento.quantidade_atual() * armazenamento.preco_unitario)|round(2)|string|replace('.', ',') }}{% else %}Não calculado{% endif %}</div>
+                        </div>
+                    </div>
+                    
+                    {% if armazenamento.observacoes %}
+                    <div class="mt-3">
+                        <small class="d-block text-muted">Observações</small>
+                        <div>{{ armazenamento.observacoes }}</div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <!-- Movimentações Recentes -->
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title">Movimentações</h5>
+                </div>
+                <div class="card-body">
+                    {% if movimentacoes %}
+                    <div class="timeline">
+                        {% for movimentacao in movimentacoes %}
+                        <div class="timeline-item">
+                            <div class="timeline-dot dot-{{ movimentacao.tipo }}"></div>
+                            <div class="timeline-entry {{ 'tipo-' + movimentacao.tipo }}">
+                                <div class="timeline-date">{{ movimentacao.data.strftime('%d/%m/%Y') }}</div>
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div>
+                                        <strong>
+                                            {{ movimentacao.tipo|capitalize }}: {{ movimentacao.quantidade|round(2) }} toneladas
+                                        </strong>
+                                        {% if movimentacao.destino %}
+                                        <div class="small">Destino: {{ movimentacao.destino }}</div>
+                                        {% endif %}
+                                        {% if movimentacao.observacoes %}
+                                        <div class="small text-muted">{{ movimentacao.observacoes }}</div>
+                                        {% endif %}
+                                    </div>
+                                    <div>
+                                        {% if movimentacao.preco_unitario %}
+                                        <span class="badge bg-success">
+                                            R$ {{ movimentacao.preco_unitario|round(2)|string|replace('.', ',') }}/ton
+                                        </span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="text-center py-4">
+                        <i class="fas fa-history fa-3x text-muted mb-3"></i>
+                        <p>Nenhuma movimentação registrada</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para Registrar Movimentação -->
+{% if armazenamento.ativo %}
+<div class="modal fade" id="modalMovimentacao" tabindex="-1" aria-labelledby="modalMovimentacaoLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalMovimentacaoLabel">Registrar Saída de Grãos</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="POST" action="{{ url_for('silos.nova_movimentacao') }}">
+                <div class="modal-body">
+                    {{ form.csrf_token }}
+                    {{ form.armazenamento_id }}
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Cultura</label>
+                        <input type="text" class="form-control" value="{{ armazenamento.cultura|capitalize }}" readonly>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Estoque Disponível</label>
+                        <input type="text" class="form-control" value="{{ quantidade_atual|round(2) }} toneladas" readonly>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                {{ form.tipo.label(class="form-label") }}
+                                {{ form.tipo(class="form-select") }}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                {{ form.data.label(class="form-label") }}
+                                {{ form.data(class="form-control", type="date") }}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <div class="form-group">
+                            {{ form.quantidade.label(class="form-label") }}
+                            <div class="input-group">
+                                {{ form.quantidade(class="form-control", placeholder="0.0") }}
+                                <span class="input-group-text">toneladas</span>
+                            </div>
+                            <small class="text-muted">Máximo: {{ quantidade_atual|round(2) }} toneladas</small>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <div class="form-group">
+                            {{ form.destino.label(class="form-label") }}
+                            {{ form.destino(class="form-control", placeholder="Ex: Venda para Cooperativa") }}
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <div class="form-group">
+                            {{ form.preco_unitario.label(class="form-label") }}
+                            <div class="input-group">
+                                <span class="input-group-text">R$</span>
+                                {{ form.preco_unitario(class="form-control", placeholder="0.00") }}
+                                <span class="input-group-text">/tonelada</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <div class="form-group">
+                            {{ form.observacoes.label(class="form-label") }}
+                            {{ form.observacoes(class="form-control", rows="2", placeholder="Observações sobre esta movimentação...") }}
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    {{ form.submit(class="btn btn-primary") }}
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %} 

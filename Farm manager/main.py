@@ -15,6 +15,7 @@ from flask import Blueprint
 # Importar blueprints
 from app.routes.areas import areas_bp
 from app.routes.analises import bp as analises_bp
+from app.routes.silos import silos_bp
 
 load_dotenv()
 
@@ -31,13 +32,15 @@ login_manager.login_view = 'login'
 # Registrar blueprints
 app.register_blueprint(areas_bp)
 app.register_blueprint(analises_bp)
+app.register_blueprint(silos_bp)
 
 # Adicionar contexto para a barra lateral
 @app.context_processor
 def inject_blueprint_url():
     return {
         'areas_url': lambda: url_for('areas.listar_areas'),
-        'analises_url': lambda: url_for('analises.listar_analises')
+        'analises_url': lambda: url_for('analises.listar_analises'),
+        'silos_url': lambda: url_for('silos.listar_silos')
     }
 
 # Modelos

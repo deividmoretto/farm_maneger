@@ -26,13 +26,14 @@ def create_app(config=None):
     login_manager.init_app(app)
     
     # Importar blueprints
-    from app.routes import auth, main, areas, analises
+    from app.routes import auth, main, areas, analises, silos
     
     # Registrar blueprints
     app.register_blueprint(auth.bp)
     app.register_blueprint(main.bp)
     app.register_blueprint(areas.areas_bp)
     app.register_blueprint(analises.bp)
+    app.register_blueprint(silos.silos_bp)
     
     # Criar tabelas se não existirem
     with app.app_context():

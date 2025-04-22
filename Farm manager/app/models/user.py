@@ -9,6 +9,7 @@ class User(UserMixin, db.Model):
     password_hash = db.Column(db.String(255))
     is_admin = db.Column(db.Boolean, default=False)
     areas = db.relationship('Area', backref='owner', lazy=True)
+    silos = db.relationship('Silo', backref='owner', lazy=True)
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)

@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, flash, session
+from flask import Flask, render_template, request, redirect, url_for, flash, session, Blueprint
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -8,7 +8,6 @@ from flask_wtf import FlaskForm
 from wtforms import FloatField, SelectField, SubmitField
 from wtforms.validators import DataRequired, NumberRange
 from datetime import datetime
-from flask import Blueprint
 
 load_dotenv()
 
@@ -30,6 +29,7 @@ class User(UserMixin, db.Model):
     password_hash = db.Column(db.String(255))
     is_admin = db.Column(db.Boolean, default=False)
     areas = db.relationship('Area', backref='owner', lazy=True)
+    silos = db.relationship('Silo', backref='owner', lazy=True)
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
@@ -64,6 +64,30 @@ class Analysis(db.Model):
     cation_exchange = db.Column(db.Float, nullable=True) # CTC - cmolc/dm³
     base_saturation = db.Column(db.Float, nullable=True) # Saturação por Bases (%)
     notes = db.Column(db.Text, nullable=True)        # Observações
+
+class Silo(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False)
+    capacity = db.Column(db.Float, nullable=False)   # Capacidade em toneladas
+    location = db.Column(db.String(200))
+    type = db.Column(db.String(50))                  # Tipo: Metálico, Concreto, Bolsa, etc.
+    diameter = db.Column(db.Float, nullable=True)    # Diâmetro em metros
+    height = db.Column(db.Float, nullable=True)      # Altura em metros
+    description = db.Column(db.Text, nullable=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    armazenamentos = db.relationship('Armazenamento', backref='silo', lazy=True)
+
+class Armazenamento(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    silo_id = db.Column(db.Integer, db.ForeignKey('silo.id'), nullable=False)
+    crop_type = db.Column(db.String(50), nullable=False) # Tipo de grão
+    quantity = db.Column(db.Float, nullable=False)      # Quantidade em toneladas
+    humidity = db.Column(db.Float, nullable=True)       # Umidade %
+    impurity = db.Column(db.Float, nullable=True)       # Impureza %
+    entry_date = db.Column(db.DateTime, nullable=False)
+    exit_date = db.Column(db.DateTime, nullable=True)   # Data de saída (se já foi retirado)
+    price_per_ton = db.Column(db.Float, nullable=True)  # Preço por tonelada
+    notes = db.Column(db.Text, nullable=True)          # Observações
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -523,6 +547,10 @@ def analises():
     for area in areas:
         analyses.extend(area.analyses)
     
+    # Verificar se há análises com matéria orgânica ou saturação de bases
+    any_organic_matter = any(analysis.organic_matter is not None for analysis in analyses)
+    any_base_saturation = any(analysis.base_saturation is not None for analysis in analyses)
+    
     # Obter dados para gráficos
     datas = [analise.date.strftime('%d/%m/%Y') for analise in analyses]
     valores_ph = [analise.ph for analise in analyses]
@@ -536,6 +564,14 @@ def analises():
     if resultados_calculadora:
         session.pop('resultados_calculadora')  # Limpar da sessão após uso
     
+    # Coletar valores opcionais
+    if analyses:
+        organic_matter_values = [float(analise.organic_matter) if analise.organic_matter is not None else None for analise in analyses]
+        base_saturation_values = [float(analise.base_saturation) if analise.base_saturation is not None else None for analise in analyses]
+    else:
+        organic_matter_values = []
+        base_saturation_values = []
+    
     return render_template('analises.html', 
                           analyses=analyses, 
                           resultados_calculadora=resultados_calculadora,
@@ -544,7 +580,11 @@ def analises():
                           valores_p=valores_p,
                           valores_k=valores_k,
                           valores_ca=valores_ca,
-                          valores_mg=valores_mg)
+                          valores_mg=valores_mg,
+                          organic_matter_values=organic_matter_values,
+                          base_saturation_values=base_saturation_values,
+                          any_organic_matter=any_organic_matter, 
+                          any_base_saturation=any_base_saturation)
 
 @app.route('/nova_analise', methods=['GET', 'POST'])
 @login_required
@@ -740,14 +780,318 @@ def admin_users():
     users = User.query.all()
     return render_template('admin/users.html', users=users)
 
+# Rota para silos
+@app.route('/silos')
+@login_required
+def silos():
+    silos = Silo.query.filter_by(user_id=current_user.id).all()
+    
+    # Calcular estatísticas
+    total_silos = len(silos)
+    total_capacidade = sum(silo.capacity for silo in silos)
+    capacidade_utilizada = 0
+    total_armazenado = 0
+    
+    silos_info = []
+    tipos_graos = {}
+    
+    for silo in silos:
+        # Filtrar apenas armazenamentos ativos (sem data de saída)
+        armazenamentos_ativos = [a for a in silo.armazenamentos if a.exit_date is None]
+        
+        # Calcular ocupação atual
+        ocupacao = sum(a.quantity for a in armazenamentos_ativos)
+        percentual = (ocupacao / silo.capacity * 100) if silo.capacity > 0 else 0
+        
+        # Somar ao total
+        total_armazenado += ocupacao
+        
+        # Contar grãos por tipo
+        for armazenamento in armazenamentos_ativos:
+            if armazenamento.crop_type in tipos_graos:
+                tipos_graos[armazenamento.crop_type] += armazenamento.quantity
+            else:
+                tipos_graos[armazenamento.crop_type] = armazenamento.quantity
+        
+        # Adicionar informações para a tabela
+        silos_info.append({
+            'silo': silo,
+            'ocupacao': ocupacao,
+            'percentual': percentual,
+            'armazenamentos': armazenamentos_ativos
+        })
+    
+    # Calcular percentual total de utilização
+    if total_capacidade > 0:
+        capacidade_utilizada = (total_armazenado / total_capacidade) * 100
+    
+    return render_template('silos/listar_silos.html', 
+                          silos=silos,
+                          silos_info=silos_info,
+                          total_silos=total_silos,
+                          total_capacidade=total_capacidade,
+                          total_armazenado=total_armazenado,
+                          capacidade_utilizada=capacidade_utilizada,
+                          tipos_graos=tipos_graos)
+
+@app.route('/silos/novo', methods=['GET', 'POST'])
+@login_required
+def novo_silo():
+    if request.method == 'POST':
+        try:
+            nome = request.form.get('name')
+            capacidade = float(request.form.get('capacity'))
+            local = request.form.get('location')
+            tipo = request.form.get('type')
+            
+            # Campos opcionais
+            diametro = None
+            altura = None
+            descricao = request.form.get('description', '')
+            
+            if request.form.get('diameter'):
+                diametro = float(request.form.get('diameter'))
+            
+            if request.form.get('height'):
+                altura = float(request.form.get('height'))
+            
+            # Criar novo silo
+            silo = Silo(
+                name=nome,
+                capacity=capacidade,
+                location=local,
+                type=tipo,
+                diameter=diametro,
+                height=altura,
+                description=descricao,
+                user_id=current_user.id
+            )
+            
+            db.session.add(silo)
+            db.session.commit()
+            
+            flash(f'Silo "{nome}" cadastrado com sucesso!', 'success')
+            return redirect(url_for('silos'))
+            
+        except Exception as e:
+            flash(f'Erro ao cadastrar silo: {str(e)}', 'danger')
+    
+    return render_template('silos/novo_silo.html')
+
+@app.route('/silos/<int:id>')
+@login_required
+def detalhes_silo(id):
+    silo = Silo.query.filter_by(id=id, user_id=current_user.id).first_or_404()
+    
+    # Filtrar apenas armazenamentos ativos (sem data de saída)
+    armazenamentos_ativos = [a for a in silo.armazenamentos if a.exit_date is None]
+    armazenamentos_finalizados = [a for a in silo.armazenamentos if a.exit_date is not None]
+    
+    # Calcular ocupação atual
+    ocupacao = sum(a.quantity for a in armazenamentos_ativos)
+    percentual = (ocupacao / silo.capacity * 100) if silo.capacity > 0 else 0
+    
+    # Calcular informações de tipos de grãos
+    tipos_graos = {}
+    for armazenamento in armazenamentos_ativos:
+        if armazenamento.crop_type in tipos_graos:
+            tipos_graos[armazenamento.crop_type] += armazenamento.quantity
+        else:
+            tipos_graos[armazenamento.crop_type] = armazenamento.quantity
+    
+    return render_template('silos/detalhes_silo.html', 
+                          silo=silo,
+                          ocupacao=ocupacao,
+                          percentual=percentual,
+                          armazenamentos_ativos=armazenamentos_ativos,
+                          armazenamentos_finalizados=armazenamentos_finalizados,
+                          tipos_graos=tipos_graos)
+
+@app.route('/silos/<int:id>/excluir', methods=['POST'])
+@login_required
+def excluir_silo(id):
+    silo = Silo.query.filter_by(id=id, user_id=current_user.id).first_or_404()
+    
+    # Verificar se existem armazenamentos ativos
+    armazenamentos_ativos = [a for a in silo.armazenamentos if a.exit_date is None]
+    if armazenamentos_ativos:
+        flash('Não é possível excluir o silo pois há armazenamentos ativos.', 'danger')
+        return redirect(url_for('detalhes_silo', id=id))
+    
+    # Remover todos os armazenamentos antigos
+    for armazenamento in silo.armazenamentos:
+        db.session.delete(armazenamento)
+    
+    # Remover o silo
+    nome_silo = silo.name
+    db.session.delete(silo)
+    db.session.commit()
+    
+    flash(f'Silo "{nome_silo}" excluído com sucesso!', 'success')
+    return redirect(url_for('silos'))
+
+@app.route('/silos/<int:id>/editar', methods=['GET', 'POST'])
+@login_required
+def editar_silo(id):
+    silo = Silo.query.filter_by(id=id, user_id=current_user.id).first_or_404()
+    
+    if request.method == 'POST':
+        try:
+            silo.name = request.form.get('name')
+            silo.capacity = float(request.form.get('capacity'))
+            silo.location = request.form.get('location')
+            silo.type = request.form.get('type')
+            silo.description = request.form.get('description', '')
+            
+            # Campos opcionais
+            if request.form.get('diameter'):
+                silo.diameter = float(request.form.get('diameter'))
+            else:
+                silo.diameter = None
+                
+            if request.form.get('height'):
+                silo.height = float(request.form.get('height'))
+            else:
+                silo.height = None
+            
+            db.session.commit()
+            flash(f'Silo "{silo.name}" atualizado com sucesso!', 'success')
+            return redirect(url_for('detalhes_silo', id=id))
+            
+        except Exception as e:
+            flash(f'Erro ao atualizar silo: {str(e)}', 'danger')
+    
+    return render_template('silos/novo_silo.html', silo=silo, edit_mode=True)
+
+@app.route('/silos/<int:id>/armazenar', methods=['GET', 'POST'])
+@login_required
+def novo_armazenamento(id):
+    silo = Silo.query.filter_by(id=id, user_id=current_user.id).first_or_404()
+    
+    # Verificar ocupação atual do silo
+    armazenamentos_ativos = [a for a in silo.armazenamentos if a.exit_date is None]
+    ocupacao_atual = sum(a.quantity for a in armazenamentos_ativos)
+    
+    if request.method == 'POST':
+        try:
+            quantidade = float(request.form.get('quantity'))
+            tipo_grao = request.form.get('crop_type')
+            
+            # Verificar se há espaço suficiente
+            if ocupacao_atual + quantidade > silo.capacity:
+                flash('A quantidade excede a capacidade disponível do silo!', 'danger')
+                return redirect(url_for('novo_armazenamento', id=id))
+            
+            # Processar campos de data
+            data_entrada = datetime.strptime(request.form.get('entry_date'), '%Y-%m-%d')
+            
+            # Campos opcionais
+            umidade = None
+            impureza = None
+            preco = None
+            observacoes = request.form.get('notes', '')
+            
+            if request.form.get('humidity'):
+                umidade = float(request.form.get('humidity'))
+                
+            if request.form.get('impurity'):
+                impureza = float(request.form.get('impurity'))
+                
+            if request.form.get('price_per_ton'):
+                preco = float(request.form.get('price_per_ton'))
+            
+            # Criar novo armazenamento
+            armazenamento = Armazenamento(
+                silo_id=silo.id,
+                crop_type=tipo_grao,
+                quantity=quantidade,
+                humidity=umidade,
+                impurity=impureza,
+                entry_date=data_entrada,
+                price_per_ton=preco,
+                notes=observacoes
+            )
+            
+            db.session.add(armazenamento)
+            db.session.commit()
+            
+            flash(f'Armazenamento de {quantidade} toneladas de {tipo_grao} registrado com sucesso!', 'success')
+            return redirect(url_for('detalhes_silo', id=id))
+            
+        except Exception as e:
+            flash(f'Erro ao registrar armazenamento: {str(e)}', 'danger')
+    
+    # Calcular espaço disponível
+    espaco_disponivel = silo.capacity - ocupacao_atual
+    
+    return render_template('silos/novo_armazenamento.html', 
+                          silo=silo, 
+                          ocupacao_atual=ocupacao_atual, 
+                          espaco_disponivel=espaco_disponivel)
+
+@app.route('/armazenamentos/<int:id>')
+@login_required
+def detalhes_armazenamento(id):
+    armazenamento = Armazenamento.query.join(Silo).filter(
+        Armazenamento.id == id,
+        Silo.user_id == current_user.id
+    ).first_or_404()
+    
+    silo = armazenamento.silo
+    
+    # Calcular valor total
+    valor_total = None
+    if armazenamento.price_per_ton:
+        valor_total = armazenamento.price_per_ton * armazenamento.quantity
+    
+    return render_template('silos/detalhes_armazenamento.html', 
+                          armazenamento=armazenamento,
+                          silo=silo,
+                          valor_total=valor_total)
+
+@app.route('/armazenamentos/<int:id>/finalizar', methods=['POST'])
+@login_required
+def finalizar_armazenamento(id):
+    armazenamento = Armazenamento.query.join(Silo).filter(
+        Armazenamento.id == id,
+        Silo.user_id == current_user.id
+    ).first_or_404()
+    
+    # Verificar se já está finalizado
+    if armazenamento.exit_date:
+        flash('Este armazenamento já foi finalizado.', 'warning')
+        return redirect(url_for('detalhes_armazenamento', id=id))
+    
+    # Registrar data de saída
+    armazenamento.exit_date = datetime.now()
+    db.session.commit()
+    
+    flash('Armazenamento finalizado com sucesso!', 'success')
+    return redirect(url_for('detalhes_silo', id=armazenamento.silo_id))
+
+@app.route('/armazenamentos/<int:id>/excluir', methods=['POST'])
+@login_required
+def excluir_armazenamento(id):
+    armazenamento = Armazenamento.query.join(Silo).filter(
+        Armazenamento.id == id,
+        Silo.user_id == current_user.id
+    ).first_or_404()
+    
+    silo_id = armazenamento.silo_id
+    db.session.delete(armazenamento)
+    db.session.commit()
+    
+    flash('Armazenamento excluído com sucesso!', 'success')
+    return redirect(url_for('detalhes_silo', id=silo_id))
+
 @app.context_processor
 def inject_blueprint_url():
     return {
-        'areas_url': lambda: url_for('areas.listar_areas'),
-        'analises_url': lambda: url_for('analises.listar_analises')
+        'areas_url': lambda: url_for('areas'),
+        'analises_url': lambda: url_for('analises'),
+        'silos_url': lambda: url_for('silos')
     }
 
-# Adicionar funções para lidar com culturas nos templates
 @app.context_processor
 def inject_crop_helpers():
     crop_names = {
@@ -787,42 +1131,75 @@ def inject_crop_helpers():
         'get_crop_color': get_crop_color
     }
 
-# Verificar se analises_bp está definido, caso contrário, definir
-try:
-    analises_bp
-except NameError:
-    analises_bp = Blueprint('analises', __name__)
-
-@analises_bp.route('/analises')
-def listar_analises():
-    analyses = Analysis.query.order_by(Analysis.date).all()
+@app.context_processor
+def inject_grain_helpers():
+    grain_names = {
+        'soja': 'Soja',
+        'milho': 'Milho',
+        'trigo': 'Trigo',
+        'arroz': 'Arroz',
+        'feijao': 'Feijão',
+        'sorgo': 'Sorgo',
+        'aveia': 'Aveia',
+        'cevada': 'Cevada',
+        'girassol': 'Girassol',
+        'outros': 'Outros'
+    }
     
-    # Verificar se há análises com matéria orgânica ou saturação de bases
-    any_organic_matter = any(analysis.organic_matter is not None for analysis in analyses)
-    any_base_saturation = any(analysis.base_saturation is not None for analysis in analyses)
+    grain_colors = {
+        'soja': '#8BC34A',  # Verde claro
+        'milho': '#FFEB3B',  # Amarelo
+        'trigo': '#FFC107',  # Âmbar
+        'arroz': '#E0E0E0',  # Cinza claro
+        'feijao': '#9C27B0',  # Roxo
+        'sorgo': '#F44336',  # Vermelho
+        'aveia': '#BDBDBD',  # Cinza
+        'cevada': '#D7CCC8',  # Marrom claro
+        'girassol': '#FFEB3B',  # Amarelo
+        'outros': '#9E9E9E'   # Cinza médio
+    }
     
-    # Preparar dados para o gráfico
-    if len(analyses) > 1:
-        dates = [analysis.date.strftime('%d/%m/%Y') for analysis in analyses]
-        ph_values = [float(analysis.ph) for analysis in analyses]
-        phosphorus_values = [float(analysis.phosphorus) for analysis in analyses]
-        potassium_values = [float(analysis.potassium) for analysis in analyses]
-        calcium_values = [float(analysis.calcium) for analysis in analyses]
-        magnesium_values = [float(analysis.magnesium) for analysis in analyses]
-        
-        # Coletar valores opcionais
-        organic_matter_values = [float(analysis.organic_matter) if analysis.organic_matter is not None else None for analysis in analyses]
-        base_saturation_values = [float(analysis.base_saturation) if analysis.base_saturation is not None else None for analysis in analyses]
-        
-        return render_template('analises/listar_analises.html', analyses=analyses, 
-                              dates=dates, ph_values=ph_values, phosphorus_values=phosphorus_values,
-                              potassium_values=potassium_values, calcium_values=calcium_values, 
-                              magnesium_values=magnesium_values, organic_matter_values=organic_matter_values,
-                              base_saturation_values=base_saturation_values,
-                              any_organic_matter=any_organic_matter, any_base_saturation=any_base_saturation)
+    # Tipos de silos e suas cores
+    silo_types = {
+        'metalico': 'Metálico',
+        'concreto': 'Concreto',
+        'bolsa': 'Silo-bolsa',
+        'aerado': 'Aerado',
+        'vertical': 'Vertical',
+        'horizontal': 'Horizontal',
+        'outros': 'Outros'
+    }
     
-    return render_template('analises/listar_analises.html', analyses=analyses,
-                          any_organic_matter=any_organic_matter, any_base_saturation=any_base_saturation)
+    silo_colors = {
+        'metalico': '#B0BEC5',  # Azul acinzentado
+        'concreto': '#78909C',  # Cinza azulado
+        'bolsa': '#FFFFFF',     # Branco
+        'aerado': '#CFD8DC',    # Cinza claro
+        'vertical': '#90A4AE',  # Azul acinzentado médio
+        'horizontal': '#607D8B', # Azul acinzentado escuro
+        'outros': '#455A64'     # Azul acinzentado muito escuro
+    }
+    
+    def get_grain_name(grain_type):
+        return grain_names.get(grain_type, 'Outros')
+    
+    def get_grain_color(grain_type):
+        return grain_colors.get(grain_type, '#9E9E9E')
+    
+    def get_silo_type_name(silo_type):
+        return silo_types.get(silo_type, 'Outros')
+    
+    def get_silo_color(silo_type):
+        return silo_colors.get(silo_type, '#9E9E9E')
+    
+    return {
+        'get_grain_name': get_grain_name,
+        'get_grain_color': get_grain_color,
+        'get_silo_type_name': get_silo_type_name,
+        'get_silo_color': get_silo_color,
+        'grain_types': list(grain_names.items()),
+        'silo_types': list(silo_types.items())
+    }
 
 if __name__ == '__main__':
     with app.app_context():
