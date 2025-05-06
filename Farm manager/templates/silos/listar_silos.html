@@ -84,7 +84,7 @@
 <div class="container-fluid py-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h1>Gestão de Silos e Armazenamento</h1>
-        <a href="{{ url_for('silos.novo_silo') }}" class="btn btn-primary">
+        <a href="{{ url_for('novo_silo') }}" class="btn btn-primary">
             <i class="fas fa-plus"></i> Novo Silo
         </a>
     </div>
@@ -209,10 +209,10 @@
                             {% endif %}
                             
                             <div class="mt-3">
-                                <a href="{{ url_for('silos.detalhes_silo', id=silo.id) }}" class="btn btn-outline-primary">
+                                <a href="{{ url_for('detalhes_silo', id=silo.id) }}" class="btn btn-outline-primary">
                                     <i class="fas fa-eye"></i> Detalhes
                                 </a>
-                                <a href="{{ url_for('silos.novo_armazenamento') }}?silo_id={{ silo.id }}" class="btn btn-outline-success">
+                                <a href="{{ url_for('novo_armazenamento') }}?silo_id={{ silo.id }}" class="btn btn-outline-success">
                                     <i class="fas fa-plus-circle"></i> Armazenar
                                 </a>
                             </div>
@@ -227,7 +227,7 @@
                 <i class="fas fa-warehouse fa-3x text-muted mb-3"></i>
                 <h5>Você ainda não possui silos cadastrados</h5>
                 <p class="text-muted">Cadastre um silo para começar a gerenciar seu armazenamento de grãos</p>
-                <a href="{{ url_for('silos.novo_silo') }}" class="btn btn-primary mt-2">
+                <a href="{{ url_for('novo_silo') }}" class="btn btn-primary mt-2">
                     <i class="fas fa-plus"></i> Cadastrar Primeiro Silo
                 </a>
             </div>
