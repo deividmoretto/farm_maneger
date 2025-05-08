@@ -1,0 +1,144 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Análises de Solo</h2>
+        <a href="{{ url_for('nova_analise') }}" class="btn btn-primary">
+            <i class="fas fa-plus"></i> Nova Análise
+        </a>
+    </div>
+
+    <!-- Filtro por Área -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="GET" action="{{ url_for('analises') }}" class="row g-3">
+                <div class="col-md-6">
+                    <label for="area_id" class="form-label">Filtrar por Área</label>
+                    <select class="form-select" id="area_id" name="area_id" onchange="this.form.submit()">
+                        <option value="">Todas as Áreas</option>
+                        {% for area in areas %}
+                        <option value="{{ area.id }}" {% if selected_area_id == area.id %}selected{% endif %}>
+                            {{ area.nome }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    {% if analyses %}
+    <div class="table-responsive">
+        <table class="table table-striped table-hover">
+            <thead>
+                <tr>
+                    <th>Data</th>
+                    <th>Área</th>
+                    <th>pH</th>
+                    <th>P (mg/dm³)</th>
+                    <th>K (cmolc/dm³)</th>
+                    <th>Ca (cmolc/dm³)</th>
+                    <th>Mg (cmolc/dm³)</th>
+                    <th>Al (cmolc/dm³)</th>
+                    <th>Matéria Orgânica (%)</th>
+                    <th>CTC (cmolc/dm³)</th>
+                    <th>V%</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for analise in analyses %}
+                <tr>
+                    <td>{{ analise.date.strftime('%d/%m/%Y') }}</td>
+                    <td>{{ analise.area.nome }}</td>
+                    <td>{{ "%.1f"|format(analise.ph) }}</td>
+                    <td>{{ "%.1f"|format(analise.phosphorus) }}</td>
+                    <td>{{ "%.2f"|format(analise.potassium) }}</td>
+                    <td>{{ "%.1f"|format(analise.calcium) }}</td>
+                    <td>{{ "%.1f"|format(analise.magnesium) }}</td>
+                    <td>{{ "%.1f"|format(analise.aluminum) if analise.aluminum else '-' }}</td>
+                    <td>{{ "%.1f"|format(analise.organic_matter) if analise.organic_matter else '-' }}</td>
+                    <td>{{ "%.1f"|format(analise.cation_exchange) if analise.cation_exchange else '-' }}</td>
+                    <td>{{ "%.1f"|format(analise.base_saturation) if analise.base_saturation else '-' }}</td>
+                    <td>
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#detailsModal{{ analise.id }}">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            <button type="button" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteModal{{ analise.id }}">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+
+                <!-- Modal de Detalhes -->
+                <div class="modal fade" id="detailsModal{{ analise.id }}" tabindex="-1" aria-labelledby="detailsModalLabel{{ analise.id }}" aria-hidden="true">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="detailsModalLabel{{ analise.id }}">Detalhes da Análise</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <h6>Informações Básicas</h6>
+                                        <p><strong>Data:</strong> {{ analise.date.strftime('%d/%m/%Y') }}</p>
+                                        <p><strong>Área:</strong> {{ analise.area.nome }}</p>
+                                        <p><strong>Observações:</strong> {{ analise.notes or 'Nenhuma' }}</p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <h6>Parâmetros Químicos</h6>
+                                        <p><strong>pH:</strong> {{ "%.1f"|format(analise.ph) }}</p>
+                                        <p><strong>Fósforo (P):</strong> {{ "%.1f"|format(analise.phosphorus) }} mg/dm³</p>
+                                        <p><strong>Potássio (K):</strong> {{ "%.2f"|format(analise.potassium) }} cmolc/dm³</p>
+                                        <p><strong>Cálcio (Ca):</strong> {{ "%.1f"|format(analise.calcium) }} cmolc/dm³</p>
+                                        <p><strong>Magnésio (Mg):</strong> {{ "%.1f"|format(analise.magnesium) }} cmolc/dm³</p>
+                                        <p><strong>Alumínio (Al):</strong> {{ "%.1f"|format(analise.aluminum) if analise.aluminum else '-' }} cmolc/dm³</p>
+                                        <p><strong>Enxofre (S):</strong> {{ "%.1f"|format(analise.sulfur) if analise.sulfur else '-' }} mg/dm³</p>
+                                        <p><strong>Matéria Orgânica:</strong> {{ "%.1f"|format(analise.organic_matter) if analise.organic_matter else '-' }}%</p>
+                                        <p><strong>CTC:</strong> {{ "%.1f"|format(analise.cation_exchange) if analise.cation_exchange else '-' }} cmolc/dm³</p>
+                                        <p><strong>V%:</strong> {{ "%.1f"|format(analise.base_saturation) if analise.base_saturation else '-' }}%</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Modal de Confirmação de Exclusão -->
+                <div class="modal fade" id="deleteModal{{ analise.id }}" tabindex="-1" aria-labelledby="deleteModalLabel{{ analise.id }}" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="deleteModalLabel{{ analise.id }}">Confirmar Exclusão</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                Tem certeza que deseja excluir a análise do dia {{ analise.date.strftime('%d/%m/%Y') }} da área {{ analise.area.nome }}?
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                <form action="{{ url_for('excluir_analise', id=analise.id) }}" method="POST" class="d-inline">
+                                    <button type="submit" class="btn btn-danger">Excluir</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="alert alert-info">
+        <i class="fas fa-info-circle"></i> Nenhuma análise encontrada. Clique em "Nova Análise" para começar.
+    </div>
+    {% endif %}
+</div>
+{% endblock %} 

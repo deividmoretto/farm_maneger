@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title mb-0">Novo Armazenamento</h3>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('novo_armazenamento') }}">
+                        <div class="mb-3">
+                            <label for="silo" class="form-label">Silo</label>
+                            <select class="form-select" id="silo" name="silo" required>
+                                <option value="">Selecione um silo</option>
+                                {% for silo in silos %}
+                                <option value="{{ silo.id }}">{{ silo.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="data_entrada" class="form-label">Data de Entrada</label>
+                            <input type="date" class="form-control" id="data_entrada" name="data_entrada" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="cultura" class="form-label">Cultura</label>
+                            <select class="form-select" id="cultura" name="cultura" required>
+                                <option value="">Selecione uma cultura</option>
+                                <option value="soja">Soja</option>
+                                <option value="milho">Milho</option>
+                                <option value="trigo">Trigo</option>
+                                <option value="cafe">Café</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="safra" class="form-label">Safra</label>
+                            <input type="text" class="form-control" id="safra" name="safra" 
+                                   placeholder="Ex: 2023/2024" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="quantidade" class="form-label">Quantidade (toneladas)</label>
+                            <input type="number" class="form-control" id="quantidade" name="quantidade" 
+                                   step="0.01" min="0" required>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="umidade" class="form-label">Umidade (%)</label>
+                                    <input type="number" class="form-control" id="umidade" name="umidade" 
+                                           step="0.1" min="0" max="100" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="impurezas" class="form-label">Impurezas (%)</label>
+                                    <input type="number" class="form-control" id="impurezas" name="impurezas" 
+                                           step="0.1" min="0" max="100" required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="observacoes" class="form-label">Observações</label>
+                            <textarea class="form-control" id="observacoes" name="observacoes" rows="3"></textarea>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i> Salvar Armazenamento
+                            </button>
+                            <a href="{{ url_for('armazenamentos') }}" class="btn btn-secondary">
+                                <i class="fas fa-times"></i> Cancelar
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Definir a data atual como padrão
+    document.getElementById('data_entrada').valueAsDate = new Date();
+</script>
+{% endblock %} 

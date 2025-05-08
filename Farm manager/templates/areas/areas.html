@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Áreas</h2>
+        <a href="{{ url_for('nova_area') }}" class="btn btn-primary">
+            <i class="fas fa-plus"></i> Nova Área
+        </a>
+    </div>
+
+    {% if areas %}
+    <div class="row">
+        {% for area in areas %}
+        <div class="col-md-6 col-lg-4 mb-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h5 class="card-title">{{ area.nome }}</h5>
+                    <p class="card-text">
+                        <strong>Tamanho:</strong> {{ area.tamanho }} hectares<br>
+                        <strong>Endereço:</strong> {{ area.endereco }}<br>
+                        <strong>Cultura:</strong> {{ area.cultura or 'Não definida' }}
+                    </p>
+                    {% if area.latitude and area.longitude %}
+                    <div class="mb-3">
+                        <small class="text-muted">
+                            <i class="fas fa-map-marker-alt"></i> 
+                            Coordenadas: {{ area.latitude }}, {{ area.longitude }}
+                        </small>
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="card-footer bg-transparent">
+                    <div class="btn-group w-100">
+                        <a href="{{ url_for('analises', area_id=area.id) }}" class="btn btn-outline-primary">
+                            <i class="fas fa-flask"></i> Análises
+                        </a>
+                        <a href="#" class="btn btn-outline-secondary">
+                            <i class="fas fa-edit"></i> Editar
+                        </a>
+                        <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteModal{{ area.id }}">
+                            <i class="fas fa-trash"></i> Excluir
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal de Confirmação de Exclusão -->
+        <div class="modal fade" id="deleteModal{{ area.id }}" tabindex="-1" aria-labelledby="deleteModalLabel{{ area.id }}" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="deleteModalLabel{{ area.id }}">Confirmar Exclusão</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        Tem certeza que deseja excluir a área "{{ area.nome }}"?
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <form action="{{ url_for('excluir_area', id=area.id) }}" method="POST" class="d-inline">
+                            <button type="submit" class="btn btn-danger">Excluir</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="alert alert-info">
+        <i class="fas fa-info-circle"></i> Nenhuma área cadastrada. Clique em "Nova Área" para começar.
+    </div>
+    {% endif %}
+</div>
+{% endblock %} 

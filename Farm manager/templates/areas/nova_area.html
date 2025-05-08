@@ -6,98 +6,69 @@
         <div class="col-md-8">
             <div class="card">
                 <div class="card-header">
-                    <h2 class="mb-0">Nova Área</h2>
+                    <h3 class="card-title mb-0">Nova Área</h3>
                 </div>
                 <div class="card-body">
-                    <form method="POST" action="{{ url_for('areas.nova_area') }}">
-                        {{ form.csrf_token }}
-                        
-                        <div class="form-group mb-3">
-                            {{ form.nome.label(class="form-label") }}
-                            {{ form.nome(class="form-control" + (" is-invalid" if form.nome.errors else "")) }}
-                            {% if form.nome.errors %}
-                            <div class="invalid-feedback">
-                                {% for error in form.nome.errors %}
-                                {{ error }}
-                                {% endfor %}
-                            </div>
-                            {% endif %}
+                    <form method="POST" action="{{ url_for('nova_area') }}">
+                        <div class="mb-3">
+                            <label for="nome" class="form-label">Nome da Área</label>
+                            <input type="text" class="form-control" id="nome" name="nome" required>
                         </div>
 
-                        <div class="form-group mb-3">
-                            {{ form.cultura.label(class="form-label") }}
-                            {{ form.cultura(class="form-control" + (" is-invalid" if form.cultura.errors else "")) }}
-                            {% if form.cultura.errors %}
-                            <div class="invalid-feedback">
-                                {% for error in form.cultura.errors %}
-                                {{ error }}
-                                {% endfor %}
-                            </div>
-                            {% endif %}
+                        <div class="mb-3">
+                            <label for="tamanho" class="form-label">Tamanho (hectares)</label>
+                            <input type="number" class="form-control" id="tamanho" name="tamanho" step="0.01" min="0" required>
                         </div>
 
-                        <div class="form-group mb-3">
-                            {{ form.tamanho.label(class="form-label") }}
-                            <div class="input-group">
-                                {{ form.tamanho(class="form-control" + (" is-invalid" if form.tamanho.errors else "")) }}
-                                <span class="input-group-text">hectares</span>
-                            </div>
-                            {% if form.tamanho.errors %}
-                            <div class="invalid-feedback">
-                                {% for error in form.tamanho.errors %}
-                                {{ error }}
-                                {% endfor %}
-                            </div>
-                            {% endif %}
+                        <div class="mb-3">
+                            <label for="endereco" class="form-label">Endereço</label>
+                            <input type="text" class="form-control" id="endereco" name="endereco">
                         </div>
 
-                        <div class="form-group mb-3">
-                            <label class="form-label">Localização</label>
-                            <div class="mb-2">
-                                <div class="input-group">
-                                    {{ form.endereco(class="form-control", placeholder="Digite o endereço ou nome do local") }}
-                                    <button type="button" id="btnBuscarEndereco" class="btn btn-primary">
-                                        <i class="fas fa-search"></i> Buscar
-                                    </button>
+                        <div class="mb-3">
+                            <label for="cultura" class="form-label">Cultura</label>
+                            <select class="form-select" id="cultura" name="cultura">
+                                <option value="">Selecione uma cultura</option>
+                                <option value="soja">Soja</option>
+                                <option value="milho">Milho</option>
+                                <option value="cafe">Café</option>
+                                <option value="cana">Cana-de-açúcar</option>
+                                <option value="algodao">Algodão</option>
+                                <option value="trigo">Trigo</option>
+                                <option value="outros">Outros</option>
+                            </select>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="latitude" class="form-label">Latitude</label>
+                                    <input type="number" class="form-control" id="latitude" name="latitude" step="0.000001">
                                 </div>
-                                <small class="text-muted">Ex: Fazenda São José, Uberaba, MG ou Rua das Palmeiras, 123, São Paulo</small>
                             </div>
-                            
-                            <div id="mapContainer" class="mb-3" style="display: none;">
-                                <div id="map" style="height: 300px; width: 100%;"></div>
-                            </div>
-                            
-                            <div class="row">
-                                <div class="col-md-6">
-                                    {{ form.latitude.label(class="form-label") }}
-                                    {{ form.latitude(class="form-control", readonly=True) }}
-                                </div>
-                                <div class="col-md-6">
-                                    {{ form.longitude.label(class="form-label") }}
-                                    {{ form.longitude(class="form-control", readonly=True) }}
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="longitude" class="form-label">Longitude</label>
+                                    <input type="number" class="form-control" id="longitude" name="longitude" step="0.000001">
                                 </div>
                             </div>
                         </div>
 
-                        <div class="form-group mb-3">
-                            {{ form.descricao.label(class="form-label") }}
-                            {{ form.descricao(class="form-control" + (" is-invalid" if form.descricao.errors else ""), rows=4) }}
-                            {% if form.descricao.errors %}
-                            <div class="invalid-feedback">
-                                {% for error in form.descricao.errors %}
-                                {{ error }}
-                                {% endfor %}
-                            </div>
-                            {% endif %}
+                        <div class="mb-3">
+                            <label for="polygon_points" class="form-label">Pontos do Polígono (JSON)</label>
+                            <textarea class="form-control" id="polygon_points" name="polygon_points" rows="3"></textarea>
+                            <small class="form-text text-muted">
+                                Formato: [{"lat": -23.123, "lng": -46.456}, ...]
+                            </small>
                         </div>
 
-                        <div class="d-flex justify-content-between">
-                            <a href="{{ url_for('areas.listar_areas') }}" class="btn btn-secondary">
-                                <i class="fas fa-arrow-left"></i> Voltar
-                            </a>
+                        <div class="d-grid gap-2">
                             <button type="submit" class="btn btn-primary">
-                                <i class="fas fa-save"></i> Salvar
+                                <i class="fas fa-save"></i> Salvar Área
                             </button>
+                            <a href="{{ url_for('areas') }}" class="btn btn-secondary">
+                                <i class="fas fa-times"></i> Cancelar
+                            </a>
                         </div>
                     </form>
                 </div>
@@ -105,161 +76,4 @@
         </div>
     </div>
 </div>
-
-<!-- Toast para notificações -->
-<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 5">
-    <div id="notificationToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
-        <div class="toast-header">
-            <strong class="me-auto" id="toastTitle">Notificação</strong>
-            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
-        </div>
-        <div class="toast-body" id="toastMessage"></div>
-    </div>
-</div>
-{% endblock %}
-
-{% block styles %}
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" 
-      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
-<style>
-    #map { 
-        border-radius: 5px;
-        border: 1px solid #ddd;
-    }
-</style>
-{% endblock %}
-
-{% block scripts %}
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" 
-        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-<script>
-    // Inicializar mapa escondido
-    let map = null;
-    let marker = null;
-    
-    // Inicializar o mapa quando for exibido
-    function initMap(lat, lng) {
-        // Se o mapa já existe, destruí-lo
-        if (map) {
-            map.remove();
-            map = null;
-        }
-
-        // Mostrar o container do mapa
-        document.getElementById('mapContainer').style.display = 'block';
-        
-        // Inicializar mapa
-        map = L.map('map').setView([lat, lng], 15);
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        }).addTo(map);
-        
-        // Adicionar marcador
-        marker = L.marker([lat, lng], {draggable: true}).addTo(map);
-        
-        // Atualizar coordenadas quando o marcador for arrastado
-        marker.on('dragend', function(e) {
-            let position = marker.getLatLng();
-            document.getElementById('latitude').value = position.lat.toFixed(6);
-            document.getElementById('longitude').value = position.lng.toFixed(6);
-        });
-    }
-    
-    // Função para buscar endereço
-    function buscarEndereco() {
-        const endereco = document.getElementById('endereco').value.trim();
-        
-        if (!endereco) {
-            showToast('Erro', 'Por favor, informe um endereço para buscar.', 'error');
-            return;
-        }
-        
-        // Mostrar indicador de carregamento
-        document.getElementById('btnBuscarEndereco').innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Buscando...';
-        document.getElementById('btnBuscarEndereco').disabled = true;
-        
-        // Chamar API de geocodificação
-        fetch('/api/geocode', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ endereco: endereco })
-        })
-        .then(response => response.json())
-        .then(data => {
-            // Restaurar botão
-            document.getElementById('btnBuscarEndereco').innerHTML = '<i class="fas fa-search"></i> Buscar';
-            document.getElementById('btnBuscarEndereco').disabled = false;
-            
-            if (data.error) {
-                showToast('Erro', data.error, 'error');
-                return;
-            }
-            
-            // Preencher campos de latitude e longitude
-            document.getElementById('latitude').value = data.latitude;
-            document.getElementById('longitude').value = data.longitude;
-            
-            // Atualizar input de endereço com nome mais completo
-            document.getElementById('endereco').value = data.display_name;
-            
-            // Inicializar ou atualizar mapa
-            initMap(parseFloat(data.latitude), parseFloat(data.longitude));
-            
-            showToast('Sucesso', 'Localização encontrada com sucesso!', 'success');
-        })
-        .catch(error => {
-            console.error('Erro ao buscar endereço:', error);
-            document.getElementById('btnBuscarEndereco').innerHTML = '<i class="fas fa-search"></i> Buscar';
-            document.getElementById('btnBuscarEndereco').disabled = false;
-            showToast('Erro', 'Ocorreu um erro ao buscar o endereço. Tente novamente.', 'error');
-        });
-    }
-    
-    // Função para mostrar toast de notificação
-    function showToast(title, message, type) {
-        const toast = document.getElementById('notificationToast');
-        const toastTitle = document.getElementById('toastTitle');
-        const toastMessage = document.getElementById('toastMessage');
-        
-        toastTitle.textContent = title;
-        toastMessage.textContent = message;
-        
-        // Definir classes de estilo baseadas no tipo
-        toast.className = 'toast';
-        if (type === 'error') {
-            toast.classList.add('bg-danger', 'text-white');
-        } else if (type === 'success') {
-            toast.classList.add('bg-success', 'text-white');
-        } else {
-            toast.classList.add('bg-primary', 'text-white');
-        }
-        
-        // Mostrar toast
-        const bsToast = new bootstrap.Toast(toast);
-        bsToast.show();
-    }
-    
-    // Verificar se já existem coordenadas preenchidas
-    document.addEventListener('DOMContentLoaded', function() {
-        const latitude = document.getElementById('latitude').value;
-        const longitude = document.getElementById('longitude').value;
-        
-        if (latitude && longitude) {
-            initMap(parseFloat(latitude), parseFloat(longitude));
-        }
-        
-        // Adicionar evento ao botão de busca
-        document.getElementById('btnBuscarEndereco').addEventListener('click', buscarEndereco);
-        
-        // Permitir busca ao pressionar Enter no campo de endereço
-        document.getElementById('endereco').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                e.preventDefault();
-                buscarEndereco();
-            }
-        });
-    });
-</script>
 {% endblock %} 

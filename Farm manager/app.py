@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, flash, session, Blueprint
+from flask import Flask, render_template, request, redirect, url_for, flash, session, Blueprint, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -39,15 +39,16 @@ class User(UserMixin, db.Model):
 
 class Area(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100), nullable=False)
-    size = db.Column(db.Float, nullable=False)
-    location = db.Column(db.String(200))
+    nome = db.Column(db.String(100), nullable=False)
+    tamanho = db.Column(db.Float, nullable=False)
+    endereco = db.Column(db.String(200))
     latitude = db.Column(db.Float, nullable=True)
     longitude = db.Column(db.Float, nullable=True)
-    polygon_points = db.Column(db.Text, nullable=True)  # Para armazenar os pontos do polígono como JSON
-    crop_type = db.Column(db.String(100), nullable=True)  # Tipo de cultura plantada
+    cultura = db.Column(db.String(100), nullable=True)  # Tipo de cultura plantada
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     analyses = db.relationship('Analysis', backref='area', lazy=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
 class Analysis(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -494,127 +495,179 @@ def logout():
 @login_required
 def areas():
     user_areas = Area.query.filter_by(user_id=current_user.id).all()
-    return render_template('areas/listar_areas.html', areas=user_areas)
+    return render_template('areas/areas.html', areas=user_areas)
 
-@app.route('/excluir_area/<int:id>', methods=['POST'])
-@login_required
-def excluir_area(id):
-    area = Area.query.filter_by(id=id, user_id=current_user.id).first_or_404()
-    db.session.delete(area)
-    db.session.commit()
-    flash('Área excluída com sucesso!', 'success')
-    return redirect(url_for('areas'))
-
-@app.route('/nova_area', methods=['GET', 'POST'])
+@app.route('/areas/nova', methods=['GET', 'POST'])
 @login_required
 def nova_area():
     if request.method == 'POST':
-        # Capturar e converter latitude e longitude
-        latitude = None
-        longitude = None
-        if request.form.get('latitude') and request.form.get('longitude'):
-            try:
-                latitude = float(request.form.get('latitude'))
-                longitude = float(request.form.get('longitude'))
-            except ValueError:
-                pass
-                
-        # Capturar os pontos do polígono
+        nome = request.form.get('nome')
+        tamanho = float(request.form.get('tamanho'))
+        endereco = request.form.get('endereco')
+        cultura = request.form.get('cultura')
+        latitude = request.form.get('latitude')
+        longitude = request.form.get('longitude')
         polygon_points = request.form.get('polygon_points')
-                
-        area = Area(
-            name=request.form.get('name'),
-            size=float(request.form.get('size')),
-            location=request.form.get('location'),
-            latitude=latitude,
-            longitude=longitude,
+
+        nova_area = Area(
+            nome=nome,
+            tamanho=tamanho,
+            endereco=endereco,
+            cultura=cultura,
+            latitude=float(latitude) if latitude else None,
+            longitude=float(longitude) if longitude else None,
             polygon_points=polygon_points,
-            crop_type=request.form.get('crop_type'),
             user_id=current_user.id
         )
-        db.session.add(area)
+
+        db.session.add(nova_area)
         db.session.commit()
-        flash('Área cadastrada com sucesso!', 'success')
+        flash('Área criada com sucesso!', 'success')
         return redirect(url_for('areas'))
-    
-    return render_template('areas/nova_area_simple.html')
+
+    return render_template('areas/nova_area.html')
 
 @app.route('/analises')
 @login_required
 def analises():
-    areas = Area.query.filter_by(user_id=current_user.id).all()
-    analyses = []
-    for area in areas:
-        analyses.extend(area.analyses)
+    user_areas = Area.query.filter_by(user_id=current_user.id).all()
+    area_id = request.args.get('area_id', type=int)
     
-    # Verificar se há análises com matéria orgânica ou saturação de bases
-    any_organic_matter = any(analysis.organic_matter is not None for analysis in analyses)
-    any_base_saturation = any(analysis.base_saturation is not None for analysis in analyses)
-    
-    # Obter dados para gráficos
-    datas = [analise.date.strftime('%d/%m/%Y') for analise in analyses]
-    valores_ph = [analise.ph for analise in analyses]
-    valores_p = [analise.phosphorus for analise in analyses]
-    valores_k = [analise.potassium for analise in analyses]
-    valores_ca = [analise.calcium for analise in analyses]
-    valores_mg = [analise.magnesium for analise in analyses]
-    
-    # Verificar se há dados da calculadora na sessão
-    resultados_calculadora = session.get('resultados_calculadora')
-    if resultados_calculadora:
-        session.pop('resultados_calculadora')  # Limpar da sessão após uso
-    
-    # Coletar valores opcionais
-    if analyses:
-        organic_matter_values = [float(analise.organic_matter) if analise.organic_matter is not None else None for analise in analyses]
-        base_saturation_values = [float(analise.base_saturation) if analise.base_saturation is not None else None for analise in analyses]
+    if area_id:
+        analyses = Analysis.query.filter_by(area_id=area_id).order_by(Analysis.date.desc()).all()
     else:
-        organic_matter_values = []
-        base_saturation_values = []
+        analyses = []
+        for area in user_areas:
+            analyses.extend(area.analyses)
+        analyses.sort(key=lambda x: x.date, reverse=True)
     
-    return render_template('analises.html', 
-                          analyses=analyses, 
-                          resultados_calculadora=resultados_calculadora,
-                          datas=datas,
-                          valores_ph=valores_ph,
-                          valores_p=valores_p,
-                          valores_k=valores_k,
-                          valores_ca=valores_ca,
-                          valores_mg=valores_mg,
-                          organic_matter_values=organic_matter_values,
-                          base_saturation_values=base_saturation_values,
-                          any_organic_matter=any_organic_matter, 
-                          any_base_saturation=any_base_saturation)
+    return render_template('analises/analises.html', analyses=analyses, areas=user_areas, selected_area_id=area_id)
 
-@app.route('/nova_analise', methods=['GET', 'POST'])
+@app.route('/analises/nova', methods=['GET', 'POST'])
 @login_required
 def nova_analise():
     if request.method == 'POST':
-        # Processar parâmetros obrigatórios
-        analysis = Analysis(
-            date=datetime.strptime(request.form.get('date'), '%Y-%m-%d'),
-            area_id=request.form.get('area_id'),
-            ph=float(request.form.get('ph')),
-            phosphorus=float(request.form.get('phosphorus')),
-            potassium=float(request.form.get('potassium')),
-            calcium=float(request.form.get('calcium')),
-            magnesium=float(request.form.get('magnesium'))
+        area_id = request.form.get('area_id')
+        date = datetime.strptime(request.form.get('date'), '%Y-%m-%d')
+        ph = float(request.form.get('ph'))
+        phosphorus = float(request.form.get('phosphorus'))
+        potassium = float(request.form.get('potassium'))
+        calcium = float(request.form.get('calcium'))
+        magnesium = float(request.form.get('magnesium'))
+        aluminum = float(request.form.get('aluminum')) if request.form.get('aluminum') else None
+        sulfur = float(request.form.get('sulfur')) if request.form.get('sulfur') else None
+        organic_matter = float(request.form.get('organic_matter')) if request.form.get('organic_matter') else None
+        cation_exchange = float(request.form.get('cation_exchange')) if request.form.get('cation_exchange') else None
+        base_saturation = float(request.form.get('base_saturation')) if request.form.get('base_saturation') else None
+        notes = request.form.get('notes')
+
+        nova_analise = Analysis(
+            date=date,
+            area_id=area_id,
+            ph=ph,
+            phosphorus=phosphorus,
+            potassium=potassium,
+            calcium=calcium,
+            magnesium=magnesium,
+            aluminum=aluminum,
+            sulfur=sulfur,
+            organic_matter=organic_matter,
+            cation_exchange=cation_exchange,
+            base_saturation=base_saturation,
+            notes=notes
         )
-        
-        # Processar parâmetros opcionais
-        if request.form.get('aluminum'):
-            analysis.aluminum = float(request.form.get('aluminum'))
-        if request.form.get('sulfur'):
-            analysis.sulfur = float(request.form.get('sulfur'))
-        if request.form.get('organic_matter'):
-            analysis.organic_matter = float(request.form.get('organic_matter'))
-            
-        db.session.add(analysis)
+
+        db.session.add(nova_analise)
         db.session.commit()
-        flash('Análise de solo cadastrada com sucesso!', 'success')
+        flash('Análise criada com sucesso!', 'success')
         return redirect(url_for('analises'))
-    areas = Area.query.filter_by(user_id=current_user.id).all()
-    return render_template('analises/nova_analise.html', areas=areas, now=datetime.now())
+
+    user_areas = Area.query.filter_by(user_id=current_user.id).all()
+    return render_template('analises/nova_analise.html', areas=user_areas)
+
+@app.route('/silos')
+@login_required
+def silos():
+    user_silos = Silo.query.filter_by(user_id=current_user.id).all()
+    return render_template('silos/silos.html', silos=user_silos)
+
+@app.route('/silos/novo', methods=['GET', 'POST'])
+@login_required
+def novo_silo():
+    if request.method == 'POST':
+        name = request.form.get('name')
+        capacity = float(request.form.get('capacity'))
+        location = request.form.get('location')
+        type = request.form.get('type')
+        diameter = float(request.form.get('diameter')) if request.form.get('diameter') else None
+        height = float(request.form.get('height')) if request.form.get('height') else None
+        description = request.form.get('description')
+
+        novo_silo = Silo(
+            name=name,
+            capacity=capacity,
+            location=location,
+            type=type,
+            diameter=diameter,
+            height=height,
+            description=description,
+            user_id=current_user.id
+        )
+
+        db.session.add(novo_silo)
+        db.session.commit()
+        flash('Silo criado com sucesso!', 'success')
+        return redirect(url_for('silos'))
+
+    return render_template('silos/novo_silo.html')
+
+@app.route('/armazenamentos')
+@login_required
+def armazenamentos():
+    user_silos = Silo.query.filter_by(user_id=current_user.id).all()
+    silo_id = request.args.get('silo_id', type=int)
+    
+    if silo_id:
+        armazenamentos = Armazenamento.query.filter_by(silo_id=silo_id).order_by(Armazenamento.entry_date.desc()).all()
+    else:
+        armazenamentos = []
+        for silo in user_silos:
+            armazenamentos.extend(silo.armazenamentos)
+        armazenamentos.sort(key=lambda x: x.entry_date, reverse=True)
+    
+    return render_template('silos/armazenamentos.html', armazenamentos=armazenamentos, silos=user_silos, selected_silo_id=silo_id)
+
+@app.route('/armazenamentos/novo', methods=['GET', 'POST'])
+@login_required
+def novo_armazenamento():
+    if request.method == 'POST':
+        silo_id = request.form.get('silo_id')
+        crop_type = request.form.get('crop_type')
+        quantity = float(request.form.get('quantity'))
+        humidity = float(request.form.get('humidity')) if request.form.get('humidity') else None
+        impurity = float(request.form.get('impurity')) if request.form.get('impurity') else None
+        entry_date = datetime.strptime(request.form.get('entry_date'), '%Y-%m-%d')
+        price_per_ton = float(request.form.get('price_per_ton')) if request.form.get('price_per_ton') else None
+        notes = request.form.get('notes')
+
+        novo_armazenamento = Armazenamento(
+            silo_id=silo_id,
+            crop_type=crop_type,
+            quantity=quantity,
+            humidity=humidity,
+            impurity=impurity,
+            entry_date=entry_date,
+            price_per_ton=price_per_ton,
+            notes=notes
+        )
+
+        db.session.add(novo_armazenamento)
+        db.session.commit()
+        flash('Armazenamento criado com sucesso!', 'success')
+        return redirect(url_for('armazenamentos'))
+
+    user_silos = Silo.query.filter_by(user_id=current_user.id).all()
+    return render_template('silos/novo_armazenamento.html', silos=user_silos)
 
 @app.route('/calculadora', methods=['GET', 'POST'])
 @login_required
@@ -780,309 +833,54 @@ def admin_users():
     users = User.query.all()
     return render_template('admin/users.html', users=users)
 
-# Rota para silos
-@app.route('/silos')
+@app.route('/silos/estatisticas', methods=['GET'])
 @login_required
-def silos():
+def estatisticas_silos():
     silos = Silo.query.filter_by(user_id=current_user.id).all()
     
-    # Calcular estatísticas
-    total_silos = len(silos)
-    total_capacidade = sum(silo.capacity for silo in silos)
-    capacidade_utilizada = 0
-    total_armazenado = 0
-    
-    silos_info = []
-    tipos_graos = {}
-    
-    for silo in silos:
-        # Filtrar apenas armazenamentos ativos (sem data de saída)
-        armazenamentos_ativos = [a for a in silo.armazenamentos if a.exit_date is None]
-        
-        # Calcular ocupação atual
-        ocupacao = sum(a.quantity for a in armazenamentos_ativos)
-        percentual = (ocupacao / silo.capacity * 100) if silo.capacity > 0 else 0
-        
-        # Somar ao total
-        total_armazenado += ocupacao
-        
-        # Contar grãos por tipo
-        for armazenamento in armazenamentos_ativos:
-            if armazenamento.crop_type in tipos_graos:
-                tipos_graos[armazenamento.crop_type] += armazenamento.quantity
-            else:
-                tipos_graos[armazenamento.crop_type] = armazenamento.quantity
-        
-        # Adicionar informações para a tabela
-        silos_info.append({
-            'silo': silo,
-            'ocupacao': ocupacao,
-            'percentual': percentual,
-            'armazenamentos': armazenamentos_ativos
-        })
-    
-    # Calcular percentual total de utilização
-    if total_capacidade > 0:
-        capacidade_utilizada = (total_armazenado / total_capacidade) * 100
-    
-    return render_template('silos/listar_silos.html', 
-                          silos=silos,
-                          silos_info=silos_info,
-                          total_silos=total_silos,
-                          total_capacidade=total_capacidade,
-                          total_armazenado=total_armazenado,
-                          capacidade_utilizada=capacidade_utilizada,
-                          tipos_graos=tipos_graos)
-
-@app.route('/silos/novo', methods=['GET', 'POST'])
-@login_required
-def novo_silo():
-    if request.method == 'POST':
-        try:
-            nome = request.form.get('name')
-            capacidade = float(request.form.get('capacity'))
-            local = request.form.get('location')
-            tipo = request.form.get('type')
-            
-            # Campos opcionais
-            diametro = None
-            altura = None
-            descricao = request.form.get('description', '')
-            
-            if request.form.get('diameter'):
-                diametro = float(request.form.get('diameter'))
-            
-            if request.form.get('height'):
-                altura = float(request.form.get('height'))
-            
-            # Criar novo silo
-            silo = Silo(
-                name=nome,
-                capacity=capacidade,
-                location=local,
-                type=tipo,
-                diameter=diametro,
-                height=altura,
-                description=descricao,
-                user_id=current_user.id
-            )
-            
-            db.session.add(silo)
-            db.session.commit()
-            
-            flash(f'Silo "{nome}" cadastrado com sucesso!', 'success')
-            return redirect(url_for('silos'))
-            
-        except Exception as e:
-            flash(f'Erro ao cadastrar silo: {str(e)}', 'danger')
-    
-    return render_template('silos/novo_silo.html')
-
-@app.route('/silos/<int:id>')
-@login_required
-def detalhes_silo(id):
-    silo = Silo.query.filter_by(id=id, user_id=current_user.id).first_or_404()
-    
-    # Filtrar apenas armazenamentos ativos (sem data de saída)
-    armazenamentos_ativos = [a for a in silo.armazenamentos if a.exit_date is None]
-    armazenamentos_finalizados = [a for a in silo.armazenamentos if a.exit_date is not None]
+    # Estatísticas gerais
+    total_capacidade = sum(silo.capacity for silo in silos) if silos else 0
     
     # Calcular ocupação atual
-    ocupacao = sum(a.quantity for a in armazenamentos_ativos)
-    percentual = (ocupacao / silo.capacity * 100) if silo.capacity > 0 else 0
-    
-    # Calcular informações de tipos de grãos
+    total_armazenado = 0
     tipos_graos = {}
-    for armazenamento in armazenamentos_ativos:
-        if armazenamento.crop_type in tipos_graos:
-            tipos_graos[armazenamento.crop_type] += armazenamento.quantity
-        else:
-            tipos_graos[armazenamento.crop_type] = armazenamento.quantity
+    valor_estimado = 0
     
-    return render_template('silos/detalhes_silo.html', 
-                          silo=silo,
-                          ocupacao=ocupacao,
-                          percentual=percentual,
-                          armazenamentos_ativos=armazenamentos_ativos,
-                          armazenamentos_finalizados=armazenamentos_finalizados,
-                          tipos_graos=tipos_graos)
-
-@app.route('/silos/<int:id>/excluir', methods=['POST'])
-@login_required
-def excluir_silo(id):
-    silo = Silo.query.filter_by(id=id, user_id=current_user.id).first_or_404()
-    
-    # Verificar se existem armazenamentos ativos
-    armazenamentos_ativos = [a for a in silo.armazenamentos if a.exit_date is None]
-    if armazenamentos_ativos:
-        flash('Não é possível excluir o silo pois há armazenamentos ativos.', 'danger')
-        return redirect(url_for('detalhes_silo', id=id))
-    
-    # Remover todos os armazenamentos antigos
-    for armazenamento in silo.armazenamentos:
-        db.session.delete(armazenamento)
-    
-    # Remover o silo
-    nome_silo = silo.name
-    db.session.delete(silo)
-    db.session.commit()
-    
-    flash(f'Silo "{nome_silo}" excluído com sucesso!', 'success')
-    return redirect(url_for('silos'))
-
-@app.route('/silos/<int:id>/editar', methods=['GET', 'POST'])
-@login_required
-def editar_silo(id):
-    silo = Silo.query.filter_by(id=id, user_id=current_user.id).first_or_404()
-    
-    if request.method == 'POST':
-        try:
-            silo.name = request.form.get('name')
-            silo.capacity = float(request.form.get('capacity'))
-            silo.location = request.form.get('location')
-            silo.type = request.form.get('type')
-            silo.description = request.form.get('description', '')
+    for silo in silos:
+        # Filtrar apenas armazenamentos ativos
+        armazenamentos_ativos = [a for a in silo.armazenamentos if a.exit_date is None]
+        
+        # Somar ocupação
+        for armazenamento in armazenamentos_ativos:
+            quantidade = armazenamento.quantity
+            tipo_grao = armazenamento.crop_type
             
-            # Campos opcionais
-            if request.form.get('diameter'):
-                silo.diameter = float(request.form.get('diameter'))
+            # Somar ao total
+            total_armazenado += quantidade
+            
+            # Adicionar ao dicionário de tipos
+            if tipo_grao in tipos_graos:
+                tipos_graos[tipo_grao] += quantidade
             else:
-                silo.diameter = None
-                
-            if request.form.get('height'):
-                silo.height = float(request.form.get('height'))
-            else:
-                silo.height = None
+                tipos_graos[tipo_grao] = quantidade
             
-            db.session.commit()
-            flash(f'Silo "{silo.name}" atualizado com sucesso!', 'success')
-            return redirect(url_for('detalhes_silo', id=id))
-            
-        except Exception as e:
-            flash(f'Erro ao atualizar silo: {str(e)}', 'danger')
+            # Calcular valor estimado
+            if armazenamento.price_per_ton:
+                valor_estimado += quantidade * armazenamento.price_per_ton
     
-    return render_template('silos/novo_silo.html', silo=silo, edit_mode=True)
-
-@app.route('/silos/<int:id>/armazenar', methods=['GET', 'POST'])
-@login_required
-def novo_armazenamento(id):
-    silo = Silo.query.filter_by(id=id, user_id=current_user.id).first_or_404()
+    # Calcular porcentagem de ocupação
+    capacidade_utilizada = (total_armazenado / total_capacidade * 100) if total_capacidade > 0 else 0
     
-    # Verificar ocupação atual do silo
-    armazenamentos_ativos = [a for a in silo.armazenamentos if a.exit_date is None]
-    ocupacao_atual = sum(a.quantity for a in armazenamentos_ativos)
+    # Formatar dados para retorno JSON
+    tipos_formatados = [{"tipo": tipo, "quantidade": quantidade} for tipo, quantidade in tipos_graos.items()]
     
-    if request.method == 'POST':
-        try:
-            quantidade = float(request.form.get('quantity'))
-            tipo_grao = request.form.get('crop_type')
-            
-            # Verificar se há espaço suficiente
-            if ocupacao_atual + quantidade > silo.capacity:
-                flash('A quantidade excede a capacidade disponível do silo!', 'danger')
-                return redirect(url_for('novo_armazenamento', id=id))
-            
-            # Processar campos de data
-            data_entrada = datetime.strptime(request.form.get('entry_date'), '%Y-%m-%d')
-            
-            # Campos opcionais
-            umidade = None
-            impureza = None
-            preco = None
-            observacoes = request.form.get('notes', '')
-            
-            if request.form.get('humidity'):
-                umidade = float(request.form.get('humidity'))
-                
-            if request.form.get('impurity'):
-                impureza = float(request.form.get('impurity'))
-                
-            if request.form.get('price_per_ton'):
-                preco = float(request.form.get('price_per_ton'))
-            
-            # Criar novo armazenamento
-            armazenamento = Armazenamento(
-                silo_id=silo.id,
-                crop_type=tipo_grao,
-                quantity=quantidade,
-                humidity=umidade,
-                impurity=impureza,
-                entry_date=data_entrada,
-                price_per_ton=preco,
-                notes=observacoes
-            )
-            
-            db.session.add(armazenamento)
-            db.session.commit()
-            
-            flash(f'Armazenamento de {quantidade} toneladas de {tipo_grao} registrado com sucesso!', 'success')
-            return redirect(url_for('detalhes_silo', id=id))
-            
-        except Exception as e:
-            flash(f'Erro ao registrar armazenamento: {str(e)}', 'danger')
-    
-    # Calcular espaço disponível
-    espaco_disponivel = silo.capacity - ocupacao_atual
-    
-    return render_template('silos/novo_armazenamento.html', 
-                          silo=silo, 
-                          ocupacao_atual=ocupacao_atual, 
-                          espaco_disponivel=espaco_disponivel)
-
-@app.route('/armazenamentos/<int:id>')
-@login_required
-def detalhes_armazenamento(id):
-    armazenamento = Armazenamento.query.join(Silo).filter(
-        Armazenamento.id == id,
-        Silo.user_id == current_user.id
-    ).first_or_404()
-    
-    silo = armazenamento.silo
-    
-    # Calcular valor total
-    valor_total = None
-    if armazenamento.price_per_ton:
-        valor_total = armazenamento.price_per_ton * armazenamento.quantity
-    
-    return render_template('silos/detalhes_armazenamento.html', 
-                          armazenamento=armazenamento,
-                          silo=silo,
-                          valor_total=valor_total)
-
-@app.route('/armazenamentos/<int:id>/finalizar', methods=['POST'])
-@login_required
-def finalizar_armazenamento(id):
-    armazenamento = Armazenamento.query.join(Silo).filter(
-        Armazenamento.id == id,
-        Silo.user_id == current_user.id
-    ).first_or_404()
-    
-    # Verificar se já está finalizado
-    if armazenamento.exit_date:
-        flash('Este armazenamento já foi finalizado.', 'warning')
-        return redirect(url_for('detalhes_armazenamento', id=id))
-    
-    # Registrar data de saída
-    armazenamento.exit_date = datetime.now()
-    db.session.commit()
-    
-    flash('Armazenamento finalizado com sucesso!', 'success')
-    return redirect(url_for('detalhes_silo', id=armazenamento.silo_id))
-
-@app.route('/armazenamentos/<int:id>/excluir', methods=['POST'])
-@login_required
-def excluir_armazenamento(id):
-    armazenamento = Armazenamento.query.join(Silo).filter(
-        Armazenamento.id == id,
-        Silo.user_id == current_user.id
-    ).first_or_404()
-    
-    silo_id = armazenamento.silo_id
-    db.session.delete(armazenamento)
-    db.session.commit()
-    
-    flash('Armazenamento excluído com sucesso!', 'success')
-    return redirect(url_for('detalhes_silo', id=silo_id))
+    return jsonify({
+        "totalCapacidade": total_capacidade,
+        "totalArmazenado": total_armazenado,
+        "capacidadeUtilizada": capacidade_utilizada,
+        "valorEstimado": valor_estimado,
+        "tiposGraos": tipos_formatados
+    })
 
 @app.context_processor
 def inject_blueprint_url():

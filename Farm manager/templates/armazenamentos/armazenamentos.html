@@ -1,0 +1,183 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h2>Armazenamentos</h2>
+        </div>
+        <div class="col-md-4 text-end">
+            <a href="{{ url_for('novo_armazenamento') }}" class="btn btn-primary">
+                <i class="fas fa-plus"></i> Novo Armazenamento
+            </a>
+        </div>
+    </div>
+
+    <!-- Filtros -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="GET" class="row g-3">
+                <div class="col-md-4">
+                    <label for="silo" class="form-label">Filtrar por Silo</label>
+                    <select class="form-select" id="silo" name="silo">
+                        <option value="">Todos os Silos</option>
+                        {% for silo in silos %}
+                        <option value="{{ silo.id }}" {% if request.args.get('silo')|int == silo.id %}selected{% endif %}>
+                            {{ silo.name }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label for="cultura" class="form-label">Filtrar por Cultura</label>
+                    <select class="form-select" id="cultura" name="cultura">
+                        <option value="">Todas as Culturas</option>
+                        <option value="soja" {% if request.args.get('cultura') == 'soja' %}selected{% endif %}>Soja</option>
+                        <option value="milho" {% if request.args.get('cultura') == 'milho' %}selected{% endif %}>Milho</option>
+                        <option value="trigo" {% if request.args.get('cultura') == 'trigo' %}selected{% endif %}>Trigo</option>
+                        <option value="cafe" {% if request.args.get('cultura') == 'cafe' %}selected{% endif %}>Café</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label for="safra" class="form-label">Filtrar por Safra</label>
+                    <input type="text" class="form-control" id="safra" name="safra" 
+                           value="{{ request.args.get('safra', '') }}" placeholder="Ex: 2023/2024">
+                </div>
+                <div class="col-12 text-end">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-filter"></i> Filtrar
+                    </button>
+                    <a href="{{ url_for('armazenamentos') }}" class="btn btn-secondary">
+                        <i class="fas fa-times"></i> Limpar Filtros
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    {% if armazenamentos %}
+    <div class="table-responsive">
+        <table class="table table-striped table-hover">
+            <thead>
+                <tr>
+                    <th>Data</th>
+                    <th>Silo</th>
+                    <th>Cultura</th>
+                    <th>Safra</th>
+                    <th>Quantidade (ton)</th>
+                    <th>Umidade (%)</th>
+                    <th>Impurezas (%)</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for armazenamento in armazenamentos %}
+                <tr>
+                    <td>{{ armazenamento.data_entrada.strftime('%d/%m/%Y') }}</td>
+                    <td>{{ armazenamento.silo.name }}</td>
+                    <td>{{ armazenamento.cultura }}</td>
+                    <td>{{ armazenamento.safra }}</td>
+                    <td>{{ "%.2f"|format(armazenamento.quantidade) }}</td>
+                    <td>{{ "%.1f"|format(armazenamento.umidade) }}</td>
+                    <td>{{ "%.1f"|format(armazenamento.impurezas) }}</td>
+                    <td>
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-sm btn-info" data-bs-toggle="modal" 
+                                    data-bs-target="#detalhesModal{{ armazenamento.id }}">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" 
+                                    data-bs-target="#excluirModal{{ armazenamento.id }}">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+
+                        <!-- Modal de Detalhes -->
+                        <div class="modal fade" id="detalhesModal{{ armazenamento.id }}" tabindex="-1">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">Detalhes do Armazenamento</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <dl class="row">
+                                            <dt class="col-sm-4">Data de Entrada</dt>
+                                            <dd class="col-sm-8">{{ armazenamento.data_entrada.strftime('%d/%m/%Y') }}</dd>
+
+                                            <dt class="col-sm-4">Silo</dt>
+                                            <dd class="col-sm-8">{{ armazenamento.silo.name }}</dd>
+
+                                            <dt class="col-sm-4">Cultura</dt>
+                                            <dd class="col-sm-8">{{ armazenamento.cultura }}</dd>
+
+                                            <dt class="col-sm-4">Safra</dt>
+                                            <dd class="col-sm-8">{{ armazenamento.safra }}</dd>
+
+                                            <dt class="col-sm-4">Quantidade</dt>
+                                            <dd class="col-sm-8">{{ "%.2f"|format(armazenamento.quantidade) }} ton</dd>
+
+                                            <dt class="col-sm-4">Umidade</dt>
+                                            <dd class="col-sm-8">{{ "%.1f"|format(armazenamento.umidade) }}%</dd>
+
+                                            <dt class="col-sm-4">Impurezas</dt>
+                                            <dd class="col-sm-8">{{ "%.1f"|format(armazenamento.impurezas) }}%</dd>
+
+                                            {% if armazenamento.observacoes %}
+                                            <dt class="col-sm-4">Observações</dt>
+                                            <dd class="col-sm-8">{{ armazenamento.observacoes }}</dd>
+                                            {% endif %}
+                                        </dl>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Modal de Exclusão -->
+                        <div class="modal fade" id="excluirModal{{ armazenamento.id }}" tabindex="-1">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">Confirmar Exclusão</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <p>Tem certeza que deseja excluir este armazenamento?</p>
+                                        <p><strong>Detalhes:</strong></p>
+                                        <ul>
+                                            <li>Data: {{ armazenamento.data_entrada.strftime('%d/%m/%Y') }}</li>
+                                            <li>Silo: {{ armazenamento.silo.name }}</li>
+                                            <li>Cultura: {{ armazenamento.cultura }}</li>
+                                            <li>Quantidade: {{ "%.2f"|format(armazenamento.quantidade) }} ton</li>
+                                        </ul>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                        <form action="{{ url_for('excluir_armazenamento', id=armazenamento.id) }}" method="POST" class="d-inline">
+                                            <button type="submit" class="btn btn-danger">Excluir</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="alert alert-info">
+        <i class="fas fa-info-circle"></i> Nenhum armazenamento encontrado.
+        {% if request.args.get('silo') or request.args.get('cultura') or request.args.get('safra') %}
+            <br>Tente ajustar os filtros ou <a href="{{ url_for('armazenamentos') }}">limpar os filtros</a>.
+        {% else %}
+            <br>Clique em "Novo Armazenamento" para começar a registrar.
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+{% endblock %} 

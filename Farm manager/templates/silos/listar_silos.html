@@ -245,7 +245,7 @@
         const silosData = {{ dados_grafico|safe }};
         
         // Carregar estatísticas gerais
-        fetch("{{ url_for('silos.estatisticas_silos') }}")
+        fetch("{{ url_for('estatisticas_silos') }}")
             .then(response => response.json())
             .then(data => {
                 document.getElementById('capacidadeTotal').textContent = data.capacidade_total.toLocaleString('pt-BR', {maximumFractionDigits: 2});

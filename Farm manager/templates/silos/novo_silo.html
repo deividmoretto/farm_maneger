@@ -1,147 +1,70 @@
-{% extends 'base.html' %}
-
-{% block title %}Novo Silo{% endblock %}
+{% extends "base.html" %}
 
 {% block content %}
-<div class="container py-4">
-    <div class="row mb-4">
-        <div class="col-md-12">
-            <nav aria-label="breadcrumb">
-                <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="{{ url_for('silos.listar_silos') }}">Silos</a></li>
-                    <li class="breadcrumb-item active">Novo Silo</li>
-                </ol>
-            </nav>
-            <h1>Cadastrar Novo Silo</h1>
-        </div>
-    </div>
-    
-    <div class="row">
+<div class="container mt-4">
+    <div class="row justify-content-center">
         <div class="col-md-8">
             <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title mb-0">Novo Silo</h3>
+                </div>
                 <div class="card-body">
-                    <form method="POST" class="needs-validation" novalidate>
-                        {{ form.csrf_token }}
-                        
-                        <div class="row mb-3">
-                            <div class="col-md-8">
-                                <div class="form-group">
-                                    {{ form.nome.label(class="form-label") }}
-                                    {{ form.nome(class="form-control" + (" is-invalid" if form.nome.errors else ""), placeholder="Ex: Silo Principal") }}
-                                    {% if form.nome.errors %}
-                                        <div class="invalid-feedback">
-                                            {% for error in form.nome.errors %}
-                                                {{ error }}
-                                            {% endfor %}
-                                        </div>
-                                    {% endif %}
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="form-group">
-                                    {{ form.tipo.label(class="form-label") }}
-                                    {{ form.tipo(class="form-select" + (" is-invalid" if form.tipo.errors else "")) }}
-                                    {% if form.tipo.errors %}
-                                        <div class="invalid-feedback">
-                                            {% for error in form.tipo.errors %}
-                                                {{ error }}
-                                            {% endfor %}
-                                        </div>
-                                    {% endif %}
-                                </div>
-                            </div>
+                    <form method="POST" action="{{ url_for('novo_silo') }}">
+                        <div class="mb-3">
+                            <label for="name" class="form-label">Nome do Silo</label>
+                            <input type="text" class="form-control" id="name" name="name" required>
                         </div>
-                        
-                        <div class="row mb-3">
+
+                        <div class="mb-3">
+                            <label for="capacity" class="form-label">Capacidade (toneladas)</label>
+                            <input type="number" class="form-control" id="capacity" name="capacity" step="0.01" min="0" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="location" class="form-label">Localização</label>
+                            <input type="text" class="form-control" id="location" name="location" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="type" class="form-label">Tipo de Silo</label>
+                            <select class="form-select" id="type" name="type" required>
+                                <option value="">Selecione um tipo</option>
+                                <option value="metalico">Metálico</option>
+                                <option value="concreto">Concreto</option>
+                                <option value="bolsa">Bolsa</option>
+                                <option value="outros">Outros</option>
+                            </select>
+                        </div>
+
+                        <div class="row">
                             <div class="col-md-6">
-                                <div class="form-group">
-                                    {{ form.capacidade.label(class="form-label") }}
-                                    <div class="input-group">
-                                        {{ form.capacidade(class="form-control" + (" is-invalid" if form.capacidade.errors else ""), placeholder="0.0") }}
-                                        <span class="input-group-text">toneladas</span>
-                                    </div>
-                                    {% if form.capacidade.errors %}
-                                        <div class="invalid-feedback">
-                                            {% for error in form.capacidade.errors %}
-                                                {{ error }}
-                                            {% endfor %}
-                                        </div>
-                                    {% endif %}
-                                    <small class="text-muted">Capacidade máxima de armazenamento</small>
+                                <div class="mb-3">
+                                    <label for="diameter" class="form-label">Diâmetro (metros)</label>
+                                    <input type="number" class="form-control" id="diameter" name="diameter" step="0.01" min="0">
                                 </div>
                             </div>
                             <div class="col-md-6">
-                                <div class="form-group">
-                                    {{ form.data_construcao.label(class="form-label") }}
-                                    {{ form.data_construcao(class="form-control" + (" is-invalid" if form.data_construcao.errors else ""), type="date") }}
-                                    {% if form.data_construcao.errors %}
-                                        <div class="invalid-feedback">
-                                            {% for error in form.data_construcao.errors %}
-                                                {{ error }}
-                                            {% endfor %}
-                                        </div>
-                                    {% endif %}
-                                    <small class="text-muted">Opcional</small>
+                                <div class="mb-3">
+                                    <label for="height" class="form-label">Altura (metros)</label>
+                                    <input type="number" class="form-control" id="height" name="height" step="0.01" min="0">
                                 </div>
                             </div>
                         </div>
-                        
+
                         <div class="mb-3">
-                            <div class="form-group">
-                                {{ form.localizacao.label(class="form-label") }}
-                                {{ form.localizacao(class="form-control" + (" is-invalid" if form.localizacao.errors else ""), placeholder="Ex: Setor Norte da Propriedade") }}
-                                {% if form.localizacao.errors %}
-                                    <div class="invalid-feedback">
-                                        {% for error in form.localizacao.errors %}
-                                            {{ error }}
-                                        {% endfor %}
-                                    </div>
-                                {% endif %}
-                                <small class="text-muted">Descreva a localização do silo na propriedade</small>
-                            </div>
+                            <label for="description" class="form-label">Descrição</label>
+                            <textarea class="form-control" id="description" name="description" rows="3"></textarea>
                         </div>
-                        
-                        <div class="mb-3">
-                            <div class="form-group">
-                                {{ form.observacoes.label(class="form-label") }}
-                                {{ form.observacoes(class="form-control" + (" is-invalid" if form.observacoes.errors else ""), rows="3", placeholder="Detalhes adicionais sobre o silo...") }}
-                                {% if form.observacoes.errors %}
-                                    <div class="invalid-feedback">
-                                        {% for error in form.observacoes.errors %}
-                                            {{ error }}
-                                        {% endfor %}
-                                    </div>
-                                {% endif %}
-                            </div>
-                        </div>
-                        
-                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                            <a href="{{ url_for('silos.listar_silos') }}" class="btn btn-outline-secondary me-md-2">Cancelar</a>
-                            {{ form.submit(class="btn btn-primary") }}
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i> Salvar Silo
+                            </button>
+                            <a href="{{ url_for('silos') }}" class="btn btn-secondary">
+                                <i class="fas fa-times"></i> Cancelar
+                            </a>
                         </div>
                     </form>
-                </div>
-            </div>
-        </div>
-        
-        <div class="col-md-4">
-            <div class="card">
-                <div class="card-header">
-                    <h5 class="card-title">Sobre Silos</h5>
-                </div>
-                <div class="card-body">
-                    <p>Os silos são estruturas fundamentais para o armazenamento de grãos na propriedade rural, permitindo:</p>
-                    <ul>
-                        <li>Armazenamento adequado da produção</li>
-                        <li>Redução de perdas pós-colheita</li>
-                        <li>Venda em momentos mais favoráveis</li>
-                        <li>Gestão estratégica do estoque</li>
-                    </ul>
-                    <p>Após cadastrar o silo, você poderá registrar os armazenamentos de diferentes culturas e safras.</p>
-                    
-                    <div class="text-center mt-3 mb-2">
-                        <i class="fas fa-warehouse fa-3x text-muted"></i>
-                    </div>
                 </div>
             </div>
         </div>
