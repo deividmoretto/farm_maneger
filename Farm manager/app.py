@@ -47,6 +47,7 @@ class Area(db.Model):
     cultura = db.Column(db.String(100), nullable=True)  # Tipo de cultura plantada
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     analyses = db.relationship('Analysis', backref='area', lazy=True)
+    polygon_points = db.Column(db.Text, nullable=True)  # Pontos do polígono em formato JSON
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
