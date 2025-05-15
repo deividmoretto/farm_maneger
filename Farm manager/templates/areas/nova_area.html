@@ -3,72 +3,101 @@
 {% block content %}
 <div class="container mt-4">
     <div class="row justify-content-center">
-        <div class="col-md-8">
+        <div class="col-md-10">
             <div class="card">
                 <div class="card-header">
-                    <h3 class="card-title mb-0">Nova Área</h3>
+                    <h2 class="mb-0">Nova Área</h2>
                 </div>
                 <div class="card-body">
-                    <form method="POST" action="{{ url_for('nova_area') }}">
-                        <div class="mb-3">
-                            <label for="nome" class="form-label">Nome da Área</label>
-                            <input type="text" class="form-control" id="nome" name="nome" required>
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="tamanho" class="form-label">Tamanho (hectares)</label>
-                            <input type="number" class="form-control" id="tamanho" name="tamanho" step="0.01" min="0" required>
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="endereco" class="form-label">Endereço</label>
-                            <input type="text" class="form-control" id="endereco" name="endereco">
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="cultura" class="form-label">Cultura</label>
-                            <select class="form-select" id="cultura" name="cultura">
-                                <option value="">Selecione uma cultura</option>
-                                <option value="soja">Soja</option>
-                                <option value="milho">Milho</option>
-                                <option value="cafe">Café</option>
-                                <option value="cana">Cana-de-açúcar</option>
-                                <option value="algodao">Algodão</option>
-                                <option value="trigo">Trigo</option>
-                                <option value="outros">Outros</option>
-                            </select>
-                        </div>
-
+                    <form method="POST" action="{{ url_for('nova_area') }}" id="areaForm">
                         <div class="row">
                             <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label for="latitude" class="form-label">Latitude</label>
-                                    <input type="number" class="form-control" id="latitude" name="latitude" step="0.000001">
+                                <div class="form-group mb-3">
+                                    <label for="nome" class="form-label">Nome da Área</label>
+                                    <input type="text" class="form-control" id="nome" name="nome" required>
+                                </div>
+
+                                <div class="form-group mb-3">
+                                    <label for="tamanho" class="form-label">Tamanho</label>
+                                    <div class="input-group">
+                                        <input type="number" step="0.01" min="0" class="form-control" id="tamanho" name="tamanho" readonly required>
+                                        <span class="input-group-text">hectares</span>
+                                    </div>
+                                    <small class="text-muted">Será calculado automaticamente ao desenhar o polígono</small>
+                                </div>
+
+                                <div class="form-group mb-3">
+                                    <label for="cultura" class="form-label">Tipo de Cultura</label>
+                                    <select class="form-control" id="cultura" name="cultura" required>
+                                        <option value="">Selecione...</option>
+                                        <option value="soja">Soja</option>
+                                        <option value="milho">Milho</option>
+                                        <option value="cana">Cana-de-açúcar</option>
+                                        <option value="cafe">Café</option>
+                                        <option value="algodao">Algodão</option>
+                                        <option value="feijao">Feijão</option>
+                                        <option value="arroz">Arroz</option>
+                                        <option value="trigo">Trigo</option>
+                                        <option value="pastagem">Pastagem</option>
+                                        <option value="outros">Outros</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-group mb-3">
+                                    <label class="form-label">Endereço/Localização</label>
+                                    <div class="input-group mb-2">
+                                        <input type="text" class="form-control" id="endereco" name="endereco" placeholder="Ex: Fazenda São José, Uberaba, MG">
+                                        <button type="button" id="btnBuscarEndereco" class="btn btn-primary">
+                                            <i class="fas fa-search"></i> Buscar
+                                        </button>
+                                    </div>
+                                    <small class="text-muted">Digite um endereço para encontrar a região no mapa</small>
+                                </div>
+                                
+                                <div class="row mb-3" style="display: none;">
+                                    <div class="col-md-6">
+                                        <label for="latitude" class="form-label">Latitude (centro)</label>
+                                        <input type="text" class="form-control" id="latitude" name="latitude" readonly>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="longitude" class="form-label">Longitude (centro)</label>
+                                        <input type="text" class="form-control" id="longitude" name="longitude" readonly>
+                                    </div>
+                                </div>
+                                
+                                <!-- Campo oculto para armazenar os pontos do polígono -->
+                                <input type="hidden" id="polygon_points" name="polygon_points">
+                                
+                                <div class="alert alert-info">
+                                    <h5 class="mb-2">Como desenhar sua área:</h5>
+                                    <ol>
+                                        <li>Utilize a barra de ferramentas à direita do mapa;</li>
+                                        <li>Clique no ícone <i class="fas fa-draw-polygon"></i> para começar a desenhar;</li>
+                                        <li>Clique em pontos no mapa para formar o polígono;</li>
+                                        <li>Clique no primeiro ponto para fechar o polígono;</li>
+                                        <li>Para editar a forma, use o ícone <i class="fas fa-edit"></i>;</li>
+                                        <li>Para remover, use o ícone <i class="fas fa-trash"></i>.</li>
+                                    </ol>
                                 </div>
                             </div>
+                            
                             <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label for="longitude" class="form-label">Longitude</label>
-                                    <input type="number" class="form-control" id="longitude" name="longitude" step="0.000001">
+                                <div class="form-group">
+                                    <label class="form-label">Desenhe a área no mapa:</label>
+                                    <div id="mapContainer" style="position: relative; z-index: 1; height: 450px; border: 1px solid #ddd; border-radius: 4px; overflow: hidden;">
+                                        <div id="map" style="width: 100%; height: 100%;"></div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="mb-3">
-                            <label for="polygon_points" class="form-label">Pontos do Polígono (JSON)</label>
-                            <textarea class="form-control" id="polygon_points" name="polygon_points" rows="3"></textarea>
-                            <small class="form-text text-muted">
-                                Formato: [{"lat": -23.123, "lng": -46.456}, ...]
-                            </small>
-                        </div>
-
-                        <div class="d-grid gap-2">
-                            <button type="submit" class="btn btn-primary">
-                                <i class="fas fa-save"></i> Salvar Área
-                            </button>
+                        <div class="d-flex justify-content-between mt-3">
                             <a href="{{ url_for('areas') }}" class="btn btn-secondary">
-                                <i class="fas fa-times"></i> Cancelar
+                                <i class="fas fa-arrow-left"></i> Voltar
                             </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i> Salvar
+                            </button>
                         </div>
                     </form>
                 </div>
@@ -76,4 +105,544 @@
         </div>
     </div>
 </div>
+
+<!-- Toast para notificações -->
+<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 5">
+    <div id="notificationToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header">
+            <strong class="me-auto" id="toastTitle">Notificação</strong>
+            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body" id="toastMessage"></div>
+    </div>
+</div>
+{% endblock %}
+
+{% block styles %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+<link rel="stylesheet" href="https://unpkg.com/leaflet-draw@1.0.4/dist/leaflet.draw.css" />
+<style>
+    /* Reset básico para evitar conflitos com outros estilos */
+    #mapContainer * {
+        box-sizing: content-box;
+    }
+    
+    /* Configurações para o mapa Leaflet */
+    .leaflet-container {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: #f2f2f2;
+        z-index: 1;
+    }
+    
+    /* Corrigir posicionamento dos tiles */
+    .leaflet-tile-container {
+        pointer-events: none;
+        position: absolute;
+        will-change: transform;
+        left: 0;
+        top: 0;
+    }
+    
+    .leaflet-tile {
+        position: absolute !important;
+        left: 0;
+        top: 0;
+        width: 256px !important;
+        height: 256px !important;
+    }
+    
+    /* Remover bordas brancas entre tiles */
+    .leaflet-tile-loaded {
+        visibility: inherit;
+        margin: 0 !important;
+        padding: 0 !important;
+        border: 0 !important;
+    }
+    
+    /* Garantir que elementos do mapa estejam acima de outros elementos */
+    .leaflet-pane,
+    .leaflet-overlay-pane,
+    .leaflet-marker-pane,
+    .leaflet-shadow-pane,
+    .leaflet-tooltip-pane,
+    .leaflet-popup-pane,
+    .leaflet-zoom-box,
+    .leaflet-image-layer,
+    .leaflet-layer {
+        position: absolute;
+        left: 0;
+        top: 0;
+        z-index: auto;
+    }
+    
+    /* Evitar quebras em containers responsivos */
+    .leaflet-container .leaflet-overlay-pane svg,
+    .leaflet-container .leaflet-marker-pane img,
+    .leaflet-container .leaflet-shadow-pane img,
+    .leaflet-container .leaflet-tile-pane img,
+    .leaflet-container img.leaflet-image-layer,
+    .leaflet-container .leaflet-tile {
+        max-width: none !important;
+        max-height: none !important;
+    }
+    
+    /* Cores das culturas */
+    .crop-color-swatch {
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        margin-right: 5px;
+        border-radius: 3px;
+        vertical-align: middle;
+    }
+    .crop-color-soja { background-color: #8BC34A; }
+    .crop-color-milho { background-color: #FFEB3B; }
+    .crop-color-cana { background-color: #4CAF50; }
+    .crop-color-cafe { background-color: #795548; }
+    .crop-color-algodao { background-color: #FFFFFF; border: 1px solid #ddd; }
+    .crop-color-feijao { background-color: #9C27B0; }
+    .crop-color-arroz { background-color: #03A9F4; }
+    .crop-color-trigo { background-color: #FFC107; }
+    .crop-color-pastagem { background-color: #00BCD4; }
+    .crop-color-outros { background-color: #9E9E9E; }
+</style>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<script src="https://unpkg.com/leaflet-draw@1.0.4/dist/leaflet.draw.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@turf/turf@6/turf.min.js"></script>
+<script>
+    // Mapa e variáveis globais
+    let map = null;
+    let marker = null;
+    let drawnItems = null;
+    let drawControl = null;
+    let Toast = null; // Referência global para o Toast do Bootstrap
+    
+    // Cores para as culturas
+    const cropColors = {
+        'soja': '#8BC34A',
+        'milho': '#FFEB3B',
+        'cana': '#4CAF50',
+        'cafe': '#795548',
+        'algodao': '#FFFFFF',
+        'feijao': '#9C27B0',
+        'arroz': '#03A9F4',
+        'trigo': '#FFC107',
+        'pastagem': '#00BCD4',
+        'outros': '#9E9E9E'
+    };
+    
+    // Função para mostrar notificações toast
+    function showToast(title, message, type = 'info') {
+        try {
+            const toastEl = document.getElementById('notificationToast');
+            
+            // Se o Bootstrap não estiver carregado ou o Toast não estiver disponível, usar alert
+            if (typeof bootstrap === 'undefined' || !bootstrap.Toast) {
+                console.warn('Bootstrap Toast não disponível, usando alert');
+                alert(message);
+                return;
+            }
+            
+            document.getElementById('toastTitle').textContent = title;
+            document.getElementById('toastMessage').textContent = message;
+            
+            // Criar uma nova instância de Toast ou usar a existente
+            const toast = Toast || new bootstrap.Toast(toastEl);
+            Toast = toast; // Salvar referência para uso futuro
+            
+            // Adicionar classes de cor baseadas no tipo
+            toastEl.className = 'toast';
+            if (type === 'warning') {
+                toastEl.classList.add('bg-warning', 'text-dark');
+            } else if (type === 'error') {
+                toastEl.classList.add('bg-danger', 'text-white');
+            } else if (type === 'success') {
+                toastEl.classList.add('bg-success', 'text-white');
+            } else {
+                toastEl.classList.add('bg-info', 'text-dark');
+            }
+            
+            toast.show();
+        } catch (error) {
+            console.error('Erro ao mostrar toast:', error);
+            alert(message); // Fallback para alert nativo
+        }
+    }
+    
+    // Função para atualizar a cor do polígono
+    function updatePolygonColor(cropType) {
+        const color = cropColors[cropType] || cropColors['outros'];
+        
+        // Atualizar opções de desenho
+        if (drawControl) {
+            map.removeControl(drawControl);
+        }
+        
+        drawControl = new L.Control.Draw({
+            position: 'topright',
+            draw: {
+                polyline: false,
+                polygon: {
+                    allowIntersection: false,
+                    drawError: {
+                        color: '#e1e100',
+                        message: '<strong>Atenção!</strong> Os polígonos não podem se cruzar!'
+                    },
+                    shapeOptions: {
+                        color: color
+                    }
+                },
+                circle: false,
+                rectangle: false,
+                marker: false,
+                circlemarker: false
+            },
+            edit: {
+                featureGroup: drawnItems,
+                remove: true
+            }
+        });
+        map.addControl(drawControl);
+        
+        // Atualizar polígonos existentes
+        drawnItems.eachLayer(function(layer) {
+            if (layer instanceof L.Polygon) {
+                layer.setStyle({ color: color });
+            }
+        });
+    }
+    
+    // Calcular a área em hectares usando Turf.js
+    function calculateAreaInHectares(latlngs) {
+        try {
+            const coordinates = latlngs.map(latlng => [latlng.lng, latlng.lat]);
+            
+            // Fechar o polígono (primeiro e último ponto devem ser iguais)
+            if (JSON.stringify(coordinates[0]) !== JSON.stringify(coordinates[coordinates.length - 1])) {
+                coordinates.push(coordinates[0]);
+            }
+            
+            const polygon = turf.polygon([coordinates]);
+            const areaInSquareMeters = turf.area(polygon);
+            const areaInHectares = areaInSquareMeters / 10000; // 1 hectare = 10000 m²
+            
+            return areaInHectares;
+        } catch (error) {
+            console.error('Erro ao calcular área:', error);
+            return 0;
+        }
+    }
+    
+    // Inicializar ou reinicializar o mapa
+    function initMap(lat, lng) {
+        try {
+            console.log("Inicializando mapa com coordenadas:", lat, lng);
+            
+            // Verificar se o elemento do mapa existe
+            const mapElement = document.getElementById('map');
+            if (!mapElement) {
+                console.error('Elemento do mapa não encontrado');
+                return;
+            }
+            
+            // Remover mapa anterior se existir
+            if (map) {
+                console.log("Removendo mapa existente");
+                map.remove();
+                map = null;
+                // Aguardar um instante após a remoção do mapa
+                setTimeout(() => {
+                    _createNewMap(lat, lng);
+                }, 50);
+            } else {
+                _createNewMap(lat, lng);
+            }
+        } catch (error) {
+            console.error('Erro ao inicializar mapa:', error);
+            showToast('Erro', 'Falha ao inicializar o mapa. Tente recarregar a página.', 'error');
+        }
+    }
+    
+    // Função auxiliar para criar um novo mapa
+    function _createNewMap(lat, lng) {
+        // Criar novo mapa com opções otimizadas
+        map = L.map('map', {
+            center: [lat, lng],
+            zoom: 5,
+            maxZoom: 18,
+            minZoom: 2,
+            worldCopyJump: true,
+            fadeAnimation: false,
+            zoomAnimation: false,
+            markerZoomAnimation: false,
+            preferCanvas: true,
+            renderer: L.canvas()
+        });
+        
+        // Adicionar tiles ao mapa
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+            subdomains: ['a', 'b', 'c'],
+            tileSize: 256,
+            updateWhenIdle: true,
+            updateWhenZooming: false,
+            keepBuffer: 2
+        }).addTo(map);
+        
+        // Inicializar camada para itens desenhados
+        drawnItems = new L.FeatureGroup();
+        map.addLayer(drawnItems);
+        
+        // Inicializar controles de desenho
+        const cropType = document.getElementById('cultura').value;
+        const color = cropColors[cropType] || cropColors['soja'];
+        
+        drawControl = new L.Control.Draw({
+            position: 'topright',
+            draw: {
+                polyline: false,
+                polygon: {
+                    allowIntersection: false,
+                    drawError: {
+                        color: '#e1e100',
+                        message: '<strong>Atenção!</strong> Os polígonos não podem se cruzar!'
+                    },
+                    shapeOptions: {
+                        color: color
+                    }
+                },
+                circle: false,
+                rectangle: false,
+                marker: false,
+                circlemarker: false
+            },
+            edit: {
+                featureGroup: drawnItems,
+                remove: true
+            }
+        });
+        map.addControl(drawControl);
+        
+        // Corrigir o tamanho do mapa após inicialização
+        setTimeout(function() {
+            if (map) map.invalidateSize(true);
+        }, 100);
+        
+        setTimeout(function() {
+            if (map) map.invalidateSize(true);
+        }, 500);
+        
+        // Adicionar eventos para o mapa
+        map.on('draw:created', handlePolygonCreated);
+        map.on('draw:edited', handlePolygonEdited);
+        map.on('draw:deleted', handlePolygonDeleted);
+        
+        console.log("Mapa inicializado com sucesso");
+    }
+    
+    // Handler para criação de polígono
+    function handlePolygonCreated(e) {
+        const layer = e.layer;
+        
+        // Limpar polígonos anteriores
+        drawnItems.clearLayers();
+        
+        // Adicionar polígono à camada de desenho
+        drawnItems.addLayer(layer);
+        
+        // Calcular o centro do polígono para o marcador
+        const bounds = layer.getBounds();
+        const center = bounds.getCenter();
+        
+        // Atualizar campos de latitude, longitude
+        document.getElementById('latitude').value = center.lat.toFixed(6);
+        document.getElementById('longitude').value = center.lng.toFixed(6);
+        
+        // Salvar pontos do polígono como JSON
+        const points = layer.getLatLngs()[0].map(function(latlng) {
+            return { lat: latlng.lat, lng: latlng.lng };
+        });
+        document.getElementById('polygon_points').value = JSON.stringify(points);
+        
+        // Calcular e atualizar a área
+        const areaHectares = calculateAreaInHectares(layer.getLatLngs()[0]);
+        document.getElementById('tamanho').value = areaHectares.toFixed(2);
+        
+        showToast('Sucesso', `Área de ${areaHectares.toFixed(2)} hectares desenhada com sucesso!`, 'success');
+    }
+    
+    // Handler para edição de polígono
+    function handlePolygonEdited(e) {
+        const layers = e.layers;
+        
+        layers.eachLayer(function(layer) {
+            const bounds = layer.getBounds();
+            const center = bounds.getCenter();
+            
+            // Atualizar campos de latitude, longitude
+            document.getElementById('latitude').value = center.lat.toFixed(6);
+            document.getElementById('longitude').value = center.lng.toFixed(6);
+            
+            // Salvar pontos do polígono como JSON
+            const points = layer.getLatLngs()[0].map(function(latlng) {
+                return { lat: latlng.lat, lng: latlng.lng };
+            });
+            document.getElementById('polygon_points').value = JSON.stringify(points);
+            
+            // Recalcular e atualizar a área
+            const areaHectares = calculateAreaInHectares(layer.getLatLngs()[0]);
+            document.getElementById('tamanho').value = areaHectares.toFixed(2);
+            
+            showToast('Editado', `Área atualizada para ${areaHectares.toFixed(2)} hectares.`, 'info');
+        });
+    }
+    
+    // Handler para remoção de polígono
+    function handlePolygonDeleted() {
+        // Limpar campos
+        document.getElementById('latitude').value = '';
+        document.getElementById('longitude').value = '';
+        document.getElementById('polygon_points').value = '';
+        document.getElementById('tamanho').value = '';
+        
+        showToast('Removido', 'O polígono foi removido. Desenhe uma nova área.', 'warning');
+    }
+    
+    // Função para buscar endereço
+    function buscarEndereco() {
+        const endereco = document.getElementById('endereco').value.trim();
+        
+        if (!endereco) {
+            showToast('Atenção', 'Por favor, informe um endereço para buscar.', 'warning');
+            return;
+        }
+        
+        // Mostrar indicador de carregamento
+        document.getElementById('btnBuscarEndereco').innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Buscando...';
+        document.getElementById('btnBuscarEndereco').disabled = true;
+        
+        // Chamar API de geocodificação
+        fetch('/api/geocode', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ endereco: endereco })
+        })
+        .then(response => response.json())
+        .then(data => {
+            // Restaurar botão
+            document.getElementById('btnBuscarEndereco').innerHTML = '<i class="fas fa-search"></i> Buscar';
+            document.getElementById('btnBuscarEndereco').disabled = false;
+            
+            if (data.error) {
+                showToast('Erro', data.error, 'error');
+                return;
+            }
+            
+            // Preencher campos de latitude e longitude
+            document.getElementById('latitude').value = data.latitude;
+            document.getElementById('longitude').value = data.longitude;
+            
+            // Atualizar input de endereço com nome mais completo
+            document.getElementById('endereco').value = data.display_name || data.endereco;
+            
+            try {
+                // Centralizar o mapa na localização encontrada
+                const lat = parseFloat(data.latitude);
+                const lng = parseFloat(data.longitude);
+                
+                if (map) {
+                    // Garantir que o mapa seja redimensionado corretamente
+                    map.invalidateSize(true);
+                    map.setView([lat, lng], 15);
+                    
+                    // Adicionar marcador temporário para mostrar a localização
+                    if (marker) {
+                        map.removeLayer(marker);
+                    }
+                    marker = L.marker([lat, lng]).addTo(map);
+                    
+                    // Remover marcador após alguns segundos
+                    setTimeout(function() {
+                        if (marker) {
+                            map.removeLayer(marker);
+                            marker = null;
+                        }
+                    }, 5000);
+                } else {
+                    // Se o mapa não existir, inicialize-o
+                    initMap(lat, lng);
+                }
+                
+                showToast('Sucesso', 'Localização encontrada! Agora desenhe o perímetro da área.', 'success');
+            } catch (error) {
+                console.error('Erro ao processar coordenadas:', error);
+                showToast('Erro', 'Ocorreu um erro ao processar as coordenadas. Tente novamente.', 'error');
+            }
+        })
+        .catch(error => {
+            console.error('Erro ao buscar endereço:', error);
+            document.getElementById('btnBuscarEndereco').innerHTML = '<i class="fas fa-search"></i> Buscar';
+            document.getElementById('btnBuscarEndereco').disabled = false;
+            showToast('Erro', 'Ocorreu um erro ao buscar o endereço. Tente novamente.', 'error');
+        });
+    }
+    
+    // Inicializar quando o documento estiver carregado
+    document.addEventListener('DOMContentLoaded', function() {
+        try {
+            // Inicializar com coordenadas padrão (Brasil)
+            initMap(-15.77972, -47.92972);
+            
+            // Configurar evento de busca de endereço
+            document.getElementById('btnBuscarEndereco').addEventListener('click', buscarEndereco);
+            
+            // Atualizar cor do polígono quando mudar o tipo de cultura
+            document.getElementById('cultura').addEventListener('change', function() {
+                updatePolygonColor(this.value);
+            });
+            
+            // Configurar validação do formulário
+            document.getElementById('areaForm').addEventListener('submit', function(e) {
+                if (!document.getElementById('polygon_points').value) {
+                    e.preventDefault();
+                    showToast('Atenção', 'Por favor, desenhe o polígono da área no mapa antes de salvar.', 'warning');
+                }
+            });
+            
+            // Eventos adicionais para detectar mudanças na visibilidade
+            document.addEventListener('visibilitychange', function() {
+                if (!document.hidden && map) {
+                    map.invalidateSize(true);
+                }
+            });
+            
+            // Evento para corrigir o mapa quando a janela é redimensionada
+            window.addEventListener('resize', function() {
+                if (map) {
+                    map.invalidateSize(true);
+                }
+            });
+            
+            // Corrigir o mapa novamente após um curto intervalo
+            setTimeout(function() {
+                if (map) {
+                    map.invalidateSize(true);
+                }
+            }, 2000);
+        } catch (error) {
+            console.error('Erro durante inicialização:', error);
+        }
+    });
+</script>
 {% endblock %} 

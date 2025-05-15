@@ -560,16 +560,8 @@ def editar_area(id):
         flash('Área atualizada com sucesso!', 'success')
         return redirect(url_for('areas'))
     
-    # Tentar encontrar o template em vários caminhos possíveis
-    for template_path in ['areas/editar_area.html', 'áreas/editar_area.html']:
-        try:
-            return render_template(template_path, area=area)
-        except:
-            continue
-    
-    # Se nenhum template for encontrado, redirecionar para a lista de áreas
-    flash('Não foi possível editar a área. Template não encontrado.', 'error')
-    return redirect(url_for('areas'))
+    # Sempre usar o template da pasta areas (sem acento)
+    return render_template('areas/editar_area.html', area=area)
 
 @app.route('/api/geocode', methods=['POST'])
 @login_required
