@@ -5,9 +5,10 @@ from werkzeug.security import generate_password_hash, check_password_hash
 import os
 from dotenv import load_dotenv
 from flask_wtf import FlaskForm
-from wtforms import FloatField, SelectField, SubmitField
+from wtforms import FloatField, SelectField, SubmitField, StringField, TextAreaField
 from wtforms.validators import DataRequired, NumberRange
 from datetime import datetime
+import requests
 
 load_dotenv()
 
@@ -496,7 +497,12 @@ def logout():
 @login_required
 def areas():
     user_areas = Area.query.filter_by(user_id=current_user.id).all()
-    return render_template('areas/areas.html', areas=user_areas)
+    try:
+        return render_template('areas/areas.html', areas=user_areas)
+    except Exception as e:
+        app.logger.error(f"Erro ao renderizar o template: {str(e)}")
+        # Tenta outro caminho como fallback
+        return render_template('areas/listar_areas.html', areas=user_areas)
 
 @app.route('/areas/nova', methods=['GET', 'POST'])
 @login_required
@@ -527,6 +533,82 @@ def nova_area():
         return redirect(url_for('areas'))
 
     return render_template('areas/nova_area.html')
+
+@app.route('/areas/<int:id>/excluir', methods=['POST'])
+@login_required
+def excluir_area(id):
+    area = Area.query.filter_by(id=id, user_id=current_user.id).first_or_404()
+    db.session.delete(area)
+    db.session.commit()
+    flash('Área excluída com sucesso!', 'success')
+    return redirect(url_for('areas'))
+
+@app.route('/areas/<int:id>/editar', methods=['GET', 'POST'])
+@login_required
+def editar_area(id):
+    area = Area.query.filter_by(id=id, user_id=current_user.id).first_or_404()
+    
+    if request.method == 'POST':
+        area.nome = request.form.get('nome')
+        area.tamanho = float(request.form.get('tamanho'))
+        area.endereco = request.form.get('endereco')
+        area.cultura = request.form.get('cultura')
+        area.latitude = float(request.form.get('latitude')) if request.form.get('latitude') else None
+        area.longitude = float(request.form.get('longitude')) if request.form.get('longitude') else None
+        
+        db.session.commit()
+        flash('Área atualizada com sucesso!', 'success')
+        return redirect(url_for('areas'))
+    
+    # Tentar encontrar o template em vários caminhos possíveis
+    for template_path in ['areas/editar_area.html', 'áreas/editar_area.html']:
+        try:
+            return render_template(template_path, area=area)
+        except:
+            continue
+    
+    # Se nenhum template for encontrado, redirecionar para a lista de áreas
+    flash('Não foi possível editar a área. Template não encontrado.', 'error')
+    return redirect(url_for('areas'))
+
+@app.route('/api/geocode', methods=['POST'])
+@login_required
+def geocode_address():
+    """API para geocodificar um endereço usando a API do OpenStreetMap Nominatim"""
+    data = request.get_json()
+    endereco = data.get('endereco', '')
+    
+    if not endereco:
+        return jsonify({'error': 'Endereço não fornecido'}), 400
+    
+    try:
+        # Usando OpenStreetMap Nominatim API (gratuito e não requer chave API)
+        response = requests.get(
+            'https://nominatim.openstreetmap.org/search',
+            params={
+                'q': endereco,
+                'format': 'json',
+                'limit': 1
+            },
+            headers={'User-Agent': 'FarmApp/1.0'}
+        )
+        
+        response.raise_for_status()
+        results = response.json()
+        
+        if not results:
+            return jsonify({'error': 'Endereço não encontrado'}), 404
+        
+        result = results[0]
+        return jsonify({
+            'endereco': endereco,
+            'latitude': result['lat'],
+            'longitude': result['lon'],
+            'display_name': result['display_name']
+        })
+    
+    except Exception as e:
+        return jsonify({'error': f'Erro ao geocodificar endereço: {str(e)}'}), 500
 
 @app.route('/analises')
 @login_required
@@ -753,6 +835,17 @@ def salvar_calculo():
 @app.route('/precos')
 def precos():
     return render_template('precos.html')
+
+# Formulário para Área
+class AreaForm(FlaskForm):
+    nome = StringField('Nome da Área', validators=[DataRequired()])
+    cultura = StringField('Cultura')
+    tamanho = FloatField('Tamanho', validators=[DataRequired(), NumberRange(min=0.1)])
+    endereco = StringField('Endereço')
+    latitude = StringField('Latitude')
+    longitude = StringField('Longitude')
+    descricao = TextAreaField('Descrição')
+    submit = SubmitField('Salvar')
 
 @app.errorhandler(404)
 def page_not_found(e):
