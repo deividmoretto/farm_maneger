@@ -3,11 +3,6 @@ from flask_login import current_user, login_required
 from app import db
 from app.models.area import Area
 from app.forms.area_form import AreaForm
-import requests
-import os
-from dotenv import load_dotenv
-
-load_dotenv()
 
 areas_bp = Blueprint('areas', __name__)
 
@@ -22,6 +17,9 @@ def listar_areas():
 def nova_area():
     form = AreaForm()
     if form.validate_on_submit():
+        # Obter os pontos do polígono do formulário
+        polygon_points = request.form.get('polygon_points', '')
+        
         area = Area(
             nome=form.nome.data,
             cultura=form.cultura.data,
@@ -29,6 +27,7 @@ def nova_area():
             endereco=form.endereco.data,
             latitude=form.latitude.data,
             longitude=form.longitude.data,
+            polygon_points=polygon_points,
             descricao=form.descricao.data,
             user_id=current_user.id
         )
@@ -51,12 +50,16 @@ def editar_area(id):
     form = AreaForm(obj=area)
     
     if form.validate_on_submit():
+        # Obter os pontos do polígono do formulário
+        polygon_points = request.form.get('polygon_points', '')
+        
         area.nome = form.nome.data
         area.cultura = form.cultura.data
         area.tamanho = form.tamanho.data
         area.endereco = form.endereco.data
         area.latitude = form.latitude.data
         area.longitude = form.longitude.data
+        area.polygon_points = polygon_points
         area.descricao = form.descricao.data
         
         db.session.commit()
@@ -72,43 +75,4 @@ def excluir_area(id):
     db.session.delete(area)
     db.session.commit()
     flash('Área excluída com sucesso!', 'success')
-    return redirect(url_for('areas.listar_areas'))
-
-@areas_bp.route('/api/geocode', methods=['POST'])
-@login_required
-def geocode_address():
-    """API para geocodificar um endereço usando a API do OpenStreetMap Nominatim"""
-    data = request.get_json()
-    endereco = data.get('endereco', '')
-    
-    if not endereco:
-        return jsonify({'error': 'Endereço não fornecido'}), 400
-    
-    try:
-        # Usando OpenStreetMap Nominatim API (gratuito e não requer chave API)
-        response = requests.get(
-            'https://nominatim.openstreetmap.org/search',
-            params={
-                'q': endereco,
-                'format': 'json',
-                'limit': 1
-            },
-            headers={'User-Agent': 'FarmApp/1.0'}
-        )
-        
-        response.raise_for_status()
-        results = response.json()
-        
-        if not results:
-            return jsonify({'error': 'Endereço não encontrado'}), 404
-        
-        result = results[0]
-        return jsonify({
-            'endereco': endereco,
-            'latitude': result['lat'],
-            'longitude': result['lon'],
-            'display_name': result['display_name']
-        })
-    
-    except Exception as e:
-        return jsonify({'error': f'Erro ao geocodificar endereço: {str(e)}'}), 500 
+    return redirect(url_for('areas.listar_areas')) 

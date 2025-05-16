@@ -3,54 +3,97 @@
 {% block content %}
 <div class="container mt-4">
     <div class="row justify-content-center">
-        <div class="col-md-8">
+        <div class="col-md-10">
             <div class="card">
                 <div class="card-header">
                     <h2 class="mb-0">Editar Área</h2>
                 </div>
                 <div class="card-body">
-                    <form method="POST" action="{{ url_for('editar_area', id=area.id) }}">
-                        <div class="form-group mb-3">
-                            <label class="form-label">Nome da Área</label>
-                            <input type="text" name="nome" value="{{ area.nome }}" class="form-control" required>
-                        </div>
-
-                        <div class="form-group mb-3">
-                            <label class="form-label">Cultura</label>
-                            <input type="text" name="cultura" value="{{ area.cultura }}" class="form-control">
-                        </div>
-
-                        <div class="form-group mb-3">
-                            <label class="form-label">Tamanho (hectares)</label>
-                            <input type="number" step="0.01" name="tamanho" value="{{ area.tamanho }}" class="form-control" required>
-                        </div>
-
-                        <div class="form-group mb-3">
-                            <label class="form-label">Endereço</label>
-                            <div class="input-group">
-                                <input type="text" id="endereco" name="endereco" value="{{ area.endereco }}" class="form-control">
-                                <button type="button" id="btnBuscarEndereco" class="btn btn-primary">
-                                    <i class="fas fa-search"></i> Buscar
-                                </button>
-                            </div>
-                        </div>
-                        
-                        <div id="mapContainer" class="mb-3" style="position: relative; z-index: 1; height: 350px; border: 1px solid #ddd; border-radius: 4px; overflow: hidden;">
-                            <div id="map" style="width: 100%; height: 100%;"></div>
-                        </div>
-                        
-                        <div class="row mb-3">
+                    <form method="POST" action="{{ url_for('editar_area', id=area.id) }}" id="areaForm">
+                        {{ form.csrf_token }}
+                        <div class="row">
                             <div class="col-md-6">
-                                <label class="form-label">Latitude</label>
-                                <input type="text" id="latitude" name="latitude" value="{{ area.latitude }}" class="form-control">
+                                <div class="form-group mb-3">
+                                    <label class="form-label">Nome da Área</label>
+                                    <input type="text" name="nome" value="{{ area.nome }}" class="form-control" required>
+                                </div>
+    
+                                <div class="form-group mb-3">
+                                    <label class="form-label">Tamanho (hectares)</label>
+                                    <div class="input-group">
+                                        <input type="number" step="0.01" name="tamanho" value="{{ area.tamanho }}" id="tamanho" class="form-control" readonly required>
+                                        <span class="input-group-text">hectares</span>
+                                    </div>
+                                    <small class="text-muted">Será recalculado automaticamente ao editar a área no mapa</small>
+                                </div>
+    
+                                <div class="form-group mb-3">
+                                    <label class="form-label">Cultura</label>
+                                    <select name="cultura" id="cultura" class="form-control" required>
+                                        <option value="soja" {% if area.cultura == 'soja' %}selected{% endif %}>Soja</option>
+                                        <option value="milho" {% if area.cultura == 'milho' %}selected{% endif %}>Milho</option>
+                                        <option value="cana" {% if area.cultura == 'cana' %}selected{% endif %}>Cana-de-açúcar</option>
+                                        <option value="cafe" {% if area.cultura == 'cafe' %}selected{% endif %}>Café</option>
+                                        <option value="algodao" {% if area.cultura == 'algodao' %}selected{% endif %}>Algodão</option>
+                                        <option value="feijao" {% if area.cultura == 'feijao' %}selected{% endif %}>Feijão</option>
+                                        <option value="arroz" {% if area.cultura == 'arroz' %}selected{% endif %}>Arroz</option>
+                                        <option value="trigo" {% if area.cultura == 'trigo' %}selected{% endif %}>Trigo</option>
+                                        <option value="pastagem" {% if area.cultura == 'pastagem' %}selected{% endif %}>Pastagem</option>
+                                        <option value="outros" {% if area.cultura == 'outros' %}selected{% endif %}>Outros</option>
+                                    </select>
+                                </div>
+    
+                                <div class="form-group mb-3">
+                                    <label class="form-label">Endereço</label>
+                                    <div class="input-group mb-2">
+                                        <input type="text" id="endereco" name="endereco" value="{{ area.endereco }}" class="form-control">
+                                        <button type="button" id="btnBuscarEndereco" class="btn btn-primary">
+                                            <i class="fas fa-search"></i> Buscar
+                                        </button>
+                                    </div>
+                                    <small class="text-muted">Digite um endereço para encontrar a região no mapa</small>
+                                </div>
+                                
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label">Latitude (centro)</label>
+                                        <input type="text" id="latitude" name="latitude" value="{{ area.latitude }}" class="form-control" readonly>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Longitude (centro)</label>
+                                        <input type="text" id="longitude" name="longitude" value="{{ area.longitude }}" class="form-control" readonly>
+                                    </div>
+                                </div>
+                                
+                                <!-- Campo oculto para armazenar os pontos do polígono -->
+                                <input type="hidden" id="polygon_points" name="polygon_points">
+                                
+                                <div class="form-group mb-3">
+                                    <label class="form-label">Descrição</label>
+                                    <textarea class="form-control" id="descricao" name="descricao" rows="3">{{ area.descricao }}</textarea>
+                                </div>
                             </div>
+                            
                             <div class="col-md-6">
-                                <label class="form-label">Longitude</label>
-                                <input type="text" id="longitude" name="longitude" value="{{ area.longitude }}" class="form-control">
+                                <div class="form-group">
+                                    <label class="form-label">Área no mapa:</label>
+                                    <div class="map-type-buttons mb-2">
+                                        <div class="btn-group w-100">
+                                            <button type="button" class="btn btn-outline-primary active" id="btnOSM">Mapa</button>
+                                            <button type="button" class="btn btn-outline-primary" id="btnSatelite">Satélite</button>
+                                        </div>
+                                    </div>
+                                    <div id="mapContainer" style="position: relative; z-index: 1; height: 450px; border: 1px solid #ddd; border-radius: 4px; overflow: hidden;">
+                                        <div id="map" style="width: 100%; height: 100%;"></div>
+                                    </div>
+                                    <small class="form-text text-muted mt-2">
+                                        Use as ferramentas de desenho no canto superior direito do mapa para redesenhar a área se necessário.
+                                    </small>
+                                </div>
                             </div>
                         </div>
 
-                        <div class="d-flex justify-content-between">
+                        <div class="d-flex justify-content-between mt-3">
                             <a href="{{ url_for('areas') }}" class="btn btn-secondary">
                                 <i class="fas fa-arrow-left"></i> Voltar
                             </a>
@@ -64,11 +107,23 @@
         </div>
     </div>
 </div>
+
+<!-- Toast para notificações -->
+<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 5">
+    <div id="notificationToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header">
+            <strong class="me-auto" id="toastTitle">Notificação</strong>
+            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body" id="toastMessage"></div>
+    </div>
+</div>
 {% endblock %}
 
 {% block styles %}
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" 
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
       integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+<link rel="stylesheet" href="https://unpkg.com/leaflet-draw@1.0.4/dist/leaflet.draw.css" />
 <style>
     /* Reset básico para evitar conflitos com outros estilos */
     #mapContainer * {
@@ -86,56 +141,23 @@
         z-index: 1;
     }
     
-    /* Corrigir posicionamento dos tiles */
-    .leaflet-tile-container {
-        pointer-events: none;
-        position: absolute;
-        will-change: transform;
-        left: 0;
-        top: 0;
-    }
-    
-    .leaflet-tile {
-        position: absolute !important;
-        left: 0;
-        top: 0;
-        width: 256px !important;
-        height: 256px !important;
-    }
-    
-    /* Remover bordas brancas entre tiles */
-    .leaflet-tile-loaded {
-        visibility: inherit;
-        margin: 0 !important;
-        padding: 0 !important;
-        border: 0 !important;
-    }
-    
-    /* Garantir que elementos do mapa estejam acima de outros elementos */
-    .leaflet-pane,
-    .leaflet-overlay-pane,
-    .leaflet-marker-pane,
-    .leaflet-shadow-pane,
-    .leaflet-tooltip-pane,
-    .leaflet-popup-pane,
-    .leaflet-zoom-box,
-    .leaflet-image-layer,
-    .leaflet-layer {
-        position: absolute;
-        left: 0;
-        top: 0;
-        z-index: auto;
-    }
-    
     /* Evitar quebras em containers responsivos */
-    .leaflet-container .leaflet-overlay-pane svg,
-    .leaflet-container .leaflet-marker-pane img,
-    .leaflet-container .leaflet-shadow-pane img,
-    .leaflet-container .leaflet-tile-pane img,
-    .leaflet-container img.leaflet-image-layer,
-    .leaflet-container .leaflet-tile {
+    .leaflet-container img {
         max-width: none !important;
         max-height: none !important;
+    }
+    
+    /* Botões de tipo de mapa */
+    .map-type-buttons .btn-outline-primary {
+        color: #333;
+        background-color: #fff;
+        border-color: #ccc;
+    }
+    
+    .map-type-buttons .btn-outline-primary.active {
+        color: #fff;
+        background-color: #0d6efd;
+        border-color: #0d6efd;
     }
 </style>
 {% endblock %}
@@ -143,70 +165,301 @@
 {% block scripts %}
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" 
         integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<script src="https://unpkg.com/leaflet-draw@1.0.4/dist/leaflet.draw.js"></script>
+<script src="https://unpkg.com/@turf/turf@6/turf.min.js"></script>
 <script>
-    // Inicializar mapa
+    // Mapa e variáveis globais
     let map = null;
     let marker = null;
-    let defaultLocation = [-15.7801, -47.9292]; // Brasília como localização padrão
+    let drawnItems = null;
+    let drawControl = null;
+    let osmLayer = null;
+    let satelliteLayer = null;
+    let activeLayer = null;
+    let existingPolygon = null;
     
-    // Inicializar o mapa com as coordenadas fornecidas
-    function initMap(lat, lng) {
-        console.log("Inicializando mapa com coordenadas:", lat, lng);
+    // Cores para as culturas
+    const cropColors = {
+        'soja': '#8BC34A',
+        'milho': '#FFEB3B',
+        'cana': '#4CAF50',
+        'cafe': '#795548',
+        'algodao': '#FFFFFF',
+        'feijao': '#9C27B0',
+        'arroz': '#03A9F4',
+        'trigo': '#FFC107',
+        'pastagem': '#00BCD4',
+        'outros': '#9E9E9E'
+    };
+    
+    // Função para mostrar notificações toast
+    function showToast(title, message, type = 'info') {
+        try {
+            const toastEl = document.getElementById('notificationToast');
+            
+            // Se o Bootstrap não estiver carregado ou o Toast não estiver disponível, usar alert
+            if (typeof bootstrap === 'undefined' || !bootstrap.Toast) {
+                console.warn('Bootstrap Toast não disponível, usando alert');
+                alert(message);
+                return;
+            }
+            
+            document.getElementById('toastTitle').textContent = title;
+            document.getElementById('toastMessage').textContent = message;
+            
+            // Criar uma nova instância de Toast
+            const toast = new bootstrap.Toast(toastEl);
+            
+            // Adicionar classes de cor baseadas no tipo
+            toastEl.className = 'toast';
+            if (type === 'warning') {
+                toastEl.classList.add('bg-warning', 'text-dark');
+            } else if (type === 'error') {
+                toastEl.classList.add('bg-danger', 'text-white');
+            } else if (type === 'success') {
+                toastEl.classList.add('bg-success', 'text-white');
+            } else {
+                toastEl.classList.add('bg-info', 'text-dark');
+            }
+            
+            toast.show();
+        } catch (error) {
+            console.error('Erro ao mostrar toast:', error);
+            alert(message); // Fallback para alert nativo
+        }
+    }
+    
+    // Função para atualizar a cor do polígono
+    function updatePolygonColor(cropType) {
+        const color = cropColors[cropType] || cropColors['outros'];
         
-        // Se o mapa já existe, destruí-lo para evitar problemas
-        if (map) {
-            map.remove();
-            map = null;
+        // Atualizar opções de desenho
+        if (drawControl) {
+            map.removeControl(drawControl);
         }
         
+        drawControl = new L.Control.Draw({
+            position: 'topright',
+            draw: {
+                polyline: false,
+                polygon: {
+                    allowIntersection: false,
+                    drawError: {
+                        color: '#e1e100',
+                        message: '<strong>Atenção!</strong> Os polígonos não podem se cruzar!'
+                    },
+                    shapeOptions: {
+                        color: color,
+                        fillOpacity: 0.3
+                    }
+                },
+                circle: false,
+                rectangle: false,
+                marker: false,
+                circlemarker: false
+            },
+            edit: {
+                featureGroup: drawnItems,
+                remove: true
+            }
+        });
+        map.addControl(drawControl);
+        
+        // Atualizar polígonos existentes
+        drawnItems.eachLayer(function(layer) {
+            if (layer instanceof L.Polygon) {
+                layer.setStyle({ color: color, fillOpacity: 0.3 });
+            }
+        });
+    }
+    
+    // Calcular a área em hectares usando Turf.js
+    function calculateAreaInHectares(latlngs) {
         try {
-            // Inicializar mapa com opções otimizadas
+            const coordinates = latlngs.map(latlng => [latlng.lng, latlng.lat]);
+            
+            // Fechar o polígono (primeiro e último ponto devem ser iguais)
+            if (JSON.stringify(coordinates[0]) !== JSON.stringify(coordinates[coordinates.length - 1])) {
+                coordinates.push(coordinates[0]);
+            }
+            
+            const polygon = turf.polygon([coordinates]);
+            const areaInSquareMeters = turf.area(polygon);
+            const areaInHectares = areaInSquareMeters / 10000; // 1 hectare = 10000 m²
+            
+            return areaInHectares;
+        } catch (error) {
+            console.error('Erro ao calcular área:', error);
+            return 0;
+        }
+    }
+    
+    // Inicializar ou reinicializar o mapa
+    function initMap(lat, lng, polygonPoints) {
+        try {
+            // Verificar se o elemento do mapa existe
+            const mapElement = document.getElementById('map');
+            if (!mapElement) {
+                console.error('Elemento do mapa não encontrado');
+                return;
+            }
+            
+            // Remover mapa anterior se existir
+            if (map) {
+                map.remove();
+                map = null;
+            }
+            
+            // Criar novo mapa
             map = L.map('map', {
                 center: [lat, lng],
                 zoom: 13,
                 maxZoom: 18,
                 minZoom: 2,
-                worldCopyJump: true,
-                fadeAnimation: false,
-                zoomAnimation: false,
-                markerZoomAnimation: false,
-                preferCanvas: true,
-                renderer: L.canvas()
+                worldCopyJump: true
             });
             
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-                subdomains: ['a', 'b', 'c'],
-                tileSize: 256,
-                updateWhenIdle: true,
-                updateWhenZooming: false,
-                keepBuffer: 2
+            // Camada OpenStreetMap (padrão)
+            osmLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
             }).addTo(map);
+            activeLayer = osmLayer;
             
-            // Adicionar marcador
-            marker = L.marker([lat, lng], {draggable: true}).addTo(map);
-            
-            // Atualizar coordenadas quando o marcador for arrastado
-            marker.on('dragend', function(e) {
-                let position = marker.getLatLng();
-                document.getElementById('latitude').value = position.lat.toFixed(6);
-                document.getElementById('longitude').value = position.lng.toFixed(6);
+            // Camada de Satélite (Google Satellite)
+            satelliteLayer = L.tileLayer('https://mt1.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', {
+                attribution: '&copy; Google'
             });
             
-            // Corrigir layout após inicialização do mapa
-            setTimeout(function() {
-                map.invalidateSize(true);
-            }, 100);
+            // Inicializar camada para itens desenhados
+            drawnItems = new L.FeatureGroup();
+            map.addLayer(drawnItems);
             
+            const cropType = document.getElementById('cultura').value || 'outros';
+            const color = cropColors[cropType] || cropColors['outros'];
+            
+            // Adicionar polígono existente se disponível
+            if (polygonPoints && polygonPoints.length > 0) {
+                const latlngs = polygonPoints.map(point => [point.lat, point.lng]);
+                existingPolygon = L.polygon(latlngs, {
+                    color: color,
+                    fillOpacity: 0.3
+                });
+                drawnItems.addLayer(existingPolygon);
+                
+                // Calcular e atualizar a área
+                const areaHectares = calculateAreaInHectares(existingPolygon.getLatLngs()[0]);
+                document.getElementById('tamanho').value = areaHectares.toFixed(2);
+                
+                // Ajustar zoom para mostrar o polígono inteiro
+                map.fitBounds(existingPolygon.getBounds());
+            }
+            
+            // Inicializar controles de desenho
+            drawControl = new L.Control.Draw({
+                position: 'topright',
+                draw: {
+                    polyline: false,
+                    polygon: {
+                        allowIntersection: false,
+                        drawError: {
+                            color: '#e1e100',
+                            message: '<strong>Atenção!</strong> Os polígonos não podem se cruzar!'
+                        },
+                        shapeOptions: {
+                            color: color,
+                            fillOpacity: 0.3
+                        }
+                    },
+                    circle: false,
+                    rectangle: false,
+                    marker: false,
+                    circlemarker: false
+                },
+                edit: {
+                    featureGroup: drawnItems,
+                    remove: true
+                }
+            });
+            map.addControl(drawControl);
+            
+            // Adicionar eventos para o mapa
+            map.on('draw:created', handlePolygonCreated);
+            map.on('draw:edited', handlePolygonEdited);
+            map.on('draw:deleted', handlePolygonDeleted);
+            
+            // Corrigir o tamanho do mapa
             setTimeout(function() {
-                map.invalidateSize(true);
-            }, 500);
+                map.invalidateSize();
+            }, 200);
             
             console.log("Mapa inicializado com sucesso");
         } catch (error) {
-            console.error("Erro ao inicializar mapa:", error);
-            alert("Erro ao carregar o mapa. Tente recarregar a página.");
+            console.error('Erro ao inicializar mapa:', error);
+            showToast('Erro', 'Falha ao inicializar o mapa. Tente recarregar a página.', 'error');
         }
+    }
+    
+    // Handler para criação de polígono
+    function handlePolygonCreated(e) {
+        const layer = e.layer;
+        
+        // Limpar polígonos anteriores
+        drawnItems.clearLayers();
+        
+        // Adicionar polígono à camada de desenho
+        drawnItems.addLayer(layer);
+        
+        // Calcular o centro do polígono para o marcador
+        const bounds = layer.getBounds();
+        const center = bounds.getCenter();
+        
+        // Atualizar campos de latitude, longitude
+        document.getElementById('latitude').value = center.lat.toFixed(6);
+        document.getElementById('longitude').value = center.lng.toFixed(6);
+        
+        // Salvar pontos do polígono como JSON
+        const points = layer.getLatLngs()[0].map(function(latlng) {
+            return { lat: latlng.lat, lng: latlng.lng };
+        });
+        document.getElementById('polygon_points').value = JSON.stringify(points);
+        
+        // Calcular e atualizar a área
+        const areaHectares = calculateAreaInHectares(layer.getLatLngs()[0]);
+        document.getElementById('tamanho').value = areaHectares.toFixed(2);
+        
+        showToast('Sucesso', `Área de ${areaHectares.toFixed(2)} hectares desenhada com sucesso!`, 'success');
+    }
+    
+    // Handler para edição de polígono
+    function handlePolygonEdited(e) {
+        const layers = e.layers;
+        
+        layers.eachLayer(function(layer) {
+            const bounds = layer.getBounds();
+            const center = bounds.getCenter();
+            
+            // Atualizar campos de latitude, longitude
+            document.getElementById('latitude').value = center.lat.toFixed(6);
+            document.getElementById('longitude').value = center.lng.toFixed(6);
+            
+            // Salvar pontos do polígono como JSON
+            const points = layer.getLatLngs()[0].map(function(latlng) {
+                return { lat: latlng.lat, lng: latlng.lng };
+            });
+            document.getElementById('polygon_points').value = JSON.stringify(points);
+            
+            // Recalcular e atualizar a área
+            const areaHectares = calculateAreaInHectares(layer.getLatLngs()[0]);
+            document.getElementById('tamanho').value = areaHectares.toFixed(2);
+            
+            showToast('Editado', `Área atualizada para ${areaHectares.toFixed(2)} hectares.`, 'info');
+        });
+    }
+    
+    // Handler para remoção de polígono
+    function handlePolygonDeleted() {
+        document.getElementById('polygon_points').value = '';
+        showToast('Removido', 'O polígono foi removido. Desenhe uma nova área.', 'warning');
     }
     
     // Função para buscar endereço
@@ -214,7 +467,7 @@
         const endereco = document.getElementById('endereco').value.trim();
         
         if (!endereco) {
-            alert('Por favor, informe um endereço para buscar.');
+            showToast('Atenção', 'Por favor, informe um endereço para buscar.', 'warning');
             return;
         }
         
@@ -222,13 +475,12 @@
         document.getElementById('btnBuscarEndereco').innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Buscando...';
         document.getElementById('btnBuscarEndereco').disabled = true;
         
-        // Chamar API de geocodificação
-        fetch('/api/geocode', {
-            method: 'POST',
+        // API gratuita de geocodificação da Nominatim (OSM)
+        fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(endereco)}&limit=1`, {
             headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ endereco: endereco })
+                'Accept': 'application/json',
+                'User-Agent': 'FarmManagerApp'
+            }
         })
         .then(response => response.json())
         .then(data => {
@@ -236,96 +488,129 @@
             document.getElementById('btnBuscarEndereco').innerHTML = '<i class="fas fa-search"></i> Buscar';
             document.getElementById('btnBuscarEndereco').disabled = false;
             
-            if (data.error) {
-                alert(data.error);
+            if (!data || data.length === 0) {
+                showToast('Erro', 'Endereço não encontrado. Tente com mais detalhes.', 'error');
                 return;
             }
             
-            try {
-                // Preencher campos de latitude e longitude
-                document.getElementById('latitude').value = data.latitude;
-                document.getElementById('longitude').value = data.longitude;
+            const result = data[0];
+            
+            // Preencher campos de latitude e longitude
+            document.getElementById('latitude').value = result.lat;
+            document.getElementById('longitude').value = result.lon;
+            
+            // Centralizar o mapa na localização encontrada
+            if (map) {
+                const lat = parseFloat(result.lat);
+                const lng = parseFloat(result.lon);
                 
-                // Atualizar input de endereço com nome mais completo
-                document.getElementById('endereco').value = data.display_name || data.endereco;
+                map.setView([lat, lng], 13);
                 
-                // Atualizar o mapa com as novas coordenadas
-                const lat = parseFloat(data.latitude);
-                const lng = parseFloat(data.longitude);
+                // Adicionar marcador temporário
+                if (marker) map.removeLayer(marker);
+                marker = L.marker([lat, lng]).addTo(map);
                 
-                // Verificar se o mapa já existe
-                if (map) {
-                    // Garantir que o mapa seja redimensionado corretamente
-                    map.invalidateSize(true);
-                    
-                    // Mover o marcador e centralizar o mapa
-                    marker.setLatLng([lat, lng]);
-                    map.setView([lat, lng], 15);
-                } else {
-                    // Se o mapa não existir, inicializar
-                    initMap(lat, lng);
-                }
-                
-                alert('Localização encontrada com sucesso!');
-            } catch (error) {
-                console.error('Erro ao processar coordenadas:', error);
-                alert('Ocorreu um erro ao processar as coordenadas. Tente novamente.');
+                // Remover marcador após alguns segundos
+                setTimeout(function() {
+                    if (marker) {
+                        map.removeLayer(marker);
+                        marker = null;
+                    }
+                }, 5000);
             }
+            
+            showToast('Sucesso', 'Localização encontrada! Agora desenhe o perímetro da área.', 'success');
         })
         .catch(error => {
             console.error('Erro ao buscar endereço:', error);
             document.getElementById('btnBuscarEndereco').innerHTML = '<i class="fas fa-search"></i> Buscar';
             document.getElementById('btnBuscarEndereco').disabled = false;
-            alert('Ocorreu um erro ao buscar o endereço. Tente novamente.');
+            showToast('Erro', 'Ocorreu um erro ao buscar o endereço. Tente novamente.', 'error');
         });
     }
     
-    // Inicialização quando a página carrega
+    // Inicializar quando o documento estiver carregado
     document.addEventListener('DOMContentLoaded', function() {
         try {
-            const latitude = document.getElementById('latitude').value;
-            const longitude = document.getElementById('longitude').value;
+            // Recuperar coordenadas e pontos do polígono (se existirem)
+            const latitude = parseFloat("{{ area.latitude or 0 }}");
+            const longitude = parseFloat("{{ area.longitude or 0 }}");
             
-            if (latitude && longitude && !isNaN(parseFloat(latitude)) && !isNaN(parseFloat(longitude))) {
-                // Se temos coordenadas válidas, inicializar o mapa com elas
-                initMap(parseFloat(latitude), parseFloat(longitude));
-            } else {
-                // Caso contrário, inicializar com a localização padrão
-                initMap(defaultLocation[0], defaultLocation[1]);
+            // Tentar recuperar pontos do polígono de dados existentes
+            let polygonPoints = [];
+            try {
+                {% if area.polygon_points %}
+                    polygonPoints = JSON.parse('{{ area.polygon_points | safe }}');
+                {% else %}
+                    // Se não houver pontos salvos, criar um polígono simples ao redor da coordenada central
+                    if (latitude && longitude && !isNaN(latitude) && !isNaN(longitude)) {
+                        // Criar um pequeno quadrado ao redor do ponto central
+                        const offset = 0.001; // Aproximadamente 100 metros
+                        polygonPoints = [
+                            {lat: latitude - offset, lng: longitude - offset},
+                            {lat: latitude - offset, lng: longitude + offset},
+                            {lat: latitude + offset, lng: longitude + offset},
+                            {lat: latitude + offset, lng: longitude - offset}
+                        ];
+                    }
+                {% endif %}
+            } catch (e) {
+                console.warn("Não foi possível recuperar pontos do polígono", e);
             }
             
-            // Adicionar evento ao botão de busca
+            // Inicializar o mapa
+            if (latitude && longitude && !isNaN(latitude) && !isNaN(longitude)) {
+                initMap(latitude, longitude, polygonPoints);
+            } else {
+                // Usar coordenadas padrão do Brasil
+                initMap(-15.77972, -47.92972, polygonPoints);
+            }
+            
+            // Configurar evento de busca de endereço
             document.getElementById('btnBuscarEndereco').addEventListener('click', buscarEndereco);
             
-            // Permitir busca ao pressionar Enter no campo de endereço
-            document.getElementById('endereco').addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') {
-                    e.preventDefault();
-                    buscarEndereco();
+            // Atualizar cor do polígono quando mudar o tipo de cultura
+            document.getElementById('cultura').addEventListener('change', function() {
+                updatePolygonColor(this.value);
+            });
+            
+            // Alternar entre mapa normal e satélite
+            document.getElementById('btnOSM').addEventListener('click', function() {
+                if (activeLayer !== osmLayer) {
+                    map.removeLayer(activeLayer);
+                    map.addLayer(osmLayer);
+                    activeLayer = osmLayer;
+                    
+                    // Atualizar estado dos botões
+                    document.getElementById('btnOSM').classList.add('active');
+                    document.getElementById('btnSatelite').classList.remove('active');
                 }
             });
             
-            // Eventos para corrigir o mapa quando necessário
-            document.addEventListener('visibilitychange', function() {
-                if (!document.hidden && map) {
-                    map.invalidateSize(true);
+            document.getElementById('btnSatelite').addEventListener('click', function() {
+                if (activeLayer !== satelliteLayer) {
+                    map.removeLayer(activeLayer);
+                    map.addLayer(satelliteLayer);
+                    activeLayer = satelliteLayer;
+                    
+                    // Atualizar estado dos botões
+                    document.getElementById('btnSatelite').classList.add('active');
+                    document.getElementById('btnOSM').classList.remove('active');
                 }
             });
             
+            // Eventos para garantir que o mapa seja redimensionado corretamente
             window.addEventListener('resize', function() {
-                if (map) {
-                    map.invalidateSize(true);
-                }
+                if (map) map.invalidateSize();
             });
             
-            // Corrigir o mapa novamente após um curto intervalo
-            setTimeout(function() {
-                if (map) {
-                    map.invalidateSize(true);
-                }
-            }, 2000);
+            document.addEventListener('visibilitychange', function() {
+                if (!document.hidden && map) map.invalidateSize();
+            });
+            
         } catch (error) {
             console.error('Erro durante inicialização:', error);
+            showToast('Erro', 'Ocorreu um erro ao inicializar a página. Tente recarregar.', 'error');
         }
     });
 </script>

@@ -1,12 +1,48 @@
 from sqlalchemy import create_engine, text
 import os
 from dotenv import load_dotenv
+import sqlite3
+import sys
 
 # Carregar variáveis de ambiente
 load_dotenv()
 
 # Configuração da conexão com o banco de dados
 DATABASE_URL = os.getenv('DATABASE_URL', 'postgresql://postgres:admin@localhost/farmdb')
+
+def update_area_table():
+    # Encontra o caminho do banco de dados
+    db_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'farm_db.sqlite')
+    
+    if not os.path.exists(db_path):
+        print(f"Banco de dados não encontrado em: {db_path}")
+        sys.exit(1)
+    
+    try:
+        # Conecta ao banco de dados
+        conn = sqlite3.connect(db_path)
+        cursor = conn.cursor()
+        
+        # Verifica se a coluna polygon_points já existe
+        cursor.execute("PRAGMA table_info(area)")
+        columns = [column[1] for column in cursor.fetchall()]
+        
+        if 'polygon_points' not in columns:
+            # Adiciona a coluna polygon_points se ela não existir
+            cursor.execute("ALTER TABLE area ADD COLUMN polygon_points TEXT")
+            conn.commit()
+            print("Coluna polygon_points adicionada com sucesso à tabela area")
+        else:
+            print("Coluna polygon_points já existe na tabela area")
+        
+        # Fecha a conexão com o banco de dados
+        conn.close()
+        
+        print("Atualização concluída com sucesso!")
+        
+    except sqlite3.Error as e:
+        print(f"Erro ao atualizar o banco de dados: {e}")
+        sys.exit(1)
 
 def main():
     print("Iniciando atualização da tabela area...")
@@ -84,4 +120,6 @@ def main():
 
 if __name__ == "__main__":
     success = main()
+    if not success:
+        update_area_table()
     exit(0 if success else 1) 

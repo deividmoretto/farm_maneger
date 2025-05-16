@@ -10,6 +10,7 @@
                 </div>
                 <div class="card-body">
                     <form method="POST" action="{{ url_for('nova_area') }}" id="areaForm">
+                        {{ form.csrf_token }}
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group mb-3">
@@ -23,7 +24,7 @@
                                         <input type="number" step="0.01" min="0" class="form-control" id="tamanho" name="tamanho" readonly required>
                                         <span class="input-group-text">hectares</span>
                                     </div>
-                                    <small class="text-muted">Será calculado automaticamente ao desenhar o polígono</small>
+                                    <small class="text-muted">Será calculado automaticamente ao desenhar no mapa</small>
                                 </div>
 
                                 <div class="form-group mb-3">
@@ -54,7 +55,7 @@
                                     <small class="text-muted">Digite um endereço para encontrar a região no mapa</small>
                                 </div>
                                 
-                                <div class="row mb-3" style="display: none;">
+                                <div class="row mb-3">
                                     <div class="col-md-6">
                                         <label for="latitude" class="form-label">Latitude (centro)</label>
                                         <input type="text" class="form-control" id="latitude" name="latitude" readonly>
@@ -68,15 +69,19 @@
                                 <!-- Campo oculto para armazenar os pontos do polígono -->
                                 <input type="hidden" id="polygon_points" name="polygon_points">
                                 
+                                <div class="form-group mb-3">
+                                    <label for="descricao" class="form-label">Descrição</label>
+                                    <textarea class="form-control" id="descricao" name="descricao" rows="3"></textarea>
+                                </div>
+                                
                                 <div class="alert alert-info">
                                     <h5 class="mb-2">Como desenhar sua área:</h5>
                                     <ol>
-                                        <li>Utilize a barra de ferramentas à direita do mapa;</li>
-                                        <li>Clique no ícone <i class="fas fa-draw-polygon"></i> para começar a desenhar;</li>
-                                        <li>Clique em pontos no mapa para formar o polígono;</li>
+                                        <li>Utilize o botão <i class="fas fa-draw-polygon"></i> no canto superior direito do mapa;</li>
+                                        <li>Clique em pontos no mapa para formar o polígono da sua área;</li>
                                         <li>Clique no primeiro ponto para fechar o polígono;</li>
-                                        <li>Para editar a forma, use o ícone <i class="fas fa-edit"></i>;</li>
-                                        <li>Para remover, use o ícone <i class="fas fa-trash"></i>.</li>
+                                        <li>Para editar a forma, use o botão de edição;</li>
+                                        <li>Para remover, use o botão de exclusão.</li>
                                     </ol>
                                 </div>
                             </div>
@@ -84,6 +89,12 @@
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label class="form-label">Desenhe a área no mapa:</label>
+                                    <div class="map-type-buttons mb-2">
+                                        <div class="btn-group w-100">
+                                            <button type="button" class="btn btn-outline-primary active" id="btnOSM">Mapa</button>
+                                            <button type="button" class="btn btn-outline-primary" id="btnSatelite">Satélite</button>
+                                        </div>
+                                    </div>
                                     <div id="mapContainer" style="position: relative; z-index: 1; height: 450px; border: 1px solid #ddd; border-radius: 4px; overflow: hidden;">
                                         <div id="map" style="width: 100%; height: 100%;"></div>
                                     </div>
@@ -139,54 +150,8 @@
         z-index: 1;
     }
     
-    /* Corrigir posicionamento dos tiles */
-    .leaflet-tile-container {
-        pointer-events: none;
-        position: absolute;
-        will-change: transform;
-        left: 0;
-        top: 0;
-    }
-    
-    .leaflet-tile {
-        position: absolute !important;
-        left: 0;
-        top: 0;
-        width: 256px !important;
-        height: 256px !important;
-    }
-    
-    /* Remover bordas brancas entre tiles */
-    .leaflet-tile-loaded {
-        visibility: inherit;
-        margin: 0 !important;
-        padding: 0 !important;
-        border: 0 !important;
-    }
-    
-    /* Garantir que elementos do mapa estejam acima de outros elementos */
-    .leaflet-pane,
-    .leaflet-overlay-pane,
-    .leaflet-marker-pane,
-    .leaflet-shadow-pane,
-    .leaflet-tooltip-pane,
-    .leaflet-popup-pane,
-    .leaflet-zoom-box,
-    .leaflet-image-layer,
-    .leaflet-layer {
-        position: absolute;
-        left: 0;
-        top: 0;
-        z-index: auto;
-    }
-    
     /* Evitar quebras em containers responsivos */
-    .leaflet-container .leaflet-overlay-pane svg,
-    .leaflet-container .leaflet-marker-pane img,
-    .leaflet-container .leaflet-shadow-pane img,
-    .leaflet-container .leaflet-tile-pane img,
-    .leaflet-container img.leaflet-image-layer,
-    .leaflet-container .leaflet-tile {
+    .leaflet-container img {
         max-width: none !important;
         max-height: none !important;
     }
@@ -210,6 +175,19 @@
     .crop-color-trigo { background-color: #FFC107; }
     .crop-color-pastagem { background-color: #00BCD4; }
     .crop-color-outros { background-color: #9E9E9E; }
+    
+    /* Botões de tipo de mapa */
+    .map-type-buttons .btn-outline-primary {
+        color: #333;
+        background-color: #fff;
+        border-color: #ccc;
+    }
+    
+    .map-type-buttons .btn-outline-primary.active {
+        color: #fff;
+        background-color: #0d6efd;
+        border-color: #0d6efd;
+    }
 </style>
 {% endblock %}
 
@@ -217,14 +195,16 @@
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
         integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 <script src="https://unpkg.com/leaflet-draw@1.0.4/dist/leaflet.draw.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@turf/turf@6/turf.min.js"></script>
+<script src="https://unpkg.com/@turf/turf@6/turf.min.js"></script>
 <script>
     // Mapa e variáveis globais
     let map = null;
     let marker = null;
     let drawnItems = null;
     let drawControl = null;
-    let Toast = null; // Referência global para o Toast do Bootstrap
+    let osmLayer = null;
+    let satelliteLayer = null;
+    let activeLayer = null;
     
     // Cores para as culturas
     const cropColors = {
@@ -255,9 +235,8 @@
             document.getElementById('toastTitle').textContent = title;
             document.getElementById('toastMessage').textContent = message;
             
-            // Criar uma nova instância de Toast ou usar a existente
-            const toast = Toast || new bootstrap.Toast(toastEl);
-            Toast = toast; // Salvar referência para uso futuro
+            // Criar uma nova instância de Toast
+            const toast = new bootstrap.Toast(toastEl);
             
             // Adicionar classes de cor baseadas no tipo
             toastEl.className = 'toast';
@@ -298,7 +277,8 @@
                         message: '<strong>Atenção!</strong> Os polígonos não podem se cruzar!'
                     },
                     shapeOptions: {
-                        color: color
+                        color: color,
+                        fillOpacity: 0.3
                     }
                 },
                 circle: false,
@@ -316,7 +296,7 @@
         // Atualizar polígonos existentes
         drawnItems.eachLayer(function(layer) {
             if (layer instanceof L.Polygon) {
-                layer.setStyle({ color: color });
+                layer.setStyle({ color: color, fillOpacity: 0.3 });
             }
         });
     }
@@ -345,8 +325,6 @@
     // Inicializar ou reinicializar o mapa
     function initMap(lat, lng) {
         try {
-            console.log("Inicializando mapa com coordenadas:", lat, lng);
-            
             // Verificar se o elemento do mapa existe
             const mapElement = document.getElementById('map');
             if (!mapElement) {
@@ -354,99 +332,86 @@
                 return;
             }
             
+            // Coordenadas padrão (Brasil)
+            lat = lat || -15.77972;
+            lng = lng || -47.92972;
+            
             // Remover mapa anterior se existir
             if (map) {
-                console.log("Removendo mapa existente");
                 map.remove();
                 map = null;
-                // Aguardar um instante após a remoção do mapa
-                setTimeout(() => {
-                    _createNewMap(lat, lng);
-                }, 50);
-            } else {
-                _createNewMap(lat, lng);
             }
+            
+            // Criar novo mapa
+            map = L.map('map', {
+                center: [lat, lng],
+                zoom: 5,
+                maxZoom: 18,
+                minZoom: 2,
+                worldCopyJump: true
+            });
+            
+            // Camada OpenStreetMap (padrão)
+            osmLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+            }).addTo(map);
+            activeLayer = osmLayer;
+            
+            // Camada de Satélite (Google Satellite)
+            satelliteLayer = L.tileLayer('https://mt1.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', {
+                attribution: '&copy; Google'
+            });
+            
+            // Inicializar camada para itens desenhados
+            drawnItems = new L.FeatureGroup();
+            map.addLayer(drawnItems);
+            
+            // Inicializar controles de desenho
+            const cropType = document.getElementById('cultura').value || 'outros';
+            const color = cropColors[cropType] || cropColors['outros'];
+            
+            drawControl = new L.Control.Draw({
+                position: 'topright',
+                draw: {
+                    polyline: false,
+                    polygon: {
+                        allowIntersection: false,
+                        drawError: {
+                            color: '#e1e100',
+                            message: '<strong>Atenção!</strong> Os polígonos não podem se cruzar!'
+                        },
+                        shapeOptions: {
+                            color: color,
+                            fillOpacity: 0.3
+                        }
+                    },
+                    circle: false,
+                    rectangle: false,
+                    marker: false,
+                    circlemarker: false
+                },
+                edit: {
+                    featureGroup: drawnItems,
+                    remove: true
+                }
+            });
+            map.addControl(drawControl);
+            
+            // Adicionar eventos para o mapa
+            map.on('draw:created', handlePolygonCreated);
+            map.on('draw:edited', handlePolygonEdited);
+            map.on('draw:deleted', handlePolygonDeleted);
+            
+            // Corrigir o tamanho do mapa
+            setTimeout(function() {
+                map.invalidateSize();
+            }, 200);
+            
+            console.log("Mapa inicializado com sucesso");
         } catch (error) {
             console.error('Erro ao inicializar mapa:', error);
             showToast('Erro', 'Falha ao inicializar o mapa. Tente recarregar a página.', 'error');
         }
-    }
-    
-    // Função auxiliar para criar um novo mapa
-    function _createNewMap(lat, lng) {
-        // Criar novo mapa com opções otimizadas
-        map = L.map('map', {
-            center: [lat, lng],
-            zoom: 5,
-            maxZoom: 18,
-            minZoom: 2,
-            worldCopyJump: true,
-            fadeAnimation: false,
-            zoomAnimation: false,
-            markerZoomAnimation: false,
-            preferCanvas: true,
-            renderer: L.canvas()
-        });
-        
-        // Adicionar tiles ao mapa
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-            subdomains: ['a', 'b', 'c'],
-            tileSize: 256,
-            updateWhenIdle: true,
-            updateWhenZooming: false,
-            keepBuffer: 2
-        }).addTo(map);
-        
-        // Inicializar camada para itens desenhados
-        drawnItems = new L.FeatureGroup();
-        map.addLayer(drawnItems);
-        
-        // Inicializar controles de desenho
-        const cropType = document.getElementById('cultura').value;
-        const color = cropColors[cropType] || cropColors['soja'];
-        
-        drawControl = new L.Control.Draw({
-            position: 'topright',
-            draw: {
-                polyline: false,
-                polygon: {
-                    allowIntersection: false,
-                    drawError: {
-                        color: '#e1e100',
-                        message: '<strong>Atenção!</strong> Os polígonos não podem se cruzar!'
-                    },
-                    shapeOptions: {
-                        color: color
-                    }
-                },
-                circle: false,
-                rectangle: false,
-                marker: false,
-                circlemarker: false
-            },
-            edit: {
-                featureGroup: drawnItems,
-                remove: true
-            }
-        });
-        map.addControl(drawControl);
-        
-        // Corrigir o tamanho do mapa após inicialização
-        setTimeout(function() {
-            if (map) map.invalidateSize(true);
-        }, 100);
-        
-        setTimeout(function() {
-            if (map) map.invalidateSize(true);
-        }, 500);
-        
-        // Adicionar eventos para o mapa
-        map.on('draw:created', handlePolygonCreated);
-        map.on('draw:edited', handlePolygonEdited);
-        map.on('draw:deleted', handlePolygonDeleted);
-        
-        console.log("Mapa inicializado com sucesso");
     }
     
     // Handler para criação de polígono
@@ -530,13 +495,12 @@
         document.getElementById('btnBuscarEndereco').innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Buscando...';
         document.getElementById('btnBuscarEndereco').disabled = true;
         
-        // Chamar API de geocodificação
-        fetch('/api/geocode', {
-            method: 'POST',
+        // API gratuita de geocodificação da Nominatim (OSM)
+        fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(endereco)}&limit=1`, {
             headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ endereco: endereco })
+                'Accept': 'application/json',
+                'User-Agent': 'FarmManagerApp'
+            }
         })
         .then(response => response.json())
         .then(data => {
@@ -544,51 +508,38 @@
             document.getElementById('btnBuscarEndereco').innerHTML = '<i class="fas fa-search"></i> Buscar';
             document.getElementById('btnBuscarEndereco').disabled = false;
             
-            if (data.error) {
-                showToast('Erro', data.error, 'error');
+            if (!data || data.length === 0) {
+                showToast('Erro', 'Endereço não encontrado. Tente com mais detalhes.', 'error');
                 return;
             }
             
+            const result = data[0];
+            
             // Preencher campos de latitude e longitude
-            document.getElementById('latitude').value = data.latitude;
-            document.getElementById('longitude').value = data.longitude;
+            document.getElementById('latitude').value = result.lat;
+            document.getElementById('longitude').value = result.lon;
             
-            // Atualizar input de endereço com nome mais completo
-            document.getElementById('endereco').value = data.display_name || data.endereco;
-            
-            try {
-                // Centralizar o mapa na localização encontrada
-                const lat = parseFloat(data.latitude);
-                const lng = parseFloat(data.longitude);
+            // Centralizar o mapa na localização encontrada
+            if (map) {
+                const lat = parseFloat(result.lat);
+                const lng = parseFloat(result.lon);
                 
-                if (map) {
-                    // Garantir que o mapa seja redimensionado corretamente
-                    map.invalidateSize(true);
-                    map.setView([lat, lng], 15);
-                    
-                    // Adicionar marcador temporário para mostrar a localização
+                map.setView([lat, lng], 13);
+                
+                // Adicionar marcador temporário
+                if (marker) map.removeLayer(marker);
+                marker = L.marker([lat, lng]).addTo(map);
+                
+                // Remover marcador após alguns segundos
+                setTimeout(function() {
                     if (marker) {
                         map.removeLayer(marker);
+                        marker = null;
                     }
-                    marker = L.marker([lat, lng]).addTo(map);
-                    
-                    // Remover marcador após alguns segundos
-                    setTimeout(function() {
-                        if (marker) {
-                            map.removeLayer(marker);
-                            marker = null;
-                        }
-                    }, 5000);
-                } else {
-                    // Se o mapa não existir, inicialize-o
-                    initMap(lat, lng);
-                }
-                
-                showToast('Sucesso', 'Localização encontrada! Agora desenhe o perímetro da área.', 'success');
-            } catch (error) {
-                console.error('Erro ao processar coordenadas:', error);
-                showToast('Erro', 'Ocorreu um erro ao processar as coordenadas. Tente novamente.', 'error');
+                }, 5000);
             }
+            
+            showToast('Sucesso', 'Localização encontrada! Agora desenhe o perímetro da área.', 'success');
         })
         .catch(error => {
             console.error('Erro ao buscar endereço:', error);
@@ -601,8 +552,8 @@
     // Inicializar quando o documento estiver carregado
     document.addEventListener('DOMContentLoaded', function() {
         try {
-            // Inicializar com coordenadas padrão (Brasil)
-            initMap(-15.77972, -47.92972);
+            // Inicializar o mapa
+            initMap();
             
             // Configurar evento de busca de endereço
             document.getElementById('btnBuscarEndereco').addEventListener('click', buscarEndereco);
@@ -610,6 +561,31 @@
             // Atualizar cor do polígono quando mudar o tipo de cultura
             document.getElementById('cultura').addEventListener('change', function() {
                 updatePolygonColor(this.value);
+            });
+            
+            // Alternar entre mapa normal e satélite
+            document.getElementById('btnOSM').addEventListener('click', function() {
+                if (activeLayer !== osmLayer) {
+                    map.removeLayer(activeLayer);
+                    map.addLayer(osmLayer);
+                    activeLayer = osmLayer;
+                    
+                    // Atualizar estado dos botões
+                    document.getElementById('btnOSM').classList.add('active');
+                    document.getElementById('btnSatelite').classList.remove('active');
+                }
+            });
+            
+            document.getElementById('btnSatelite').addEventListener('click', function() {
+                if (activeLayer !== satelliteLayer) {
+                    map.removeLayer(activeLayer);
+                    map.addLayer(satelliteLayer);
+                    activeLayer = satelliteLayer;
+                    
+                    // Atualizar estado dos botões
+                    document.getElementById('btnSatelite').classList.add('active');
+                    document.getElementById('btnOSM').classList.remove('active');
+                }
             });
             
             // Configurar validação do formulário
@@ -620,28 +596,18 @@
                 }
             });
             
-            // Eventos adicionais para detectar mudanças na visibilidade
-            document.addEventListener('visibilitychange', function() {
-                if (!document.hidden && map) {
-                    map.invalidateSize(true);
-                }
-            });
-            
-            // Evento para corrigir o mapa quando a janela é redimensionada
+            // Eventos para garantir que o mapa seja redimensionado corretamente
             window.addEventListener('resize', function() {
-                if (map) {
-                    map.invalidateSize(true);
-                }
+                if (map) map.invalidateSize();
             });
             
-            // Corrigir o mapa novamente após um curto intervalo
-            setTimeout(function() {
-                if (map) {
-                    map.invalidateSize(true);
-                }
-            }, 2000);
+            document.addEventListener('visibilitychange', function() {
+                if (!document.hidden && map) map.invalidateSize();
+            });
+            
         } catch (error) {
             console.error('Erro durante inicialização:', error);
+            showToast('Erro', 'Ocorreu um erro ao inicializar a página. Tente recarregar.', 'error');
         }
     });
 </script>

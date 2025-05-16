@@ -8,6 +8,7 @@ class Area(db.Model):
     endereco = db.Column(db.String(200))
     latitude = db.Column(db.String(30))
     longitude = db.Column(db.String(30))
+    polygon_points = db.Column(db.Text)  # JSON serializado dos pontos do polígono
     descricao = db.Column(db.Text)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     analyses = db.relationship('Analysis', backref='area', lazy=True) 

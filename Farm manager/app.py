@@ -51,6 +51,7 @@ class Area(db.Model):
     polygon_points = db.Column(db.Text, nullable=True)  # Pontos do polígono em formato JSON
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    descricao = db.Column(db.Text, nullable=True)
 
 class Analysis(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -547,6 +548,7 @@ def excluir_area(id):
 @login_required
 def editar_area(id):
     area = Area.query.filter_by(id=id, user_id=current_user.id).first_or_404()
+    form = AreaForm(obj=area)
     
     if request.method == 'POST':
         area.nome = request.form.get('nome')
@@ -555,13 +557,15 @@ def editar_area(id):
         area.cultura = request.form.get('cultura')
         area.latitude = float(request.form.get('latitude')) if request.form.get('latitude') else None
         area.longitude = float(request.form.get('longitude')) if request.form.get('longitude') else None
+        area.polygon_points = request.form.get('polygon_points')
+        area.descricao = request.form.get('descricao')
         
         db.session.commit()
         flash('Área atualizada com sucesso!', 'success')
         return redirect(url_for('areas'))
     
     # Sempre usar o template da pasta areas (sem acento)
-    return render_template('areas/editar_area.html', area=area)
+    return render_template('areas/editar_area.html', area=area, form=form)
 
 @app.route('/api/geocode', methods=['POST'])
 @login_required
